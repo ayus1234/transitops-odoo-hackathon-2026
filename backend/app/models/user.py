@@ -12,6 +12,7 @@ from app.core.database import Base
 
 if TYPE_CHECKING:
     from app.models.role import Role
+    from app.models.driver import Driver
 
 
 class User(Base):
@@ -96,6 +97,13 @@ class User(Base):
         "Role",
         back_populates="users",
         lazy="joined"
+    )
+    
+    driver: Mapped[Optional["Driver"]] = relationship(
+        "Driver",
+        back_populates="user",
+        uselist=False,
+        lazy="select"
     )
     
     def __repr__(self) -> str:

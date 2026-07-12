@@ -122,6 +122,7 @@ class Driver(Base):
     # Relationships
     user: Mapped["User"] = relationship(
         "User",
+        back_populates="driver",
         lazy="joined",
         foreign_keys=[user_id]
     )
