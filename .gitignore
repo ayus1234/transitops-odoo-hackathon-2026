@@ -43,3 +43,16 @@ coverage/
 # OS
 Thumbs.db
 .DS_Store
+
+# Local setup documents
+CURRENT_STATUS.md
+FIXES_TO_APPLY.md
+
+backend/README_SETUP.md
+backend/READY_TO_SETUP.md
+backend/SETUP_CHECKLIST.txt
+backend/SETUP_INSTRUCTIONS.md
+
+backend/complete_setup.bat
+backend/install_deps.bat
+backend/verify_setup.py
