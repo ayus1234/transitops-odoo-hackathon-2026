@@ -152,7 +152,7 @@ def update_trip(
     - All creation validations apply to changed fields
     """
     service = TripService(db)
-    trip = service.update_trip(trip_id, trip_data)
+    trip = service.update_trip(trip_id, trip_data, current_user)
     return TripResponse.model_validate(trip)
 
 
@@ -171,7 +171,7 @@ def delete_trip(
     - Cannot delete Dispatched or Completed trips
     """
     service = TripService(db)
-    service.delete_trip(trip_id)
+    service.delete_trip(trip_id, current_user)
     return SuccessResponse(
         success=True,
         message="Trip deleted successfully"
@@ -201,7 +201,7 @@ def dispatch_trip(
     - Records actual departure time and start odometer
     """
     service = TripService(db)
-    trip = service.dispatch_trip(trip_id, dispatch_data)
+    trip = service.dispatch_trip(trip_id, dispatch_data, current_user)
     return TripResponse.model_validate(trip)
 
 
@@ -225,7 +225,7 @@ def complete_trip(
     - Updates vehicle odometer
     """
     service = TripService(db)
-    trip = service.complete_trip(trip_id, complete_data)
+    trip = service.complete_trip(trip_id, complete_data, current_user)
     return TripResponse.model_validate(trip)
 
 
@@ -246,5 +246,5 @@ def cancel_trip(
     - If trip was Dispatched, restores vehicle and driver to 'Available'
     """
     service = TripService(db)
-    trip = service.cancel_trip(trip_id, cancel_data)
+    trip = service.cancel_trip(trip_id, cancel_data, current_user)
     return TripResponse.model_validate(trip)

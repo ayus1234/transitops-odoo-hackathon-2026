@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Trip Execution - TransitOps</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#ffcfb7",
+                    "on-primary": "#ffffff",
+                    "on-primary-fixed": "#001847",
+                    "tertiary-fixed": "#ffdbca",
+                    "surface-variant": "#e1e3e4",
+                    "on-secondary-fixed": "#002204",
+                    "surface": "#f8f9fa",
+                    "on-surface": "#191c1d",
+                    "on-tertiary-fixed-variant": "#773300",
+                    "on-secondary-fixed-variant": "#005312",
+                    "outline-variant": "#c3c6d6",
+                    "error": "#ba1a1a",
+                    "tertiary-fixed-dim": "#ffb68e",
+                    "primary": "#0040a1",
+                    "surface-bright": "#f8f9fa",
+                    "surface-container": "#edeeef",
+                    "on-tertiary-fixed": "#331200",
+                    "on-secondary-container": "#217128",
+                    "inverse-on-surface": "#f0f1f2",
+                    "surface-dim": "#d9dadb",
+                    "error-container": "#ffdad6",
+                    "inverse-surface": "#2e3132",
+                    "on-primary-fixed-variant": "#0040a1",
+                    "secondary-container": "#a0f399",
+                    "outline": "#737785",
+                    "secondary": "#1b6d24",
+                    "surface-tint": "#0056d2",
+                    "surface-container-highest": "#e1e3e4",
+                    "on-surface-variant": "#424654",
+                    "primary-fixed-dim": "#b2c5ff",
+                    "on-tertiary": "#ffffff",
+                    "tertiary": "#773300",
+                    "surface-container-low": "#f3f4f5",
+                    "on-error": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed": "#a3f69c",
+                    "inverse-primary": "#b2c5ff",
+                    "surface-container-high": "#e7e8e9",
+                    "on-background": "#191c1d",
+                    "primary-container": "#0056d2",
+                    "on-error-container": "#93000a",
+                    "on-primary-container": "#ccd8ff",
+                    "on-secondary": "#ffffff",
+                    "tertiary-container": "#9c4500",
+                    "secondary-fixed-dim": "#88d982",
+                    "background": "#f8f9fa",
+                    "primary-fixed": "#dae2ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sm": "8px",
+                    "gutter": "16px",
+                    "xs": "4px",
+                    "sidebar_width": "240px",
+                    "base": "8px",
+                    "xl": "32px",
+                    "lg": "24px",
+                    "md": "16px"
+            },
+            "fontFamily": {
+                    "title-sm": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "label-caps": ["Inter"],
+                    "data-tabular": ["Inter"],
+                    "body-md": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "body-sm": ["Inter"]
+            },
+            "fontSize": {
+                    "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "data-tabular": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .step-active::before {
+            content: '';
+            position: absolute;
+            left: 11px;
+            top: 24px;
+            bottom: -24px;
+            width: 2px;
+            background: #0040a1;
+        }
+        .step-inactive::before {
+            content: '';
+            position: absolute;
+            left: 11px;
+            top: 24px;
+            bottom: -24px;
+            width: 2px;
+            background: #e1e3e4;
+        }
+        .signature-canvas {
+            background-image: radial-gradient(#ccd8ff 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface flex flex-col min-h-screen">
+<!-- Top App Bar (Shared Component Context) -->
+<header class="bg-surface dark:bg-background border-b border-outline-variant shadow-sm flex justify-between items-center h-16 px-lg w-full sticky top-0 z-50">
+<div class="flex items-center gap-md">
+<button class="p-sm rounded-full hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-primary">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Trip #4829-X</h1>
+</div>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer transition-colors">notifications</span>
+<div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center">
+<img class="w-full h-full rounded-full object-cover" data-alt="A close-up portrait of a professional male fleet driver in a clean, navy blue company uniform, smiling confidently. The lighting is bright and natural, suggesting an outdoor daylight setting. The background is softly blurred, showing the subtle metallic textures of a modern commercial vehicle." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCG1conAuZ8HmgQp4U32xpg3TUdwr8t4nkTfoqBSSb4rZuS5cAcxVhyl-GMxWt7cULpzI1tbv6VtBNpO5wbVkQvNxjNBB_18Qb3N9PVCY1H_FQO4rMmBJXmg9gJyVrlOCexj8YbW29puXQTz2gGq36ZMlw4ExUtrg_PFvG21ACf0bBeihoKk7tzYrVMfwvu-dC46uy2Hcp19OgikhXFisJtmxMbAWbN9hDbZgSsW6ZrXimP0T_B0M-y"/>
+</div>
+</div>
+</header>
+<main class="flex-grow flex flex-col md:flex-row pb-24 md:pb-0">
+<!-- Main Content Area: Map and Journey Detail -->
+<div class="w-full md:w-2/3 lg:w-3/4 h-[40vh] md:h-auto relative">
+<!-- Map Preview (Integrated Navigation) -->
+<div class="absolute inset-0 bg-surface-container-high" data-location="Chicago, Illinois" style="">
+<img class="w-full h-full object-cover opacity-80" data-alt="A high-fidelity satellite navigation map view of downtown Chicago, showing intricate street grids, the Chicago River, and highlighted blue route lines for a logistics delivery trip. The visual style is clean and professional, with enterprise-grade data overlays, traffic density indicators in yellow and red, and 3D building silhouettes." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCS4ifIfBBGmCsFQzKJfGunn0-7GYiijxR-YRnsK3hwXIoAqX6P0gMpFZSwy23x_kbna5ZiNlGYI7FtIELg9WXQl_r0V9-zwMaMKEIdAR23CiCaWnOXJZg8MaKfUvQyBsGEps-HdnYobeCKWSPCgFe0iWZTuK1PasLAQuq1mfpwYWqKTwNXK2v0-WVYXeaYp_f4DYYbBh6QO_RvBVsTIHvVB4IRKT4a3b2OL5QltO3N9qt--w14cKcm"/>
+<!-- Floating Nav HUD -->
+<div class="absolute top-4 left-4 right-4 md:right-auto md:w-80">
+<div class="bg-white/90 backdrop-blur-md p-md rounded-xl shadow-lg border border-outline-variant">
+<div class="flex justify-between items-start mb-sm">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Current Instruction</span>
+<span class="font-title-sm text-title-sm text-primary">Turn left on W Adams St</span>
+</div>
+<span class="bg-primary-container text-on-primary-container px-2 py-1 rounded text-[12px] font-bold">1.2 mi</span>
+</div>
+<div class="flex items-center gap-md">
+<div class="flex-1 bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-2/3"></div>
+</div>
+<span class="font-data-tabular text-data-tabular text-on-surface-variant">Arrival 14:30</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sidebar Actions & Checklist -->
+<div class="w-full md:w-1/3 lg:w-1/4 bg-white border-l border-outline-variant flex flex-col max-h-screen overflow-y-auto">
+<!-- Summary Header -->
+<div class="p-lg bg-surface-container-low border-b border-outline-variant">
+<div class="flex justify-between items-center mb-md">
+<span class="bg-secondary-container text-on-secondary-container px-sm py-1 rounded-full font-label-caps text-label-caps">ON TRIP</span>
+<div class="text-right">
+<span class="block font-data-tabular text-display-lg text-primary">12:45:02</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Total Journey Time</span>
+</div>
+</div>
+<div class="flex gap-sm">
+<button class="flex-1 bg-error text-on-error py-sm rounded-lg font-title-sm text-title-sm flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined">warning</span> SOS
+                    </button>
+<button class="flex-1 bg-surface-container-highest text-on-surface py-sm rounded-lg font-title-sm text-title-sm flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined">chat</span> Help
+                    </button>
+</div>
+</div>
+<!-- Steps Checklist -->
+<div class="p-lg space-y-xl">
+<!-- Step 1: Completed -->
+<div class="relative flex gap-md step-active">
+<div class="relative z-10 w-6 h-6 rounded-full bg-secondary text-on-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<div class="flex-1 -mt-1">
+<div class="flex justify-between items-start">
+<h3 class="font-title-sm text-title-sm text-on-surface-variant">Pickup: Central Hub</h3>
+<span class="font-data-tabular text-body-sm text-on-surface-variant">08:15 AM</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">Completed in 45 mins</p>
+</div>
+</div>
+<!-- Step 2: Active -->
+<div class="relative flex gap-md step-active">
+<div class="relative z-10 w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center border-4 border-primary-container">
+<span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+</div>
+<div class="flex-1 -mt-1">
+<div class="flex justify-between items-start">
+<h3 class="font-title-sm text-title-sm text-primary">Transit: I-94 Expressway</h3>
+<span class="font-data-tabular text-body-sm text-primary">Active</span>
+</div>
+<div class="mt-md bg-primary-container/10 p-md rounded-xl border border-primary/20">
+<div class="flex items-center gap-sm mb-sm">
+<span class="material-symbols-outlined text-primary">schedule</span>
+<span class="font-data-tabular text-body-md font-bold">04:30:12 elapsed</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Next Milestone: Toll Plaza (3.2 mi)</p>
+</div>
+</div>
+</div>
+<!-- Step 3: Upcoming -->
+<div class="relative flex gap-md">
+<div class="relative z-10 w-6 h-6 rounded-full bg-surface-container-highest text-outline flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">radio_button_unchecked</span>
+</div>
+<div class="flex-1 -mt-1 opacity-50">
+<div class="flex justify-between items-start">
+<h3 class="font-title-sm text-title-sm">Drop-off: Retail Block A</h3>
+<span class="font-data-tabular text-body-sm">ETA 15:45</span>
+</div>
+<p class="font-body-sm text-body-sm mt-xs">12 Packages • Dock 4</p>
+</div>
+</div>
+</div>
+<!-- Proof of Delivery Section -->
+<div class="mt-auto p-lg border-t border-outline-variant bg-surface-bright">
+<h3 class="font-title-sm text-title-sm text-on-surface mb-md">Proof of Delivery</h3>
+<div class="signature-capture">
+<div class="signature-canvas w-full h-32 rounded-xl border-2 border-dashed border-outline-variant flex items-center justify-center relative mb-md cursor-crosshair">
+<span class="font-body-sm text-outline select-none">Sign here on arrival</span>
+<div class="absolute bottom-2 right-2 flex gap-xs">
+<button class="p-xs bg-white rounded shadow-sm hover:bg-surface-variant"><span class="material-symbols-outlined text-[18px]">refresh</span></button>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-md">
+<button class="bg-surface-container-highest text-on-surface py-md rounded-xl font-title-sm text-title-sm flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined">photo_camera</span> Photo
+                        </button>
+<button class="bg-primary text-on-primary py-md rounded-xl font-title-sm text-title-sm flex items-center justify-center gap-xs shadow-md active:scale-95 transition-transform">
+                            Finish Leg <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar (Shared Component Context - Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 bg-surface dark:bg-inverse-surface shadow-lg flex justify-around items-center px-md py-sm rounded-t-xl border-t border-outline-variant">
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-label-caps text-label-caps uppercase">Work Orders</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
+<span class="material-symbols-outlined">precision_manufacturing</span>
+<span class="font-label-caps text-label-caps uppercase">Parts</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
+<span class="material-symbols-outlined">build_circle</span>
+<span class="font-label-caps text-label-caps uppercase">Maintenance</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-caps text-label-caps uppercase">Profile</span>
+</div>
+</nav>
+<!-- Interactive Layer for Signature Capture simulation -->
+<script>
+        const canvas = document.querySelector('.signature-canvas');
+        let isDrawing = false;
+
+        canvas.addEventListener('mousedown', () => isDrawing = true);
+        window.addEventListener('mouseup', () => isDrawing = false);
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDrawing) return;
+            const dot = document.createElement('div');
+            dot.className = 'absolute bg-primary w-1 h-1 rounded-full pointer-events-none';
+            const rect = canvas.getBoundingClientRect();
+            dot.style.left = (e.clientX - rect.left) + 'px';
+            dot.style.top = (e.clientY - rect.top) + 'px';
+            canvas.appendChild(dot);
+            
+            // Hide the placeholder text once user starts signing
+            const placeholder = canvas.querySelector('span');
+            if(placeholder) placeholder.style.display = 'none';
+        });
+
+        // Clear signature simulation
+        document.querySelector('button .material-symbols-outlined[innerText="refresh"]')?.parentElement.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const dots = canvas.querySelectorAll('div.bg-primary');
+            dots.forEach(d => d.remove());
+            const placeholder = canvas.querySelector('span');
+            if(placeholder) placeholder.style.display = 'block';
+        });
+    </script>
+</body></html>

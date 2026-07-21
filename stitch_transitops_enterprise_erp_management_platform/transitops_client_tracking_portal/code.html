@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Track Your Shipment | TransitOps Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-on-surface": "#f0f1f2",
+                    "surface-tint": "#0056d2",
+                    "inverse-primary": "#b2c5ff",
+                    "tertiary-fixed": "#ffdbca",
+                    "tertiary-container": "#9c4500",
+                    "on-error-container": "#93000a",
+                    "error": "#ba1a1a",
+                    "secondary-container": "#a0f399",
+                    "inverse-surface": "#2e3132",
+                    "on-tertiary-container": "#ffcfb7",
+                    "on-primary-fixed-variant": "#0040a1",
+                    "background": "#f8f9fa",
+                    "surface-container-high": "#e7e8e9",
+                    "secondary": "#1b6d24",
+                    "surface-variant": "#e1e3e4",
+                    "on-surface": "#191c1d",
+                    "primary-container": "#0056d2",
+                    "on-background": "#191c1d",
+                    "surface-container-low": "#f3f4f5",
+                    "primary-fixed-dim": "#b2c5ff",
+                    "primary-fixed": "#dae2ff",
+                    "on-secondary-fixed-variant": "#005312",
+                    "on-secondary-container": "#217128",
+                    "on-surface-variant": "#424654",
+                    "on-primary-container": "#ccd8ff",
+                    "on-secondary": "#ffffff",
+                    "surface-bright": "#f8f9fa",
+                    "on-primary": "#ffffff",
+                    "tertiary": "#773300",
+                    "surface": "#f8f9fa",
+                    "secondary-fixed-dim": "#88d982",
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed": "#a3f69c",
+                    "primary": "#0040a1",
+                    "tertiary-fixed-dim": "#ffb68e",
+                    "surface-container": "#edeeef",
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed": "#001847",
+                    "on-error": "#ffffff",
+                    "surface-container-highest": "#e1e3e4",
+                    "on-tertiary-fixed-variant": "#773300",
+                    "surface-dim": "#d9dadb",
+                    "surface-container-lowest": "#ffffff",
+                    "outline-variant": "#c3c6d6",
+                    "on-secondary-fixed": "#002204",
+                    "on-tertiary-fixed": "#331200",
+                    "outline": "#737785"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sm": "8px",
+                    "md": "16px",
+                    "base": "8px",
+                    "gutter": "16px",
+                    "xl": "32px",
+                    "sidebar_width": "240px",
+                    "xs": "4px",
+                    "lg": "24px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "label-caps": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "title-sm": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "data-tabular": ["Inter"]
+            },
+            "fontSize": {
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "data-tabular": ["14px", {"lineHeight": "20px", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Inter', sans-serif;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 16px;
+        }
+        .progress-line {
+            background: linear-gradient(90deg, #1b6d24 var(--progress), #e1e3e4 var(--progress));
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- Top Navigation Bar (Shared Component Strategy) -->
+<header class="flex justify-between items-center w-full px-lg h-[64px] z-40 bg-surface border-b border-outline-variant sticky top-0 shadow-sm">
+<div class="flex items-center gap-md">
+<span class="text-title-sm font-black text-primary uppercase tracking-tighter">TransitOps</span>
+<div class="hidden md:flex gap-md ml-xl">
+<a class="text-primary border-b-2 border-primary pb-1 font-body-md" href="#">Live Map</a>
+<a class="text-on-surface-variant hover:text-primary transition-all font-body-md" href="#">Alerts</a>
+<a class="text-on-surface-variant hover:text-primary transition-all font-body-md" href="#">Reports</a>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined text-on-surface-variant p-xs hover:bg-surface-variant rounded-full transition-colors" data-icon="notifications">notifications</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a corporate fleet logistics manager in a bright, modern office setting. The lighting is soft and natural, emphasizing a trustworthy and efficient persona. The image is crisp, with a shallow depth of field, fitting the corporate modern aesthetic of TransitOps." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUHnIP2ATzwUyoxW9LzmRAYivMARCffmE4p8l9zesoGEr1Np5zBwGjpUqgpbJAahGWakNNAztQquGreAbjTPNFRxEMFVKOFZaiEPerfHHV0isa4qWOqp2ZL7Hclg8wKeYkQRuPq7GQbeKlarB5dwIMS2DwtJ2LpIERtPId_ayjHmnzyl7uvThb_r1pXwRJc9KAhmTm8xes4iohCqpqDyvrnoUYuYx9L5Z4eZOJ26hSTWgR5t6gt4Ot"/>
+</div>
+</div>
+</header>
+<main class="max-w-[1200px] mx-auto px-md py-xl">
+<!-- Hero Search Section -->
+<section class="mb-xl text-center">
+<h1 class="font-display-lg text-display-lg text-on-surface mb-sm">Track Your Shipment</h1>
+<p class="font-body-md text-on-surface-variant mb-xl">Enter your tracking number to see real-time updates and delivery status.</p>
+<div class="relative max-w-2xl mx-auto group">
+<div class="absolute inset-y-0 left-0 pl-md flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline" data-icon="local_shipping">local_shipping</span>
+</div>
+<input class="w-full pl-[48px] pr-[140px] py-md bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all font-data-tabular shadow-sm" placeholder="e.g., TRK-8829-XJ2" type="text"/>
+<button class="absolute right-xs inset-y-xs px-lg bg-primary text-white rounded-md font-body-md hover:bg-surface-tint transition-colors">
+                    Track
+                </button>
+</div>
+</section>
+<!-- Main Tracking Dashboard (Bento Layout) -->
+<div class="bento-grid">
+<!-- Shipment Summary Card -->
+<div class="col-span-12 lg:col-span-8 bg-white border border-outline-variant rounded-xl p-lg shadow-sm">
+<div class="flex flex-col md:flex-row justify-between gap-md mb-xl">
+<div>
+<div class="flex items-center gap-sm mb-xs">
+<span class="font-label-caps text-label-caps text-outline uppercase">Tracking ID</span>
+<span class="font-data-tabular text-on-surface font-bold">TRK-8829-XJ2</span>
+<span class="bg-secondary-container/20 text-secondary px-sm py-1 rounded-full font-label-caps text-[10px] font-bold uppercase tracking-wider">In Transit</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-primary">Arriving by Thursday, Oct 24</h2>
+</div>
+<div class="flex items-center gap-md">
+<div class="text-right">
+<p class="font-label-caps text-label-caps text-outline">Current Status</p>
+<p class="font-body-md font-bold text-secondary">On Schedule</p>
+</div>
+<div class="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="schedule" style="font-variation-settings: 'FILL' 1;">schedule</span>
+</div>
+</div>
+</div>
+<!-- Progress Bar -->
+<div class="relative mb-xl px-xs">
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-3/4 rounded-full transition-all duration-1000 ease-out"></div>
+</div>
+<div class="flex justify-between mt-sm text-label-caps font-label-caps text-outline uppercase tracking-wider">
+<span>Departed</span>
+<span>In Transit</span>
+<span class="text-primary font-bold">Arriving Soon</span>
+</div>
+</div>
+<!-- Map Integration -->
+<div class="relative h-64 rounded-lg overflow-hidden border border-outline-variant mb-md">
+<div class="absolute inset-0 bg-surface-container">
+<div class="w-full h-full bg-cover bg-center opacity-80" data-alt="A minimalist vector-style map of a metropolitan area showing a logistics route. The map uses a palette of soft grays, whites, and corporate blues, with a glowing green line indicating a vehicle's path. A small shipping truck icon is highlighted in TransitOps blue, indicating real-time location. The aesthetic is clean, professional, and data-driven." data-location="Chicago" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAjKXgohHGAPFIrnfWO-267rmWykY-qCaZtwBMZ5FU4dSmJrma43nOIePvfKBeOaCxW088glfsNUjSbqmzPOkjerUejD-83e_7nHPLZfim3eVIf4iB4LlIzHzDaCR1s4aZkLr02ptpSo9A-JtYeYYccGTC_0TtX4x-qG3nkifbgAzkeXwCAaIHrA7-GQ89IyzRJOORMS4A8YLLsKjDOYadOb41tG77NrPP9MgussgeqTajnrzs85F4L')"></div>
+</div>
+<div class="absolute bottom-md right-md bg-white p-sm rounded shadow-md border border-outline-variant flex items-center gap-sm">
+<div class="w-3 h-3 bg-secondary rounded-full animate-pulse"></div>
+<span class="font-label-caps text-on-surface">Live: Truck ID 4402</span>
+</div>
+</div>
+</div>
+<!-- Controls & Notifications -->
+<div class="col-span-12 lg:col-span-4 space-y-md">
+<!-- Notifications Card -->
+<div class="bg-white border border-outline-variant rounded-xl p-lg shadow-sm">
+<h3 class="font-title-sm text-title-sm mb-md flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="notifications_active">notifications_active</span>
+                        Stay Updated
+                    </h3>
+<p class="font-body-sm text-on-surface-variant mb-md">Receive real-time push notifications for all delivery milestones.</p>
+<div class="space-y-sm">
+<label class="flex items-center justify-between p-sm hover:bg-surface-container-low rounded-lg transition-colors cursor-pointer">
+<span class="font-body-md">Email Updates</span>
+<input checked="" class="rounded text-primary focus:ring-primary h-5 w-5" type="checkbox"/>
+</label>
+<label class="flex items-center justify-between p-sm hover:bg-surface-container-low rounded-lg transition-colors cursor-pointer">
+<span class="font-body-md">SMS Notifications</span>
+<input class="rounded text-primary focus:ring-primary h-5 w-5" type="checkbox"/>
+</label>
+</div>
+<button class="w-full mt-md py-sm bg-surface-container-highest font-body-md font-bold rounded-lg hover:bg-outline-variant transition-colors">
+                        Manage Subscriptions
+                    </button>
+</div>
+<!-- Support Card -->
+<div class="bg-primary text-on-primary-container rounded-xl p-lg shadow-sm relative overflow-hidden group">
+<div class="relative z-10">
+<h3 class="font-title-sm text-title-sm mb-sm">Need Assistance?</h3>
+<p class="font-body-sm opacity-90 mb-md">Our support team is available 24/7 to help with your shipment details.</p>
+<div class="grid grid-cols-2 gap-sm">
+<button class="bg-white/10 hover:bg-white/20 border border-white/20 py-sm rounded-lg flex items-center justify-center gap-xs transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="chat">chat</span>
+<span class="font-label-caps">Live Chat</span>
+</button>
+<button class="bg-white/10 hover:bg-white/20 border border-white/20 py-sm rounded-lg flex items-center justify-center gap-xs transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="call">call</span>
+<span class="font-label-caps">Call Support</span>
+</button>
+</div>
+</div>
+<!-- Decorative background element -->
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-[120px] opacity-10 pointer-events-none" data-icon="support_agent">support_agent</span>
+</div>
+</div>
+<!-- Journey Milestones (Full Width) -->
+<div class="col-span-12 bg-white border border-outline-variant rounded-xl p-lg shadow-sm">
+<h3 class="font-title-sm text-title-sm mb-xl">Journey Milestones</h3>
+<div class="relative">
+<!-- Vertical Line for Mobile, Horizontal for Desktop -->
+<div class="absolute left-4 top-0 bottom-0 w-0.5 bg-surface-container md:left-0 md:top-6 md:h-0.5 md:w-full md:bottom-auto"></div>
+<div class="space-y-lg md:space-y-0 md:flex md:justify-between relative">
+<!-- Milestone 1: Done -->
+<div class="flex gap-md md:flex-col md:items-center md:text-center md:w-1/4">
+<div class="relative z-10 w-8 h-8 rounded-full bg-secondary flex items-center justify-center border-4 border-white shadow-sm shrink-0">
+<span class="material-symbols-outlined text-white text-[16px]" data-icon="check">check</span>
+</div>
+<div class="md:mt-md">
+<p class="font-label-caps text-secondary font-bold mb-xs">Completed</p>
+<p class="font-body-md font-bold">Order Processed</p>
+<p class="font-body-sm text-outline">Oct 20, 09:15 AM</p>
+<p class="font-body-sm text-on-surface-variant mt-xs italic">Origin: Logistic Hub A</p>
+</div>
+</div>
+<!-- Milestone 2: Done -->
+<div class="flex gap-md md:flex-col md:items-center md:text-center md:w-1/4">
+<div class="relative z-10 w-8 h-8 rounded-full bg-secondary flex items-center justify-center border-4 border-white shadow-sm shrink-0">
+<span class="material-symbols-outlined text-white text-[16px]" data-icon="check">check</span>
+</div>
+<div class="md:mt-md">
+<p class="font-label-caps text-secondary font-bold mb-xs">Completed</p>
+<p class="font-body-md font-bold">At Warehouse</p>
+<p class="font-body-sm text-outline">Oct 21, 02:40 PM</p>
+<p class="font-body-sm text-on-surface-variant mt-xs italic">Sorted &amp; Ready</p>
+</div>
+</div>
+<!-- Milestone 3: Active -->
+<div class="flex gap-md md:flex-col md:items-center md:text-center md:w-1/4">
+<div class="relative z-10 w-8 h-8 rounded-full bg-primary flex items-center justify-center border-4 border-white shadow-sm shrink-0 animate-pulse">
+<div class="w-2 h-2 bg-white rounded-full"></div>
+</div>
+<div class="md:mt-md">
+<p class="font-label-caps text-primary font-bold mb-xs uppercase tracking-widest">In Transit</p>
+<p class="font-body-md font-bold">On the Way</p>
+<p class="font-body-sm text-outline">Expected Today</p>
+<p class="font-body-sm text-on-surface-variant mt-xs italic">En route to Chicago Terminal</p>
+</div>
+</div>
+<!-- Milestone 4: Pending -->
+<div class="flex gap-md md:flex-col md:items-center md:text-center md:w-1/4">
+<div class="relative z-10 w-8 h-8 rounded-full bg-surface-container flex items-center justify-center border-4 border-white shadow-sm shrink-0"></div>
+<div class="md:mt-md">
+<p class="font-label-caps text-outline font-bold mb-xs">Pending</p>
+<p class="font-body-md font-bold">Out for Delivery</p>
+<p class="font-body-sm text-outline">Oct 24, 08:00 AM</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Details Section (Bento Bottom) -->
+<div class="col-span-12 md:col-span-6 bg-white border border-outline-variant rounded-xl p-lg shadow-sm">
+<h3 class="font-title-sm text-title-sm mb-md">Package Details</h3>
+<div class="space-y-sm">
+<div class="flex justify-between py-xs border-b border-surface-container-low">
+<span class="text-on-surface-variant font-body-sm">Weight</span>
+<span class="font-data-tabular">12.4 kg</span>
+</div>
+<div class="flex justify-between py-xs border-b border-surface-container-low">
+<span class="text-on-surface-variant font-body-sm">Dimensions</span>
+<span class="font-data-tabular">40 x 30 x 20 cm</span>
+</div>
+<div class="flex justify-between py-xs border-b border-surface-container-low">
+<span class="text-on-surface-variant font-body-sm">Service Type</span>
+<span class="font-body-sm font-bold">TransitOps Express</span>
+</div>
+<div class="flex justify-between py-xs">
+<span class="text-on-surface-variant font-body-sm">Sender</span>
+<span class="font-body-sm">Global Parts Corp.</span>
+</div>
+</div>
+</div>
+<div class="col-span-12 md:col-span-6 bg-white border border-outline-variant rounded-xl p-lg shadow-sm">
+<h3 class="font-title-sm text-title-sm mb-md">Delivery Address</h3>
+<div class="flex gap-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary" data-icon="location_on">location_on</span>
+</div>
+<div>
+<p class="font-body-md font-bold">Sarah Jenkins</p>
+<p class="font-body-sm text-on-surface-variant">455 Enterprise Way, Suite 200</p>
+<p class="font-body-sm text-on-surface-variant">Chicago, IL 60611</p>
+<p class="font-body-sm text-on-surface-variant">United States</p>
+</div>
+</div>
+<div class="mt-md p-sm bg-surface-container-low rounded-lg border border-outline-variant/30 flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline text-[18px]" data-icon="info">info</span>
+<p class="font-body-sm text-on-surface-variant">Signature required upon delivery.</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Content -->
+<footer class="mt-xl py-xl bg-surface border-t border-outline-variant">
+<div class="max-w-[1200px] mx-auto px-md flex flex-col md:flex-row justify-between items-center gap-md">
+<div class="flex items-center gap-sm">
+<span class="text-title-sm font-black text-primary uppercase tracking-tighter">TransitOps</span>
+<span class="text-outline">|</span>
+<p class="font-body-sm text-on-surface-variant">© 2024 Logistics Systems, Inc.</p>
+</div>
+<div class="flex gap-lg">
+<a class="font-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">Accessibility</a>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interactions for the tracking search
+        const trackInput = document.querySelector('input[type="text"]');
+        const trackBtn = document.querySelector('button.bg-primary');
+
+        trackBtn.addEventListener('mousedown', () => {
+            trackBtn.style.transform = 'scale(0.96)';
+        });
+        trackBtn.addEventListener('mouseup', () => {
+            trackBtn.style.transform = 'scale(1)';
+        });
+        
+        // Simulating some loading state if they click (just for visuals)
+        trackBtn.addEventListener('click', () => {
+            const originalText = trackBtn.innerText;
+            trackBtn.innerText = 'Searching...';
+            trackBtn.classList.add('opacity-80');
+            
+            setTimeout(() => {
+                trackBtn.innerText = originalText;
+                trackBtn.classList.remove('opacity-80');
+            }, 1000);
+        });
+    </script>
+</body></html>

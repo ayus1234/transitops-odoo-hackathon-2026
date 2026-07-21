@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TransitOps | Client Tracking Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#331200",
+                        "secondary-fixed": "#a3f69c",
+                        "outline-variant": "#c3c6d6",
+                        "on-primary-fixed": "#001847",
+                        "on-tertiary-container": "#ffcfb7",
+                        "secondary-fixed-dim": "#88d982",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#ffdbca",
+                        "on-surface": "#191c1d",
+                        "on-secondary-fixed-variant": "#005312",
+                        "outline": "#737785",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed-dim": "#ffb68e",
+                        "surface-variant": "#e1e3e4",
+                        "surface-container-low": "#f3f4f5",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-dim": "#d9dadb",
+                        "on-secondary-fixed": "#002204",
+                        "background": "#f8f9fa",
+                        "on-tertiary-fixed-variant": "#773300",
+                        "primary-container": "#0056d2",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "surface-container": "#edeeef",
+                        "on-secondary-container": "#217128",
+                        "primary-fixed": "#dae2ff",
+                        "primary": "#0040a1",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-error-container": "#93000a",
+                        "surface": "#f8f9fa",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed-variant": "#0040a1",
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#0056d2",
+                        "on-primary": "#ffffff",
+                        "inverse-primary": "#b2c5ff",
+                        "inverse-on-surface": "#f0f1f2",
+                        "surface-container-high": "#e7e8e9",
+                        "secondary-container": "#a0f399",
+                        "on-primary-container": "#ccd8ff",
+                        "tertiary": "#773300",
+                        "on-surface-variant": "#424654",
+                        "secondary": "#1b6d24",
+                        "on-background": "#191c1d",
+                        "inverse-surface": "#2e3132",
+                        "surface-bright": "#f8f9fa",
+                        "tertiary-container": "#9c4500"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "xl": "32px",
+                        "sidebar_width": "240px",
+                        "gutter": "16px",
+                        "xs": "4px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "data-tabular": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "body-md": ["Inter"],
+                        "title-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "data-tabular": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "title-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen">
+<!-- TopNavBar (Mobile Shell Implementation) -->
+<header class="bg-surface sticky top-0 z-40 flex justify-between items-center w-full px-lg py-sm shadow-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary font-bold" data-icon="local_shipping">local_shipping</span>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">TransitOps</h1>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant hover:text-primary transition-all duration-200">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional close-up studio portrait of a corporate executive for a logistics technology company. The subject is wearing business casual attire, set against a clean, neutral gray background. Soft professional lighting highlights their face, conveying trustworthiness and expertise. The overall aesthetic is modern, sharp, and aligned with a premium enterprise software interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBw26Oe6cz-foglvVxrD4NUnWHnlXA6smWTe-bJOnptkeFAW4g3Nw_TfN0qkNwSAPfgYhZwOSPc3XY1kZThiZvuFtSqRAV-GbDbgHKY5hnQXDFYIwVUlMNpn9kqbbqrGS6l4ekJpBG44szoPyKE4s5nhltnMNF4OMhD6FXIZgw2diZOwS8zF0ZWu_iURH2wo__dwJAG5gexkC-THs26U2abnrv-VySG2THYoMSdzwSj7_L8mdzuZ5I-"/>
+</div>
+</div>
+</header>
+<main class="pb-24 px-md space-y-md mt-md">
+<!-- Search Bar Section -->
+<section class="w-full">
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline" data-icon="search">search</span>
+</div>
+<input class="block w-full pl-10 pr-3 py-3 bg-surface-container-lowest border border-outline-variant rounded-xl font-body-md text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 shadow-sm" placeholder="Enter Tracking Number..." type="text" value="TRK-9823-XQ4"/>
+<button class="absolute inset-y-2 right-2 px-md bg-primary text-on-primary rounded-lg font-label-caps flex items-center transition-transform active:scale-95">
+                    TRACK
+                </button>
+</div>
+</section>
+<!-- Status Card (Bento Style) -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-sm">
+<div class="flex justify-between items-start mb-md">
+<div>
+<p class="font-label-caps text-on-surface-variant uppercase mb-1">Estimated Arrival</p>
+<h2 class="font-display-lg text-display-lg text-primary">14:45 <span class="font-title-sm text-title-sm text-on-surface-variant ml-1">PM</span></h2>
+</div>
+<div class="bg-secondary-container px-3 py-1 rounded-full">
+<span class="font-label-caps text-on-secondary-container">ON TRIP</span>
+</div>
+</div>
+<!-- Progress Bar -->
+<div class="space-y-2 mb-md">
+<div class="flex justify-between text-on-surface-variant">
+<span class="font-body-sm">Chicago, IL</span>
+<span class="font-body-sm font-bold">78% Complete</span>
+<span class="font-body-sm">Detroit, MI</span>
+</div>
+<div class="w-full bg-surface-container-high h-2.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full transition-all duration-700 w-[78%] relative">
+<div class="absolute right-0 top-0 h-full w-2 bg-white/30 animate-pulse"></div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-sm">
+<div class="bg-surface-container-low p-3 rounded-lg flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="distance">distance</span>
+<div>
+<p class="font-label-caps text-on-surface-variant">Distance</p>
+<p class="font-data-tabular text-on-surface">142.5 mi</p>
+</div>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="schedule">schedule</span>
+<div>
+<p class="font-label-caps text-on-surface-variant">Remaining</p>
+<p class="font-data-tabular text-on-surface">2h 15m</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Map View (Simplified) -->
+<section class="relative h-48 rounded-xl overflow-hidden border border-outline-variant shadow-sm group">
+<div class="absolute inset-0 bg-surface-container-highest flex items-center justify-center">
+<div class="w-full h-full" data-location="Chicago to Detroit" style="">
+<img class="w-full h-full object-cover" data-alt="A clean, minimalist vector map showing a shipping route between two Midwestern cities. The map uses a neutral color palette with soft grays for land and whites for roads. A prominent, glowing blue line indicates the active transit path, with small, refined icons representing the origin and destination. The lighting is bright and modern, avoiding clutter to focus on the operational data." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7TtzReeDcOQ_dneog6zp9w6pc-WhghesgneWjghqzbU30VMf_7S4n2uEn0Ab-cxjONpaDsQaix2FNWr-eTQCKAU_Kan7zfiEhHnX3k-o7Fatki2DQO2Lb9XfHVIQyQPpn8gG_Mefd1Mlkoye29evhNMgyiuRSv7IQNEiqM4KWWeUnmSnZXBL8DFGknOu_T25L_MAfauBcZKSYFtXFLEXyHpSQRwU9Hw15G8lyzPaOEgTPioDon5Ms"/>
+</div>
+</div>
+<div class="absolute top-3 right-3 flex flex-col gap-2">
+<button class="w-10 h-10 bg-surface-container-lowest shadow-md rounded-lg flex items-center justify-center text-primary active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="fullscreen">fullscreen</span>
+</button>
+<button class="w-10 h-10 bg-surface-container-lowest shadow-md rounded-lg flex items-center justify-center text-primary active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="gps_fixed" style="font-variation-settings: 'FILL' 1;">gps_fixed</span>
+</button>
+</div>
+</section>
+<!-- Journey Timeline -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-sm">
+<h3 class="font-title-sm text-title-sm mb-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="route">route</span>
+                Journey Milestones
+            </h3>
+<div class="space-y-6 relative before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-0.5 before:bg-surface-container-highest">
+<!-- Milestone 1 -->
+<div class="relative pl-10">
+<div class="absolute left-0 top-1 w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center z-10 border-4 border-surface-container-lowest">
+<span class="material-symbols-outlined text-on-secondary-container text-[14px]" data-icon="check" style="font-variation-settings: 'wght' 700;">check</span>
+</div>
+<div>
+<p class="font-body-md font-bold text-on-surface">Order Picked Up</p>
+<p class="font-body-sm text-on-surface-variant">Chicago Distribution Center • 06:12 AM</p>
+</div>
+</div>
+<!-- Milestone 2 -->
+<div class="relative pl-10">
+<div class="absolute left-0 top-1 w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center z-10 border-4 border-surface-container-lowest">
+<span class="material-symbols-outlined text-on-secondary-container text-[14px]" data-icon="check" style="font-variation-settings: 'wght' 700;">check</span>
+</div>
+<div>
+<p class="font-body-md font-bold text-on-surface">Regional Sorting</p>
+<p class="font-body-sm text-on-surface-variant">Transit Hub West • 09:45 AM</p>
+</div>
+</div>
+<!-- Milestone 3 (Current) -->
+<div class="relative pl-10">
+<div class="absolute left-0 top-1 w-6 h-6 rounded-full bg-primary flex items-center justify-center z-10 border-4 border-surface-container-lowest animate-pulse">
+<div class="w-2 h-2 bg-white rounded-full"></div>
+</div>
+<div>
+<p class="font-body-md font-bold text-primary">In Transit</p>
+<p class="font-body-sm text-on-surface-variant">Highway I-94 Eastbound • 11:30 AM</p>
+<p class="mt-2 text-primary font-label-caps flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="speed">speed</span>
+                            Traveling at 65 mph
+                        </p>
+</div>
+</div>
+<!-- Milestone 4 (Upcoming) -->
+<div class="relative pl-10 opacity-50">
+<div class="absolute left-0 top-1 w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center z-10 border-4 border-surface-container-lowest">
+<div class="w-2 h-2 bg-outline rounded-full"></div>
+</div>
+<div>
+<p class="font-body-md font-bold text-on-surface">Delivery Confirmation</p>
+<p class="font-body-sm text-on-surface-variant">Expected: Detroit Facility • 02:45 PM</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Notification Management -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-sm">
+<div class="flex justify-between items-center mb-md">
+<h3 class="font-title-sm text-title-sm">Notifications</h3>
+<button class="text-primary font-label-caps">MANAGE ALL</button>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-3 bg-surface-container-low rounded-lg">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications_active">notifications_active</span>
+<span class="font-body-md">Status Updates</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container-low rounded-lg">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="mail">mail</span>
+<span class="font-body-md">Email Delivery Receipt</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Shared Component) -->
+<nav class="fixed bottom-0 left-0 w-full bg-surface border-t border-outline-variant flex justify-around items-center px-4 py-2 z-50 md:hidden shadow-lg">
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container-high transition-all duration-100 scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-caps text-label-caps">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-2xl p-2 transition-all duration-100 scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="location_on" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<span class="font-label-caps text-label-caps">Tracking</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container-high transition-all duration-100 scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="minor_crash">minor_crash</span>
+<span class="font-label-caps text-label-caps">Fleet</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container-high transition-all duration-100 scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+<span class="font-label-caps text-label-caps">Logs</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container-high transition-all duration-100 scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+<span class="font-label-caps text-label-caps">More</span>
+</a>
+</nav>
+<!-- Interaction Script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Micro-interaction for search button
+            const trackBtn = document.querySelector('button.absolute.right-2');
+            trackBtn.addEventListener('click', () => {
+                trackBtn.innerHTML = '<span class="material-symbols-outlined animate-spin" data-icon="sync">sync</span>';
+                setTimeout(() => {
+                    trackBtn.innerHTML = 'TRACK';
+                }, 1500);
+            });
+
+            // Smooth scroll for timeline items appearing
+            const timelineItems = document.querySelectorAll('.relative.pl-10');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('translate-x-0', 'opacity-100');
+                        entry.target.classList.remove('translate-x-4', 'opacity-0');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            timelineItems.forEach(item => {
+                item.classList.add('transition-all', 'duration-500', 'translate-x-4', 'opacity-0');
+                observer.observe(item);
+            });
+        });
+    </script>
+</body></html>

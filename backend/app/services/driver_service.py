@@ -15,9 +15,11 @@ from app.core.security import get_password_hash
 from app.utils.exceptions import (
     NotFoundError,
     DuplicateEntryError,
-    BusinessLogicError,
     ValidationError
 )
+from app.services.activity_service import activity_service
+from app.schemas.activity import ActivityCreate
+from app.models.activity import ModuleEnum, ActivityTypeEnum, SeverityEnum
 
 
 class DriverService:
@@ -62,7 +64,7 @@ class DriverService:
             license_expiring_soon=license_expiring_soon
         )
     
-    def create_driver(self, driver_data: DriverCreate) -> Driver:
+    def create_driver(self, driver_data: DriverCreate, current_user: User = None) -> Driver:
         """
         Create a new driver with user account.
         
@@ -125,9 +127,22 @@ class DriverService:
         driver_dict['user_id'] = user.id
         
         driver = self.repository.create(driver_dict)
+        
+        if current_user:
+            activity_service.log_activity(self.db, ActivityCreate(
+                module=ModuleEnum.DRIVER,
+                activity_type=ActivityTypeEnum.CREATED,
+                title="Driver Profile Created",
+                description=f"Onboarded new driver: {user.full_name} ({driver.license_number}).",
+                severity=SeverityEnum.SUCCESS,
+                status="Success",
+                user_id=current_user.id,
+                driver_id=driver.id
+            ))
+            
         return driver
     
-    def update_driver(self, driver_id: UUID, driver_data: DriverUpdate) -> Driver:
+    def update_driver(self, driver_id: UUID, driver_data: DriverUpdate, current_user: User = None) -> Driver:
         """
         Update an existing driver.
         
@@ -163,12 +178,36 @@ class DriverService:
             raise ValidationError("License expiry date must be after issue date")
         
         # Validate status change
+        current_status = driver.status
         if driver_data.status and driver_data.status != driver.status:
             self._validate_status_change(driver, driver_data.status)
         
-        return self.repository.update(driver, driver_data)
+        updated_driver = self.repository.update(driver, driver_data)
+        
+        if current_user:
+            if driver_data.status and driver_data.status != current_status:
+                title = f"Driver {updated_driver.user.full_name} status changed"
+                desc = f"Status updated to {driver_data.status}."
+                act_type = ActivityTypeEnum.ASSIGNED if driver_data.status == 'On Trip' else ActivityTypeEnum.UPDATED
+            else:
+                title = f"Driver {updated_driver.user.full_name} profile updated"
+                desc = "Driver license or personal details modified."
+                act_type = ActivityTypeEnum.UPDATED
+                
+            activity_service.log_activity(self.db, ActivityCreate(
+                module=ModuleEnum.DRIVER,
+                activity_type=act_type,
+                title=title,
+                description=desc,
+                severity=SeverityEnum.INFO,
+                status="Success",
+                user_id=current_user.id,
+                driver_id=updated_driver.id
+            ))
+            
+        return updated_driver
     
-    def delete_driver(self, driver_id: UUID) -> None:
+    def delete_driver(self, driver_id: UUID, current_user: User = None) -> None:
         """
         Delete a driver.
         
@@ -190,11 +229,26 @@ class DriverService:
                 code="BIZ_002"
             )
         
-        # Delete associated user account
-        if driver.user:
-            self.db.delete(driver.user)
+        # Delete associated user account AFTER driver to avoid foreign key violations
+        user = driver.user
+        driver_name = user.full_name if user else "Unknown Driver"
         
+        if current_user:
+            activity_service.log_activity(self.db, ActivityCreate(
+                module=ModuleEnum.DRIVER,
+                activity_type=ActivityTypeEnum.DELETED,
+                title=f"Driver Profile Deleted",
+                description=f"Removed driver: {driver_name}",
+                severity=SeverityEnum.WARNING,
+                status="Success",
+                user_id=current_user.id
+            ))
+            
         self.repository.delete(driver)
+        
+        if user:
+            self.db.delete(user)
+            self.db.commit()
     
     def get_available_drivers(self) -> List[Driver]:
         """Get all drivers available for assignment with valid licenses."""

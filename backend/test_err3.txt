@@ -1,0 +1,83 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.13.7, pytest-7.4.4, pluggy-1.6.0
+rootdir: C:\Users\hp\Downloads\New folder (6)\transitops-odoo-hackathon-2026\backend
+plugins: anyio-4.11.0, dash-3.2.0, hypothesis-6.152.7, asyncio-0.23.3, cov-6.2.1
+asyncio: mode=Mode.STRICT
+collected 1 item
+
+tests\test_inventory_dashboard.py E                                      [100%]
+
+=================================== ERRORS ====================================
+_______________ ERROR at setup of test_get_inventory_dashboard ________________
+file C:\Users\hp\Downloads\New folder (6)\transitops-odoo-hackathon-2026\backend\tests\test_inventory_dashboard.py, line 4
+  def test_get_inventory_dashboard(client, auth_headers, test_db, test_user):
+E       fixture 'test_db' not found
+>       available fixtures: _session_event_loop, admin_token_headers, anyio_backend, anyio_backend_name, anyio_backend_options, auth_headers, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, client, cov, dash_br, dash_duo, dash_duo_mp, dash_multi_process_server, dash_process_server, dash_thread_server, dashjl, dashjl_server, dashr, dashr_server, db_engine, db_session, diskcache_manager, doctest_namespace, driver_token_headers, event_loop, event_loop_policy, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, no_cover, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, tests/test_inventory_dashboard.py::<event_loop>, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory, unused_tcp_port, unused_tcp_port_factory, unused_udp_port, unused_udp_port_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+C:\Users\hp\Downloads\New folder (6)\transitops-odoo-hackathon-2026\backend\tests\test_inventory_dashboard.py:4
+---------------------------- Captured stdout setup ----------------------------
+Starting TransitOps v1.0.0
+Environment: development
+Database: configured
+Database tables created
+============================== warnings summary ===============================
+app\schemas\activity.py:29
+  C:\Users\hp\Downloads\New folder (6)\transitops-odoo-hackathon-2026\backend\app\schemas\activity.py:29: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class ActivityResponse(ActivityBase):
+
+app\api\v1\activity.py:87
+  C:\Users\hp\Downloads\New folder (6)\transitops-odoo-hackathon-2026\backend\app\api\v1\activity.py:87: DeprecationWarning: `regex` has been deprecated, please use `pattern` instead
+    format: str = Query("csv", regex="^(csv|pdf)$"),
+
+app\main.py:144
+  C:\Users\hp\Downloads\New folder (6)\transitops-odoo-hackathon-2026\backend\app\main.py:144: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+..\..\..\..\..\..\Python313\Lib\site-packages\fastapi\applications.py:4495
+..\..\..\..\..\..\Python313\Lib\site-packages\fastapi\applications.py:4495
+  C:\Python313\Lib\site-packages\fastapi\applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+app\main.py:164
+  C:\Users\hp\Downloads\New folder (6)\transitops-odoo-hackathon-2026\backend\app\main.py:164: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("shutdown")
+
+tests/test_inventory_dashboard.py::test_get_inventory_dashboard
+tests/test_inventory_dashboard.py::test_get_inventory_dashboard
+tests/test_inventory_dashboard.py::test_get_inventory_dashboard
+tests/test_inventory_dashboard.py::test_get_inventory_dashboard
+  C:\Python313\Lib\site-packages\sqlalchemy\sql\schema.py:3623: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+
+tests/test_inventory_dashboard.py::test_get_inventory_dashboard
+  C:\Users\hp\Downloads\New folder (6)\transitops-odoo-hackathon-2026\backend\app\api\v1\auth.py:85: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    user.last_login = datetime.utcnow()
+
+tests/test_inventory_dashboard.py::test_get_inventory_dashboard
+  C:\Users\hp\Downloads\New folder (6)\transitops-odoo-hackathon-2026\backend\app\core\security.py:59: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    expire = datetime.utcnow() + expires_delta
+
+tests/test_inventory_dashboard.py::test_get_inventory_dashboard
+  C:\Users\hp\Downloads\New folder (6)\transitops-odoo-hackathon-2026\backend\app\core\security.py:65: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    "iat": datetime.utcnow()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+ERROR tests/test_inventory_dashboard.py::test_get_inventory_dashboard
+======================== 13 warnings, 1 error in 2.59s ========================

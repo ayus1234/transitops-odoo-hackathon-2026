@@ -11,6 +11,7 @@ from app.core.database import get_db
 from app.core.security import decode_access_token
 from app.models.user import User
 from app.models.role import Role
+import uuid
 
 
 # HTTP Bearer token scheme
@@ -39,7 +40,7 @@ def get_current_user(
     payload = decode_access_token(token)
     
     # Extract user_id from token
-    user_id: str = payload.get("sub")
+    user_id: str | None = payload.get("sub")
     if user_id is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -48,7 +49,16 @@ def get_current_user(
         )
     
     # Get user from database
-    user = db.query(User).filter(User.id == user_id).first()
+    try:
+        user_uuid = uuid.UUID(user_id)
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token subject",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    user = db.query(User).filter(User.id == user_uuid).first()
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -150,10 +160,7 @@ class PermissionChecker:
         Raises:
             HTTPException: If user doesn't have required permission
         """
-        permissions = current_user.role.permissions or {}
-        resource_permissions = permissions.get(self.resource, [])
-        
-        if self.action not in resource_permissions:
+        if not current_user.has_permission(self.resource, self.action):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=f"Permission denied. Required: {self.resource}:{self.action}"

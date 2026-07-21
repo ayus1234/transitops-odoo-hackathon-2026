@@ -12,6 +12,9 @@ from app.models.user import User
 from app.schemas.auth import LoginRequest, TokenResponse
 from app.schemas.user import UserResponse
 from app.schemas.common import SuccessResponse
+from app.services.activity_service import activity_service
+from app.schemas.activity import ActivityCreate
+from app.models.activity import ModuleEnum, ActivityTypeEnum, SeverityEnum
 
 
 router = APIRouter()
@@ -39,6 +42,15 @@ def login(
     user = db.query(User).filter(User.email == credentials.email).first()
     
     if not user:
+        # We can't log the user_id since it's invalid, but we can log the attempt
+        activity_service.log_activity(db, ActivityCreate(
+            module=ModuleEnum.AUTHENTICATION,
+            activity_type=ActivityTypeEnum.LOGIN,
+            title="Failed Login Attempt",
+            description=f"Invalid login attempt for email: {credentials.email}",
+            severity=SeverityEnum.WARNING,
+            status="Failed"
+        ))
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
@@ -47,6 +59,15 @@ def login(
     
     # Verify password
     if not verify_password(credentials.password, user.password_hash):
+        activity_service.log_activity(db, ActivityCreate(
+            module=ModuleEnum.AUTHENTICATION,
+            activity_type=ActivityTypeEnum.LOGIN,
+            title="Failed Login Attempt",
+            description=f"Invalid password for email: {credentials.email}",
+            severity=SeverityEnum.WARNING,
+            status="Failed",
+            user_id=user.id
+        ))
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
@@ -75,6 +96,17 @@ def login(
         expires_delta=access_token_expires
     )
     
+    # Log successful login
+    activity_service.log_activity(db, ActivityCreate(
+        module=ModuleEnum.AUTHENTICATION,
+        activity_type=ActivityTypeEnum.LOGIN,
+        title="User Login Successful",
+        description="User successfully authenticated via API.",
+        severity=SeverityEnum.INFO,
+        status="Success",
+        user_id=user.id
+    ))
+    
     return TokenResponse(
         access_token=access_token,
         token_type="bearer",
@@ -101,7 +133,8 @@ def get_current_user_info(
 
 @router.post("/logout", response_model=SuccessResponse)
 def logout(
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ) -> SuccessResponse:
     """
     Logout endpoint (JWT tokens are stateless, so this is mainly for client-side).
@@ -112,6 +145,17 @@ def logout(
     Returns:
         Success message
     """
+    # Log logout
+    activity_service.log_activity(db, ActivityCreate(
+        module=ModuleEnum.AUTHENTICATION,
+        activity_type=ActivityTypeEnum.LOGOUT,
+        title="User Logout",
+        description="User session terminated.",
+        severity=SeverityEnum.INFO,
+        status="Success",
+        user_id=current_user.id
+    ))
+
     return SuccessResponse(
         success=True,
         message="Logged out successfully"

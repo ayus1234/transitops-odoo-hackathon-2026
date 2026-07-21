@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TransitOps - Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed": "#001847",
+                    "surface-variant": "#e1e3e4",
+                    "on-primary-fixed-variant": "#0040a1",
+                    "on-tertiary-fixed": "#331200",
+                    "on-background": "#191c1d",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-container": "#0056d2",
+                    "background": "#f8f9fa",
+                    "primary-fixed-dim": "#b2c5ff",
+                    "on-secondary-container": "#217128",
+                    "surface-bright": "#f8f9fa",
+                    "on-error-container": "#93000a",
+                    "tertiary-container": "#9c4500",
+                    "surface-container-high": "#e7e8e9",
+                    "surface-container": "#edeeef",
+                    "outline-variant": "#c3c6d6",
+                    "surface": "#f8f9fa",
+                    "tertiary": "#773300",
+                    "tertiary-fixed-dim": "#ffb68e",
+                    "inverse-surface": "#2e3132",
+                    "surface-container-low": "#f3f4f5",
+                    "secondary": "#1b6d24",
+                    "on-surface": "#191c1d",
+                    "on-tertiary-fixed-variant": "#773300",
+                    "inverse-on-surface": "#f0f1f2",
+                    "outline": "#737785",
+                    "tertiary-fixed": "#ffdbca",
+                    "on-surface-variant": "#424654",
+                    "primary": "#0040a1",
+                    "on-primary-container": "#ccd8ff",
+                    "inverse-primary": "#b2c5ff",
+                    "on-primary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "error": "#ba1a1a",
+                    "on-tertiary-container": "#ffcfb7",
+                    "on-error": "#ffffff",
+                    "surface-dim": "#d9dadb",
+                    "on-tertiary": "#ffffff",
+                    "primary-fixed": "#dae2ff",
+                    "on-secondary-fixed": "#002204",
+                    "surface-container-highest": "#e1e3e4",
+                    "secondary-container": "#a0f399",
+                    "surface-tint": "#0056d2",
+                    "secondary-fixed-dim": "#88d982",
+                    "on-secondary-fixed-variant": "#005312",
+                    "secondary-fixed": "#a3f69c"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "24px",
+                    "xl": "32px",
+                    "gutter": "16px",
+                    "xs": "4px",
+                    "sidebar_width": "240px",
+                    "base": "8px",
+                    "sm": "8px",
+                    "md": "16px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Inter"],
+                    "title-sm": ["Inter"],
+                    "data-tabular": ["Inter"],
+                    "label-caps": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-md": ["Inter"]
+            },
+            "fontSize": {
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "data-tabular": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .sidebar-active { background-color: rgba(0, 86, 210, 0.1); }
+        .permission-cell:hover { background-color: #f3f4f5; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #c3c6d6; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-background overflow-hidden h-screen flex">
+<!-- Persistent SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-[240px] bg-surface-container border-r border-outline-variant flex flex-col z-40">
+<div class="px-md py-lg flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary text-headline-md font-bold" data-icon="local_shipping">local_shipping</span>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md font-bold text-primary">TransitOps</span>
+<span class="text-[10px] uppercase tracking-wider font-bold text-on-surface-variant opacity-70">Logistics ERP</span>
+</div>
+</div>
+<nav class="flex-1 px-sm space-y-xs overflow-y-auto">
+<a class="flex items-center gap-sm px-md py-sm rounded text-on-surface-variant font-medium hover:bg-surface-variant transition-colors group" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm rounded text-on-surface-variant font-medium hover:bg-surface-variant transition-colors group" href="#">
+<span class="material-symbols-outlined" data-icon="local_shipping">local_shipping</span>
+<span class="font-body-md text-body-md">Vehicle Registry</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm rounded text-on-surface-variant font-medium hover:bg-surface-variant transition-colors group" href="#">
+<span class="material-symbols-outlined" data-icon="person_pin">person_pin</span>
+<span class="font-body-md text-body-md">Driver Management</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm rounded text-on-surface-variant font-medium hover:bg-surface-variant transition-colors group" href="#">
+<span class="material-symbols-outlined" data-icon="route">route</span>
+<span class="font-body-md text-body-md">Trip Management</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm rounded text-on-surface-variant font-medium hover:bg-surface-variant transition-colors group" href="#">
+<span class="material-symbols-outlined" data-icon="build">build</span>
+<span class="font-body-md text-body-md">Maintenance</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm rounded text-on-surface-variant font-medium hover:bg-surface-variant transition-colors group" href="#">
+<span class="material-symbols-outlined" data-icon="local_gas_station">local_gas_station</span>
+<span class="font-body-md text-body-md">Fuel Logs</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm rounded text-on-surface-variant font-medium hover:bg-surface-variant transition-colors group" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-body-md text-body-md">Expenses</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm rounded text-on-surface-variant font-medium hover:bg-surface-variant transition-colors group" href="#">
+<span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+<span class="font-body-md text-body-md">Reports</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm rounded text-primary font-bold border-l-4 border-primary bg-primary-container/10 transition-colors group" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+</nav>
+<div class="p-md border-t border-outline-variant bg-surface-container-low">
+<div class="flex items-center gap-sm">
+<img class="w-8 h-8 rounded-full border border-outline" data-alt="A professional headshot of a fleet operations director in a high-tech logistics center. The setting is clean and modern with soft blue and grey tones. The lighting is bright and corporate, reflecting an environment of high-stakes logistics and operational excellence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuARuvtQj7le12OtwQb8nuvBgqaw6IOt-gE5iidPLg0E7CCGiaFzCYlIplCjKS6vt7DyrfEtXB7byBHeoiMvBQj9EWtYJiVouiTRcGwdjSXDfYrJ8yVffgbfbLhdayelmvomedX7vSnRNV-8l05g1T2GjfdchjjCfskALtLCwrDWktZZ-6m3oO07LBK0609hraPPld_hWGJw3ATZ6eyXdlrkpowVfrVQDj5pwfTwR8O8Own-fPhShSJU"/>
+<div class="flex flex-col overflow-hidden">
+<span class="text-body-sm font-bold truncate">Alex Morgan</span>
+<span class="text-[10px] text-on-surface-variant truncate">System Administrator</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-[240px] flex flex-col h-full bg-background overflow-hidden">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center h-16 px-md w-full sticky top-0 z-50 bg-surface border-b border-outline-variant shadow-sm">
+<div class="flex items-center gap-md">
+<div class="relative group">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="search">search</span>
+</span>
+<input class="h-9 w-64 bg-surface-container-low border-none rounded-lg pl-10 pr-3 text-body-sm focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search settings..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="h-9 w-9 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+</button>
+<button class="h-9 w-9 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="help">help</span>
+</button>
+<div class="h-8 w-[1px] bg-outline-variant mx-xs"></div>
+<button class="flex items-center gap-xs bg-primary text-on-primary px-md py-xs rounded font-title-sm text-[13px] hover:brightness-110 transition-all">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+                    Add Vehicle
+                </button>
+</div>
+</header>
+<!-- Viewport Scrollable Area -->
+<section class="flex-1 overflow-y-auto p-lg">
+<div class="max-w-6xl mx-auto space-y-lg">
+<!-- Header & Breadcrumbs -->
+<div class="flex flex-col gap-xs">
+<div class="flex items-center gap-xs text-on-surface-variant text-[12px] font-medium">
+<span>Management</span>
+<span class="material-symbols-outlined text-[14px]" data-icon="chevron_right">chevron_right</span>
+<span class="text-primary">System Settings</span>
+</div>
+<h1 class="font-headline-md text-headline-md text-on-surface">Configuration Panel</h1>
+</div>
+<!-- Tabbed Navigation -->
+<div class="border-b border-outline-variant flex gap-xl overflow-x-auto no-scrollbar">
+<button class="pb-md px-xs text-on-surface-variant font-medium hover:text-primary transition-all relative">
+                        Organization Settings
+                    </button>
+<button class="pb-md px-xs text-primary font-bold relative">
+                        Roles &amp; Permissions
+                        <div class="absolute bottom-0 left-0 right-0 h-[3px] bg-primary rounded-t-full"></div>
+</button>
+<button class="pb-md px-xs text-on-surface-variant font-medium hover:text-primary transition-all relative">
+                        Notification Preferences
+                    </button>
+<button class="pb-md px-xs text-on-surface-variant font-medium hover:text-primary transition-all relative">
+                        Integrations &amp; APIs
+                    </button>
+</div>
+<!-- Bento Style Settings Layout -->
+<div class="grid grid-cols-12 gap-lg">
+<!-- Left Column: Search and Filter Control -->
+<div class="col-span-12 lg:col-span-3 space-y-md">
+<div class="bg-white border border-outline-variant rounded-xl p-md shadow-sm">
+<h3 class="text-label-caps font-label-caps text-on-surface-variant mb-md">SEARCH ROLES</h3>
+<div class="relative mb-md">
+<input class="w-full h-9 bg-surface-container-low border border-outline-variant rounded px-md text-body-sm focus:border-primary outline-none" placeholder="Filter by module..." type="text"/>
+</div>
+<h3 class="text-label-caps font-label-caps text-on-surface-variant mb-md mt-lg">QUICK FILTERS</h3>
+<div class="space-y-sm">
+<label class="flex items-center gap-sm cursor-pointer group">
+<input checked="" class="w-4 h-4 rounded text-primary border-outline-variant focus:ring-primary" type="checkbox"/>
+<span class="text-body-sm group-hover:text-primary">Operational Staff</span>
+</label>
+<label class="flex items-center gap-sm cursor-pointer group">
+<input class="w-4 h-4 rounded text-primary border-outline-variant focus:ring-primary" type="checkbox"/>
+<span class="text-body-sm group-hover:text-primary">Financial Access</span>
+</label>
+<label class="flex items-center gap-sm cursor-pointer group">
+<input class="w-4 h-4 rounded text-primary border-outline-variant focus:ring-primary" type="checkbox"/>
+<span class="text-body-sm group-hover:text-primary">Admin Only</span>
+</label>
+</div>
+<button class="w-full mt-xl py-sm bg-surface-container-highest text-on-surface font-bold text-body-sm rounded hover:bg-surface-variant transition-all border border-outline-variant flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+                                Create Custom Role
+                            </button>
+</div>
+<!-- KPI Card for Quick Info -->
+<div class="bg-primary text-on-primary rounded-xl p-md shadow-sm">
+<div class="flex justify-between items-start mb-sm">
+<span class="text-label-caps font-label-caps opacity-80">ACTIVE USERS</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="group">group</span>
+</div>
+<div class="text-display-lg font-display-lg">142</div>
+<div class="text-[11px] opacity-70 mt-xs"> across 4 primary roles</div>
+</div>
+</div>
+<!-- Right Column: Permission Matrix -->
+<div class="col-span-12 lg:col-span-9">
+<div class="bg-white border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+<div class="p-md border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+<div>
+<h2 class="font-title-sm text-title-sm">Permission Matrix</h2>
+<p class="text-body-sm text-on-surface-variant">Configure granular access levels for system modules.</p>
+</div>
+<div class="flex gap-sm">
+<button class="h-9 px-md border border-outline-variant rounded text-body-sm font-medium hover:bg-surface-container transition-all">Reset Changes</button>
+<button class="h-9 px-md bg-primary text-on-primary rounded text-body-sm font-bold hover:brightness-110 transition-all shadow-md">Save Changes</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="px-md py-sm text-label-caps font-label-caps text-on-surface-variant border-b border-outline-variant sticky left-0 bg-surface-container-low z-10">MODULE</th>
+<th class="px-md py-sm text-label-caps font-label-caps text-on-surface-variant border-b border-outline-variant text-center">ADMIN</th>
+<th class="px-md py-sm text-label-caps font-label-caps text-on-surface-variant border-b border-outline-variant text-center">FLEET MANAGER</th>
+<th class="px-md py-sm text-label-caps font-label-caps text-on-surface-variant border-b border-outline-variant text-center">DISPATCHER</th>
+<th class="px-md py-sm text-label-caps font-label-caps text-on-surface-variant border-b border-outline-variant text-center">DRIVER</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Vehicles Module Row -->
+<tr>
+<td class="px-md py-md sticky left-0 bg-white border-r border-outline-variant font-bold text-body-sm">
+                                                Vehicles Registry
+                                                <div class="text-[10px] font-normal text-on-surface-variant">Manage truck inventory and status</div>
+</td>
+<td class="px-md py-md text-center permission-cell"><span class="material-symbols-outlined text-secondary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1">check_circle</span></td>
+<td class="px-md py-md text-center permission-cell"><span class="material-symbols-outlined text-secondary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1">check_circle</span></td>
+<td class="px-md py-md text-center permission-cell"><span class="material-symbols-outlined text-on-surface-variant opacity-30" data-icon="visibility">visibility</span></td>
+<td class="px-md py-md text-center permission-cell"><span class="material-symbols-outlined text-on-surface-variant opacity-30" data-icon="visibility">visibility</span></td>
+</tr>
+<!-- Drivers Module Row -->
+<tr>
+<td class="px-md py-md sticky left-0 bg-white border-r border-outline-variant font-bold text-body-sm">
+                                                Drivers &amp; Assignments
+                                                <div class="text-[10px] font-normal text-on-surface-variant">Profile data and shift logs</div>
+</td>
+<td class="px-md py-md text-center permission-cell"><span class="material-symbols-outlined text-secondary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1">check_circle</span></td>
+<td class="px-md py-md text-center permission-cell"><span class="material-symbols-outlined text-secondary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1">check_circle</span></td>
+<td class="px-md py-md text-center permission-cell"><span class="material-symbols-outlined text-tertiary" data-icon="edit">edit</span></td>
+<td class="px-md py-md text-center permission-cell"><span class="material-symbols-outlined text-on-surface-variant opacity-30" data-icon="lock">lock</span></td>
+</tr>
+<!-- Trips Module Row -->
+<tr>
+<td class="px-md py-md sticky left-0 bg-white border-r border-outline-variant font-bold text-body-sm">
+                                                Trip Management
+                                                <div class="text-[10px] font-normal text-on-surface-variant">Routing and real-time dispatch</div>
+</td>
+<td class="px-md py-md text-center permission-cell"><span class="material-symbols-outlined text-secondary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1">check_circle</span></td>
+<td class="px-md py-md text-center permission-cell"><span class="material-symbols-outlined text-secondary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1">check_circle</span></td>
+<td class="px-md py-md text-center permission-cell"><span class="material-symbols-outlined text-secondary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1">check_circle</span></td>
+<td class="px-md py-md text-center permission-cell"><span class="material-symbols-outlined text-on-surface-variant opacity-30" data-icon="visibility">visibility</span></td>
+</tr>
+<!-- Maintenance Row -->
+<tr>
+<td class="px-md py-md sticky left-0 bg-white border-r border-outline-variant font-bold text-body-sm">
+                                                Maintenance &amp; Repair
+                                                <div class="text-[10px] font-normal text-on-surface-variant">Service logs and shop schedules</div>
+</td>
+<td class="px-md py-md text-center permission-cell"><span class="material-symbols-outlined text-secondary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1">check_circle</span></td>
+<td class="px-md py-md text-center permission-cell"><span class="material-symbols-outlined text-tertiary" data-icon="edit">edit</span></td>
+<td class="px-md py-md text-center permission-cell"><span class="material-symbols-outlined text-on-surface-variant opacity-30" data-icon="lock">lock</span></td>
+<td class="px-md py-md text-center permission-cell"><span class="material-symbols-outlined text-on-surface-variant opacity-30" data-icon="lock">lock</span></td>
+</tr>
+<!-- Financials Row -->
+<tr>
+<td class="px-md py-md sticky left-0 bg-white border-r border-outline-variant font-bold text-body-sm">
+                                                Financials &amp; Expenses
+                                                <div class="text-[10px] font-normal text-on-surface-variant">Fuel costs and P&amp;L reports</div>
+</td>
+<td class="px-md py-md text-center permission-cell"><span class="material-symbols-outlined text-secondary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1">check_circle</span></td>
+<td class="px-md py-md text-center permission-cell"><span class="material-symbols-outlined text-on-surface-variant opacity-30" data-icon="lock">lock</span></td>
+<td class="px-md py-md text-center permission-cell"><span class="material-symbols-outlined text-on-surface-variant opacity-30" data-icon="lock">lock</span></td>
+<td class="px-md py-md text-center permission-cell"><span class="material-symbols-outlined text-on-surface-variant opacity-30" data-icon="lock">lock</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-md bg-surface-container-low border-t border-outline-variant">
+<div class="flex items-center gap-md">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[18px]" data-icon="check_circle" style="font-variation-settings: 'FILL' 1">check_circle</span>
+<span class="text-[11px] font-medium text-on-surface-variant uppercase tracking-tighter">Full Access</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-tertiary text-[18px]" data-icon="edit">edit</span>
+<span class="text-[11px] font-medium text-on-surface-variant uppercase tracking-tighter">Edit Only</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-on-surface-variant opacity-30 text-[18px]" data-icon="visibility">visibility</span>
+<span class="text-[11px] font-medium text-on-surface-variant uppercase tracking-tighter">View Only</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-on-surface-variant opacity-30 text-[18px]" data-icon="lock">lock</span>
+<span class="text-[11px] font-medium text-on-surface-variant uppercase tracking-tighter">No Access</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Secondary Role Settings -->
+<div class="mt-lg grid grid-cols-1 md:grid-cols-2 gap-lg">
+<div class="bg-white border border-outline-variant rounded-xl p-md shadow-sm">
+<h3 class="font-title-sm text-title-sm mb-sm flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary" data-icon="security">security</span>
+                                    Session Security
+                                </h3>
+<p class="text-body-sm text-on-surface-variant mb-md">Manage auto-logout and multi-factor authentication requirements for roles.</p>
+<button class="text-primary font-bold text-body-sm hover:underline">Configure Security Policy →</button>
+</div>
+<div class="bg-white border border-outline-variant rounded-xl p-md shadow-sm">
+<h3 class="font-title-sm text-title-sm mb-sm flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary" data-icon="history">history</span>
+                                    Audit Logs
+                                </h3>
+<p class="text-body-sm text-on-surface-variant mb-md">Review all permission changes and administrative actions over the last 90 days.</p>
+<button class="text-primary font-bold text-body-sm hover:underline">View Access History →</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<script>
+        // Micro-interactions for UI responsiveness
+        document.querySelectorAll('.permission-cell').forEach(cell => {
+            cell.addEventListener('click', function() {
+                this.classList.toggle('bg-primary/5');
+            });
+        });
+
+        // Search Filter Interaction (Visual Placeholder)
+        const searchInput = document.querySelector('input[placeholder="Filter by module..."]');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                const rows = document.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    const text = row.cells[0].textContent.toLowerCase();
+                    row.style.display = text.includes(term) ? '' : 'none';
+                });
+            });
+        }
+    </script>
+</body></html>

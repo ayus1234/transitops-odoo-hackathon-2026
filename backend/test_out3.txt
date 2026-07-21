@@ -1,0 +1,117 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.7, pytest-7.4.4, pluggy-1.6.0 -- C:\Python313\python.exe
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: C:\Users\hp\Downloads\New folder (6)\transitops-odoo-hackathon-2026\backend
+plugins: anyio-4.11.0, dash-3.2.0, hypothesis-6.152.7, asyncio-0.23.3, cov-6.2.1
+asyncio: mode=Mode.STRICT
+collecting ... collected 1 item
+
+tests/test_support_tickets.py::test_admin_can_resolve_ticket Starting TransitOps v1.0.0
+Environment: development
+Database: configured
+Database tables created
+{'success': False, 'error': {'code': 'SYS_001', 'message': "Database error occurred: (sqlite3.IntegrityError) CHECK constraint failed: check_notification_category\n[SQL: INSERT INTO notifications (id, user_id, title, description, type, priority, category, module_name, severity, icon_name, route, related_entity_id, is_read, is_archived, metadata, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]\n[parameters: ('0c0b7b4831114033adf517c938c8bd75', '6827dadb4a8d4c3199e116b2f9bc64d4', 'Support Ticket Resolved', 'Your support ticket SUP-2026-00001 has been resolved.', 'Success', 'Medium', 'Help Center', 'Help Center', 'Info', None, '/help/tickets/4297db2a-f5f9-4885-9f9d-9958f5b5a6f6', None, 0, 0, 'null', '2026-07-15 18:30:56.171675', '2026-07-15 18:30:56.171680')]\n(Background on this error at: https://sqlalche.me/e/20/gkpj)", 'details': {}}}
+FAILEDShutting down TransitOps
+
+
+================================== FAILURES ===================================
+________________________ test_admin_can_resolve_ticket ________________________
+
+client = <starlette.testclient.TestClient object at 0x00000189D9898C20>
+driver_token_headers = {'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ODI3ZGFkYi00YThkLTRjMzEtOTllMS0xNmIyZjliYzY...NvbSIsInJvbGUiOiJEcml2ZXIiLCJleHAiOjE3ODQxNDM4NTUsImlhdCI6MTc4NDE0MDI1NX0.yG_5xwHR8lgC3Bm_VkuZ0RlGIlbsFnCiQYC2lvuZeow'}
+admin_token_headers = {'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlODJmZWEwZS00OWE2LTQxODAtODI1Zi1iZjU1ODAwMzZ...m9sZSI6IlN5c3RlbSBBZG1pbiIsImV4cCI6MTc4NDE0Mzg1NiwiaWF0IjoxNzg0MTQwMjU2fQ.tG81Y5FuWEey_3M_KKvHSjn1-lMatTKXkZASEpbNbP4'}
+
+    def test_admin_can_resolve_ticket(client: TestClient, driver_token_headers: dict, admin_token_headers: dict):
+        # Driver creates a ticket
+        data = {
+            "title": "Need new route",
+            "description": "Route 5 is blocked",
+            "module_name": "Trips",
+            "category": "General Inquiry",
+            "priority": "Medium"
+        }
+        response = client.post("/api/v1/help/tickets", json=data, headers=driver_token_headers)
+        ticket_id = response.json()["data"]["id"]
+    
+        # Admin resolves it
+        res_response = client.post(f"/api/v1/help/tickets/{ticket_id}/resolve?resolution_notes=Re-routed", headers=admin_token_headers)
+        print(res_response.json())
+>       assert res_response.status_code == 200
+E       assert 500 == 200
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+
+tests\test_support_tickets.py:61: AssertionError
+============================== warnings summary ===============================
+app\schemas\activity.py:29
+  C:\Users\hp\Downloads\New folder (6)\transitops-odoo-hackathon-2026\backend\app\schemas\activity.py:29: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class ActivityResponse(ActivityBase):
+
+app\api\v1\activity.py:87
+  C:\Users\hp\Downloads\New folder (6)\transitops-odoo-hackathon-2026\backend\app\api\v1\activity.py:87: DeprecationWarning: `regex` has been deprecated, please use `pattern` instead
+    format: str = Query("csv", regex="^(csv|pdf)$"),
+
+app\main.py:142
+  C:\Users\hp\Downloads\New folder (6)\transitops-odoo-hackathon-2026\backend\app\main.py:142: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+..\..\..\..\..\..\Python313\Lib\site-packages\fastapi\applications.py:4495
+..\..\..\..\..\..\Python313\Lib\site-packages\fastapi\applications.py:4495
+  C:\Python313\Lib\site-packages\fastapi\applications.py:4495: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+app\main.py:159
+  C:\Users\hp\Downloads\New folder (6)\transitops-odoo-hackathon-2026\backend\app\main.py:159: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("shutdown")
+
+tests/test_support_tickets.py: 12 warnings
+  C:\Python313\Lib\site-packages\sqlalchemy\sql\schema.py:3623: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+
+tests/test_support_tickets.py::test_admin_can_resolve_ticket
+tests/test_support_tickets.py::test_admin_can_resolve_ticket
+  C:\Users\hp\Downloads\New folder (6)\transitops-odoo-hackathon-2026\backend\app\api\v1\auth.py:85: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    user.last_login = datetime.utcnow()
+
+tests/test_support_tickets.py::test_admin_can_resolve_ticket
+tests/test_support_tickets.py::test_admin_can_resolve_ticket
+  C:\Users\hp\Downloads\New folder (6)\transitops-odoo-hackathon-2026\backend\app\core\security.py:59: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    expire = datetime.utcnow() + expires_delta
+
+tests/test_support_tickets.py::test_admin_can_resolve_ticket
+tests/test_support_tickets.py::test_admin_can_resolve_ticket
+  C:\Users\hp\Downloads\New folder (6)\transitops-odoo-hackathon-2026\backend\app\core\security.py:65: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    "iat": datetime.utcnow()
+
+tests/test_support_tickets.py::test_admin_can_resolve_ticket
+tests/test_support_tickets.py::test_admin_can_resolve_ticket
+  C:\Python313\Lib\site-packages\jose\jwt.py:311: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    now = timegm(datetime.utcnow().utctimetuple())
+
+tests/test_support_tickets.py::test_admin_can_resolve_ticket
+  C:\Users\hp\Downloads\New folder (6)\transitops-odoo-hackathon-2026\backend\app\services\help_service.py:268: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    "resolved_at": datetime.utcnow()
+
+tests/test_support_tickets.py::test_admin_can_resolve_ticket
+  C:\Users\hp\Downloads\New folder (6)\transitops-odoo-hackathon-2026\backend\tests\conftest.py:41: SAWarning: transaction already deassociated from connection
+    transaction.rollback()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_support_tickets.py::test_admin_can_resolve_ticket - assert ...
+======================= 1 failed, 28 warnings in 3.81s ========================

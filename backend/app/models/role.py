@@ -2,16 +2,24 @@
 Role model for RBAC (Role-Based Access Control).
 """
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from uuid import uuid4
-from sqlalchemy import String, DateTime, func
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy import String, DateTime, func, Boolean, ForeignKey, Table, Column
+from sqlalchemy import Uuid as UUID, JSON as JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
 
 if TYPE_CHECKING:
     from app.models.user import User
+
+user_additional_roles = Table(
+    "user_additional_roles",
+    Base.metadata,
+    Column("user_id", UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), primary_key=True),
+    Column("role_id", UUID(as_uuid=True), ForeignKey("roles.id", ondelete="CASCADE"), primary_key=True)
+)
+
 
 
 class Role(Base):
@@ -41,19 +49,38 @@ class Role(Base):
     permissions: Mapped[dict] = mapped_column(
         JSONB,
         nullable=False,
-        default=dict
+        default=dict,
+        server_default="{}"
+    )
+    
+    description: Mapped[Optional[str]] = mapped_column(
+        String(255),
+        nullable=True
+    )
+    
+    is_custom: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False,
+        server_default="0",
+        nullable=False
+    )
+    
+    parent_role_id: Mapped[Optional[UUID]] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("roles.id", ondelete="SET NULL"),
+        nullable=True
     )
     
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        server_default=func.now(),
+        default=datetime.utcnow,
         nullable=False
     )
     
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        server_default=func.now(),
+        default=datetime.utcnow,
         onupdate=func.now(),
         nullable=False
     )
@@ -63,6 +90,17 @@ class Role(Base):
         "User",
         back_populates="role",
         cascade="all, delete-orphan"
+    )
+    
+    parent: Mapped[Optional["Role"]] = relationship(
+        "Role",
+        remote_side="Role.id",
+        back_populates="children"
+    )
+    
+    children: Mapped[list["Role"]] = relationship(
+        "Role",
+        back_populates="parent"
     )
     
     def __repr__(self) -> str:

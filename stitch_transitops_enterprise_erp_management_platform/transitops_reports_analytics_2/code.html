@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TransitOps | Reports &amp; Analytics</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "background": "#f8f9fa",
+                    "primary-fixed": "#dae2ff",
+                    "surface-container-highest": "#e1e3e4",
+                    "primary-container": "#0056d2",
+                    "on-secondary": "#ffffff",
+                    "primary": "#0040a1",
+                    "on-secondary-fixed": "#002204",
+                    "on-primary-fixed-variant": "#0040a1",
+                    "surface-container": "#edeeef",
+                    "error-container": "#ffdad6",
+                    "surface-variant": "#e1e3e4",
+                    "surface-container-high": "#e7e8e9",
+                    "on-tertiary-container": "#ffcfb7",
+                    "on-error-container": "#93000a",
+                    "on-primary-container": "#ccd8ff",
+                    "secondary": "#1b6d24",
+                    "on-background": "#191c1d",
+                    "inverse-primary": "#b2c5ff",
+                    "on-surface": "#191c1d",
+                    "on-surface-variant": "#424654",
+                    "on-primary": "#ffffff",
+                    "primary-fixed-dim": "#b2c5ff",
+                    "inverse-on-surface": "#f0f1f2",
+                    "surface-bright": "#f8f9fa",
+                    "surface-dim": "#d9dadb",
+                    "on-primary-fixed": "#001847",
+                    "surface-container-low": "#f3f4f5",
+                    "secondary-fixed-dim": "#88d982",
+                    "on-secondary-container": "#217128",
+                    "outline": "#737785",
+                    "surface": "#f8f9fa",
+                    "on-secondary-fixed-variant": "#005312",
+                    "tertiary-container": "#9c4500",
+                    "tertiary-fixed-dim": "#ffb68e",
+                    "secondary-fixed": "#a3f69c",
+                    "error": "#ba1a1a",
+                    "outline-variant": "#c3c6d6",
+                    "inverse-surface": "#2e3132",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-container": "#a0f399",
+                    "on-tertiary-fixed": "#331200",
+                    "on-tertiary-fixed-variant": "#773300",
+                    "on-tertiary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "tertiary": "#773300",
+                    "surface-tint": "#0056d2",
+                    "tertiary-fixed": "#ffdbca"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sidebar_width": "240px",
+                    "xl": "32px",
+                    "md": "16px",
+                    "base": "8px",
+                    "sm": "8px",
+                    "lg": "24px",
+                    "xs": "4px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "title-sm": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "label-caps": ["Inter"],
+                    "data-tabular": ["Inter"],
+                    "body-sm": ["Inter"]
+            },
+            "fontSize": {
+                    "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "data-tabular": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .sidebar-active { border-left: 4px solid #0040a1; background-color: rgba(0, 86, 210, 0.1); color: #0040a1; font-weight: 700; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #c3c6d6; border-radius: 10px; }
+        .chart-card:hover .view-details { opacity: 1; }
+        .tooltip { visibility: hidden; opacity: 0; transition: opacity 0.2s; }
+        .chart-bar:hover .tooltip { visibility: visible; opacity: 1; }
+    </style>
+</head>
+<body class="flex overflow-hidden h-screen bg-background">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-[240px] bg-surface-container flex flex-col border-r border-outline-variant z-50">
+<div class="px-md py-lg flex items-center gap-base">
+<span class="material-symbols-outlined text-primary text-headline-md" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md font-bold text-primary">TransitOps</span>
+<span class="text-xs uppercase tracking-widest text-on-surface-variant/70 font-bold">Logistics ERP</span>
+</div>
+</div>
+<nav class="flex-1 overflow-y-auto px-xs py-md space-y-xs custom-scrollbar">
+<a class="flex items-center gap-md px-md py-sm rounded-sm text-on-surface-variant font-medium hover:bg-surface-variant transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span> Dashboard
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-sm text-on-surface-variant font-medium hover:bg-surface-variant transition-colors" href="#">
+<span class="material-symbols-outlined">local_shipping</span> Vehicle Registry
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-sm text-on-surface-variant font-medium hover:bg-surface-variant transition-colors" href="#">
+<span class="material-symbols-outlined">person_pin</span> Driver Management
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-sm text-on-surface-variant font-medium hover:bg-surface-variant transition-colors" href="#">
+<span class="material-symbols-outlined">route</span> Trip Management
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-sm text-on-surface-variant font-medium hover:bg-surface-variant transition-colors" href="#">
+<span class="material-symbols-outlined">build</span> Maintenance
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-sm text-on-surface-variant font-medium hover:bg-surface-variant transition-colors" href="#">
+<span class="material-symbols-outlined">local_gas_station</span> Fuel Logs
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-sm text-on-surface-variant font-medium hover:bg-surface-variant transition-colors" href="#">
+<span class="material-symbols-outlined">payments</span> Expenses
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-sm sidebar-active" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bar_chart</span> Reports
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-sm text-on-surface-variant font-medium hover:bg-surface-variant transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span> Settings
+            </a>
+</nav>
+<div class="p-md mt-auto border-t border-outline-variant bg-surface-container-low">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold text-xs">JD</div>
+<div class="flex flex-col">
+<span class="text-body-sm font-bold text-on-surface">John Doe</span>
+<span class="text-[10px] text-on-surface-variant">Fleet Manager</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="ml-[240px] flex-1 flex flex-col h-screen overflow-y-auto">
+<!-- TopNavBar -->
+<header class="h-16 px-md bg-surface flex justify-between items-center sticky top-0 z-40 border-b border-outline-variant shadow-sm">
+<div class="flex items-center gap-lg">
+<h1 class="font-headline-md text-headline-md font-extrabold text-primary">Reports &amp; Analytics</h1>
+<div class="hidden md:flex bg-surface-container px-sm py-xs rounded-lg items-center gap-sm border border-outline-variant">
+<span class="material-symbols-outlined text-outline text-lg">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm w-64" placeholder="Search reports..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<div class="flex items-center gap-sm text-on-surface-variant">
+<button class="p-xs hover:bg-surface-container-low rounded-full transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-xs hover:bg-surface-container-low rounded-full transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+<button class="bg-primary text-on-primary px-md py-sm rounded-lg font-title-sm text-sm flex items-center gap-xs hover:bg-primary-container transition-all active:scale-95 shadow-sm">
+<span class="material-symbols-outlined text-lg">add_chart</span> Create Custom Report
+                </button>
+</div>
+</header>
+<!-- Page Canvas -->
+<div class="p-lg space-y-lg">
+<!-- Global Dashboard Controls -->
+<div class="flex flex-col gap-md">
+<div class="flex flex-col lg:flex-row justify-between items-end gap-md bg-surface-container-lowest p-md rounded-xl border border-outline-variant shadow-sm">
+<div class="flex flex-wrap items-end gap-md flex-1">
+<div class="flex flex-col gap-xs min-w-[180px]">
+<label class="text-label-caps text-on-surface-variant px-xs flex items-center gap-1"><span class="material-symbols-outlined text-sm">calendar_month</span> Date Range</label>
+<select class="bg-surface border border-outline-variant text-body-sm px-sm py-2 rounded-lg focus:ring-primary focus:border-primary">
+<option>Last 30 Days</option>
+<option>Last 90 Days</option>
+<option>Current Quarter</option>
+<option>Last 12 Months</option>
+<option>Custom Range...</option>
+</select>
+</div>
+<div class="flex flex-col gap-xs min-w-[180px]">
+<label class="text-label-caps text-on-surface-variant px-xs flex items-center gap-1"><span class="material-symbols-outlined text-sm">local_shipping</span> Specific Vehicle</label>
+<select class="bg-surface border border-outline-variant text-body-sm px-sm py-2 rounded-lg focus:ring-primary focus:border-primary">
+<option>All Vehicles</option>
+<option>TRK-2940 (Heavy)</option>
+<option>VAN-4022 (Light)</option>
+<option>SPR-1205 (Sprinter)</option>
+<option>By Fleet Category...</option>
+</select>
+</div>
+<div class="flex flex-col gap-xs min-w-[180px]">
+<label class="text-label-caps text-on-surface-variant px-xs flex items-center gap-1"><span class="material-symbols-outlined text-sm">badge</span> Driver Performance</label>
+<select class="bg-surface border border-outline-variant text-body-sm px-sm py-2 rounded-lg focus:ring-primary focus:border-primary">
+<option>All Drivers</option>
+<option>Top 10% Performers</option>
+<option>Bottom 10% Performers</option>
+<option>Safety Incidents &gt; 0</option>
+<option>Specific Driver Selection...</option>
+</select>
+</div>
+<!-- Comparison Toggle -->
+<div class="flex items-center gap-sm bg-surface-container-low px-md py-2 rounded-lg border border-outline-variant/50 self-end">
+<span class="text-body-sm font-semibold text-on-surface-variant">Compare to previous period</span>
+<button class="relative inline-flex h-5 w-10 shrink-0 cursor-pointer items-center rounded-full bg-primary-container transition-colors duration-200" role="switch">
+<span class="translate-x-5 inline-block h-4 w-4 transform rounded-full bg-primary transition duration-200"></span>
+</button>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<button class="flex items-center gap-xs text-body-sm font-bold px-md py-2 border-2 border-outline text-on-surface-variant rounded-lg hover:bg-surface-variant hover:border-on-surface-variant transition-all">
+<span class="material-symbols-outlined text-lg">download</span> Download CSV
+                    </button>
+<button class="flex items-center gap-xs text-body-sm font-bold px-md py-2 border-2 border-outline text-on-surface-variant rounded-lg hover:bg-surface-variant hover:border-on-surface-variant transition-all">
+<span class="material-symbols-outlined text-lg">picture_as_pdf</span> Download PDF
+                    </button>
+<button class="flex items-center justify-center p-2 border-2 border-primary text-primary rounded-lg hover:bg-primary/5 transition-all" title="Schedule automated report">
+<span class="material-symbols-outlined text-lg">schedule_send</span>
+</button>
+</div>
+</div>
+</div>
+<!-- KPI Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
+<!-- Fleet Utilization -->
+<div class="bg-surface p-md rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-all group chart-card cursor-default">
+<div class="flex justify-between items-start mb-sm">
+<div class="p-xs bg-primary-container/10 rounded-lg">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">analytics</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-secondary text-xs font-bold flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm">trending_up</span> +2.4%
+                        </span>
+<span class="text-[10px] text-outline font-medium">vs last month</span>
+</div>
+</div>
+<p class="text-on-surface-variant text-body-sm font-medium mb-xs">Fleet Utilization</p>
+<div class="flex justify-between items-end">
+<h2 class="text-display-lg font-display-lg text-on-surface">84.2%</h2>
+<button class="view-details opacity-0 transition-opacity text-primary text-[11px] font-bold uppercase flex items-center gap-0.5 pb-1">
+                            Details <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+<div class="mt-md w-full bg-surface-container rounded-full h-1.5">
+<div class="bg-primary h-1.5 rounded-full" style="width: 84%"></div>
+</div>
+</div>
+<!-- Total Revenue -->
+<div class="bg-surface p-md rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-all group chart-card cursor-default">
+<div class="flex justify-between items-start mb-sm">
+<div class="p-xs bg-secondary-container/20 rounded-lg">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">monetization_on</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-secondary text-xs font-bold flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm">trending_up</span> +12.8%
+                        </span>
+<span class="text-[10px] text-outline font-medium">vs last month</span>
+</div>
+</div>
+<p class="text-on-surface-variant text-body-sm font-medium mb-xs">Total Revenue</p>
+<div class="flex justify-between items-end">
+<h2 class="text-display-lg font-display-lg text-on-surface">$1.24M</h2>
+<button class="view-details opacity-0 transition-opacity text-primary text-[11px] font-bold uppercase flex items-center gap-0.5 pb-1">
+                            Details <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+<p class="text-[10px] text-on-surface-variant mt-md uppercase tracking-tight">Projected: $1.5M by EOY</p>
+</div>
+<!-- Avg. Fuel Efficiency -->
+<div class="bg-surface p-md rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-all group chart-card cursor-default">
+<div class="flex justify-between items-start mb-sm">
+<div class="p-xs bg-tertiary-container/10 rounded-lg">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">local_gas_station</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-error text-xs font-bold flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm">trending_down</span> -0.5%
+                        </span>
+<span class="text-[10px] text-outline font-medium">vs last month</span>
+</div>
+</div>
+<p class="text-on-surface-variant text-body-sm font-medium mb-xs">Avg. Fuel Efficiency</p>
+<div class="flex justify-between items-end">
+<h2 class="text-display-lg font-display-lg text-on-surface">6.8 <span class="text-headline-md font-normal text-on-surface-variant">MPG</span></h2>
+<button class="view-details opacity-0 transition-opacity text-primary text-[11px] font-bold uppercase flex items-center gap-0.5 pb-1">
+                            Details <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+<p class="text-[10px] text-on-surface-variant mt-md uppercase tracking-tight">Fleet Target: 7.2 MPG</p>
+</div>
+<!-- Maintenance Costs -->
+<div class="bg-surface p-md rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-all group chart-card cursor-default">
+<div class="flex justify-between items-start mb-sm">
+<div class="p-xs bg-error-container/20 rounded-lg">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">handyman</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-secondary text-xs font-bold flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm">trending_down</span> -4.2%
+                        </span>
+<span class="text-[10px] text-outline font-medium">vs last month</span>
+</div>
+</div>
+<p class="text-on-surface-variant text-body-sm font-medium mb-xs">Maintenance Costs</p>
+<div class="flex justify-between items-end">
+<h2 class="text-display-lg font-display-lg text-on-surface">$42.3k</h2>
+<button class="view-details opacity-0 transition-opacity text-primary text-[11px] font-bold uppercase flex items-center gap-0.5 pb-1">
+                            Details <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+<p class="text-[10px] text-on-surface-variant mt-md uppercase tracking-tight">Down from $44.1k last month</p>
+</div>
+</div>
+<!-- Dashboard Layout (Bento Style) -->
+<div class="grid grid-cols-12 gap-lg">
+<!-- Fleet Utilization Trend (Multi-line) -->
+<div class="col-span-12 lg:col-span-8 bg-surface p-lg rounded-xl border border-outline-variant shadow-sm">
+<div class="flex justify-between items-center mb-lg">
+<div>
+<h3 class="text-title-sm font-title-sm text-on-surface">Fleet Utilization Trend</h3>
+<p class="text-body-sm text-on-surface-variant">Daily utilization rate by vehicle class</p>
+</div>
+<div class="flex items-center gap-md">
+<div class="flex items-center gap-xs">
+<span class="w-3 h-3 rounded-full bg-primary"></span>
+<span class="text-[11px] font-bold text-on-surface-variant">Heavy</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="w-3 h-3 rounded-full bg-secondary"></span>
+<span class="text-[11px] font-bold text-on-surface-variant">Light</span>
+</div>
+<button class="bg-surface-container px-3 py-1 rounded text-[11px] font-bold text-primary hover:bg-primary/10 transition-colors">VIEW DATA</button>
+</div>
+</div>
+<div class="h-64 flex items-end justify-between gap-xs relative px-md">
+<!-- Chart Lines Simulation -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none pb-8">
+<div class="border-b border-outline-variant/30 w-full h-0"></div>
+<div class="border-b border-outline-variant/30 w-full h-0"></div>
+<div class="border-b border-outline-variant/30 w-full h-0"></div>
+<div class="border-b border-outline-variant/30 w-full h-0"></div>
+</div>
+<!-- Animated Graph Visual Placeholder -->
+<div class="w-full h-full relative">
+<div class="absolute inset-0 flex items-end justify-between px-md pb-4">
+<div class="flex flex-col items-center gap-xs group/bar chart-bar relative">
+<div class="tooltip absolute -top-10 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-[10px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-10">Mon: 68% utilization</div>
+<div class="w-4 bg-primary/20 h-40 rounded-t-sm transition-all group-hover/bar:bg-primary/40"></div>
+<span class="text-[10px] text-on-surface-variant font-bold">Mon</span>
+</div>
+<div class="flex flex-col items-center gap-xs group/bar chart-bar relative">
+<div class="tooltip absolute -top-10 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-[10px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-10">Tue: 74% utilization</div>
+<div class="w-4 bg-primary/30 h-48 rounded-t-sm transition-all group-hover/bar:bg-primary/50"></div>
+<span class="text-[10px] text-on-surface-variant font-bold">Tue</span>
+</div>
+<div class="flex flex-col items-center gap-xs group/bar chart-bar relative">
+<div class="tooltip absolute -top-10 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-[10px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-10">Wed: 82% utilization</div>
+<div class="w-4 bg-primary/40 h-52 rounded-t-sm transition-all group-hover/bar:bg-primary/60"></div>
+<span class="text-[10px] text-on-surface-variant font-bold">Wed</span>
+</div>
+<div class="flex flex-col items-center gap-xs group/bar chart-bar relative">
+<div class="tooltip absolute -top-10 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-[10px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-10">Thu: 54% utilization</div>
+<div class="w-4 bg-primary/50 h-32 rounded-t-sm transition-all group-hover/bar:bg-primary/70"></div>
+<span class="text-[10px] text-on-surface-variant font-bold">Thu</span>
+</div>
+<div class="flex flex-col items-center gap-xs group/bar chart-bar relative">
+<div class="tooltip absolute -top-10 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-[10px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-10">Fri: 70% utilization</div>
+<div class="w-4 bg-primary/60 h-44 rounded-t-sm transition-all group-hover/bar:bg-primary/80"></div>
+<span class="text-[10px] text-on-surface-variant font-bold">Fri</span>
+</div>
+<div class="flex flex-col items-center gap-xs group/bar chart-bar relative">
+<div class="tooltip absolute -top-10 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-[10px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-10">Sat: 88% utilization</div>
+<div class="w-4 bg-primary/70 h-56 rounded-t-sm transition-all group-hover/bar:bg-primary/90"></div>
+<span class="text-[10px] text-on-surface-variant font-bold">Sat</span>
+</div>
+<div class="flex flex-col items-center gap-xs group/bar chart-bar relative">
+<div class="tooltip absolute -top-10 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-[10px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-10">Sun: 62% utilization</div>
+<div class="w-4 bg-primary/80 h-38 rounded-t-sm transition-all group-hover/bar:bg-primary"></div>
+<span class="text-[10px] text-on-surface-variant font-bold">Sun</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Vehicle ROI Distribution (Pie) -->
+<div class="col-span-12 lg:col-span-4 bg-surface p-lg rounded-xl border border-outline-variant shadow-sm flex flex-col group chart-card">
+<div class="flex justify-between items-center mb-md">
+<h3 class="text-title-sm font-title-sm text-on-surface">Vehicle ROI Dist.</h3>
+<button class="view-details opacity-0 transition-opacity bg-primary text-on-primary text-[10px] px-2 py-1 rounded font-bold">FULL AUDIT</button>
+</div>
+<div class="flex-1 flex flex-col items-center justify-center relative">
+<div class="w-40 h-40 rounded-full border-[12px] border-primary-container relative flex items-center justify-center cursor-help">
+<div class="absolute inset-[-12px] rounded-full border-[12px] border-secondary-container border-r-transparent border-b-transparent rotate-[30deg] transition-transform duration-500 hover:scale-105"></div>
+<div class="flex flex-col items-center">
+<span class="text-headline-md font-bold text-on-surface">78%</span>
+<span class="text-[10px] text-on-surface-variant uppercase font-bold">Optimal</span>
+</div>
+</div>
+<div class="mt-lg w-full space-y-sm">
+<div class="flex justify-between items-center text-body-sm group/row cursor-pointer py-1 px-2 hover:bg-surface-container rounded transition-colors">
+<div class="flex items-center gap-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container transition-transform group-hover/row:scale-125"></span> High Yield
+                                </div>
+<span class="font-bold text-on-surface">52%</span>
+</div>
+<div class="flex justify-between items-center text-body-sm group/row cursor-pointer py-1 px-2 hover:bg-surface-container rounded transition-colors">
+<div class="flex items-center gap-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary-container transition-transform group-hover/row:scale-125"></span> Moderate
+                                </div>
+<span class="font-bold text-on-surface">26%</span>
+</div>
+<div class="flex justify-between items-center text-body-sm group/row cursor-pointer py-1 px-2 hover:bg-surface-container rounded transition-colors">
+<div class="flex items-center gap-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-error-container transition-transform group-hover/row:scale-125"></span> Underperforming
+                                </div>
+<span class="font-bold text-on-surface">22%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Trips by Region (Map Visual) -->
+<div class="col-span-12 lg:col-span-7 bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden flex flex-col h-[400px]">
+<div class="p-md border-b border-outline-variant bg-surface-container-lowest flex justify-between items-center">
+<div>
+<h3 class="text-title-sm font-title-sm text-on-surface">Trips by Region</h3>
+<p class="text-[11px] text-on-surface-variant font-medium">Global operational density heatmap</p>
+</div>
+<div class="flex items-center gap-sm">
+<div class="bg-surface border border-outline-variant rounded flex">
+<button class="px-sm py-xs bg-surface-container text-primary font-bold text-[10px]">MAP</button>
+<button class="px-sm py-xs text-on-surface-variant font-bold text-[10px] border-l border-outline-variant hover:bg-surface-variant transition-colors">LIST</button>
+</div>
+<button class="p-1 text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-lg">fullscreen</span></button>
+</div>
+</div>
+<div class="flex-1 relative bg-surface-container-low group">
+<div class="absolute inset-0 flex items-center justify-center overflow-hidden">
+<div class="w-full h-full grayscale opacity-40 mix-blend-multiply transition-transform duration-[10s] group-hover:scale-110" data-alt="A sophisticated, high-contrast dark blue and white global topographic map showing logistics shipping routes. The map should be minimalist, featuring thin wireframe-style lines representing flight and road paths between major transport hubs like Chicago, London, and Singapore. The aesthetic should be clean, professional, and corporate, matching a high-end enterprise ERP dashboard with subtle glowing points of light at key logistics centers." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDCfEwD9oyfYvh29BxJvoKiwdLTHMvZJwJQ6_YlTkBKJGgnbyEeLlFcV6ORyb3PRQyLVHHBMq4N6iIjwY1kiUTNtIN92uZu2fGbhAFWRVXFAWYsVL16l4LVj-fnhGy6bJLTKHjLBXzWScPx6OT5Y0al1oWuvwYpwbaJ61iDGR3Hm93_wIU3BjJ_GOcLHU0rhqAb7vppCvJZ6zwOBJ-8vNTOlJODU2hE5xLZOt0Wimd61_87TdOmffmi')"></div>
+</div>
+<!-- Heatmap Hotspots -->
+<div class="absolute top-[20%] left-[25%] w-8 h-8 bg-primary/20 rounded-full animate-ping"></div>
+<div class="absolute top-[22%] left-[27%] w-4 h-4 bg-primary rounded-full cursor-pointer hover:ring-4 hover:ring-primary/20 transition-all group/pin">
+<div class="invisible group-hover/pin:visible absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-white px-2 py-1 rounded shadow-md border text-[10px] font-bold text-on-surface whitespace-nowrap">Chicago Hub: 542 trips</div>
+</div>
+<div class="absolute top-[40%] left-[55%] w-10 h-10 bg-secondary/20 rounded-full animate-pulse"></div>
+<div class="absolute top-[42%] left-[57%] w-5 h-5 bg-secondary rounded-full cursor-pointer hover:ring-4 hover:ring-secondary/20 transition-all group/pin2">
+<div class="invisible group-hover/pin2:visible absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-white px-2 py-1 rounded shadow-md border text-[10px] font-bold text-on-surface whitespace-nowrap">London Ops: 312 trips</div>
+</div>
+<!-- Floating Map Legend -->
+<div class="absolute bottom-md right-md bg-white/90 backdrop-blur-sm p-sm rounded border border-outline-variant shadow-lg text-[10px]">
+<div class="font-bold mb-xs text-on-surface">TRIP DENSITY</div>
+<div class="flex items-center gap-xs mb-xs">
+<span class="w-2 h-2 rounded-full bg-primary"></span> &gt; 500 trips/mo
+                            </div>
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-secondary"></span> 100-500 trips/mo
+                            </div>
+</div>
+</div>
+</div>
+<!-- Operational Costs (Bar Chart) -->
+<div class="col-span-12 lg:col-span-5 bg-surface p-lg rounded-xl border border-outline-variant shadow-sm flex flex-col h-[400px]">
+<div class="flex justify-between items-center mb-lg">
+<h3 class="text-title-sm font-title-sm text-on-surface">Operational Costs</h3>
+<div class="flex items-center gap-2">
+<span class="text-on-surface-variant font-bold text-[11px] uppercase tracking-widest">USD (k)</span>
+<button class="bg-surface-container-low p-1 rounded hover:bg-surface-variant"><span class="material-symbols-outlined text-lg">more_vert</span></button>
+</div>
+</div>
+<div class="flex-1 flex flex-col gap-lg mt-md">
+<!-- Custom Bar Chart UI -->
+<div class="space-y-sm group/row cursor-pointer">
+<div class="flex justify-between text-body-sm font-medium">
+<span class="group-hover/row:text-primary transition-colors">Fuel</span>
+<div class="flex items-center gap-2">
+<span class="text-on-surface-variant font-bold group-hover/row:text-primary">$285.4k</span>
+<span class="invisible group-hover/row:visible text-[10px] text-secondary font-bold">+2.1%</span>
+</div>
+</div>
+<div class="w-full bg-surface-container rounded-full h-3 overflow-hidden">
+<div class="bg-primary h-full rounded-full transition-all duration-500 group-hover/row:brightness-110" style="width: 75%"></div>
+</div>
+</div>
+<div class="space-y-sm group/row cursor-pointer">
+<div class="flex justify-between text-body-sm font-medium">
+<span class="group-hover/row:text-secondary transition-colors">Maintenance</span>
+<div class="flex items-center gap-2">
+<span class="text-on-surface-variant font-bold group-hover/row:text-secondary">$112.9k</span>
+<span class="invisible group-hover/row:visible text-[10px] text-secondary font-bold">-4.2%</span>
+</div>
+</div>
+<div class="w-full bg-surface-container rounded-full h-3 overflow-hidden">
+<div class="bg-secondary h-full rounded-full transition-all duration-500 group-hover/row:brightness-110" style="width: 45%"></div>
+</div>
+</div>
+<div class="space-y-sm group/row cursor-pointer">
+<div class="flex justify-between text-body-sm font-medium">
+<span class="group-hover/row:text-tertiary transition-colors">Tolls &amp; Compliance</span>
+<div class="flex items-center gap-2">
+<span class="text-on-surface-variant font-bold group-hover/row:text-tertiary">$64.2k</span>
+<span class="invisible group-hover/row:visible text-[10px] text-error font-bold">+1.5%</span>
+</div>
+</div>
+<div class="w-full bg-surface-container rounded-full h-3 overflow-hidden">
+<div class="bg-tertiary h-full rounded-full transition-all duration-500 group-hover/row:brightness-110" style="width: 30%"></div>
+</div>
+</div>
+<div class="space-y-sm group/row cursor-pointer">
+<div class="flex justify-between text-body-sm font-medium">
+<span class="group-hover/row:text-on-surface transition-colors">Other</span>
+<div class="flex items-center gap-2">
+<span class="text-on-surface-variant font-bold group-hover/row:text-on-surface">$18.1k</span>
+<span class="invisible group-hover/row:visible text-[10px] text-on-surface-variant font-bold">Stable</span>
+</div>
+</div>
+<div class="w-full bg-surface-container rounded-full h-3 overflow-hidden">
+<div class="bg-outline h-full rounded-full transition-all duration-500 group-hover/row:brightness-110" style="width: 12%"></div>
+</div>
+</div>
+</div>
+<!-- Breakdown Legend -->
+<div class="mt-auto pt-4 border-t border-outline-variant/30 grid grid-cols-2 gap-2">
+<div class="flex items-center gap-1.5 text-[10px] font-bold text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
+<span class="w-2 h-2 rounded-full bg-primary"></span> FUEL: $12.4k/day
+                    </div>
+<div class="flex items-center gap-1.5 text-[10px] font-bold text-on-surface-variant hover:text-secondary transition-colors cursor-pointer">
+<span class="w-2 h-2 rounded-full bg-secondary"></span> MAINT: $4.1k/day
+                    </div>
+<div class="flex items-center gap-1.5 text-[10px] font-bold text-on-surface-variant hover:text-tertiary transition-colors cursor-pointer">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span> TOLLS: $2.2k/day
+                    </div>
+<div class="flex items-center gap-1.5 text-[10px] font-bold text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer">
+<span class="w-2 h-2 rounded-full bg-outline"></span> MISC: $0.6k/day
+                    </div>
+</div>
+</div>
+</div>
+<!-- Detailed Table -->
+<div class="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+<div class="p-md border-b border-outline-variant bg-surface-container-lowest flex justify-between items-center">
+<div class="flex items-center gap-3">
+<h3 class="text-title-sm font-title-sm text-on-surface">Vehicle Performance Summary</h3>
+<span class="bg-primary-container/10 text-primary px-2 py-0.5 rounded text-[10px] font-bold">LIVE UPDATES</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="bg-surface-container p-1 rounded flex gap-1">
+<button class="p-1 text-primary"><span class="material-symbols-outlined text-sm">grid_view</span></button>
+<button class="p-1 text-on-surface-variant opacity-50"><span class="material-symbols-outlined text-sm">view_list</span></button>
+</div>
+<button class="text-primary text-body-sm font-bold flex items-center gap-xs hover:underline bg-surface-container-low px-3 py-1 rounded transition-colors">
+                            Explore Dataset <span class="material-symbols-outlined text-sm">open_in_new</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-md py-sm text-label-caps text-on-surface-variant">VEHICLE ID</th>
+<th class="px-md py-sm text-label-caps text-on-surface-variant">TYPE</th>
+<th class="px-md py-sm text-label-caps text-on-surface-variant text-right">UTILIZATION</th>
+<th class="px-md py-sm text-label-caps text-on-surface-variant text-right">FUEL (MPG)</th>
+<th class="px-md py-sm text-label-caps text-on-surface-variant text-right">MAINT. COST</th>
+<th class="px-md py-sm text-label-caps text-on-surface-variant">STATUS</th>
+<th class="px-md py-sm text-label-caps text-on-surface-variant text-center">ACTIONS</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-md py-sm text-data-tabular font-bold text-primary">TRK-2940</td>
+<td class="px-md py-sm text-body-sm">Heavy Duty</td>
+<td class="px-md py-sm text-data-tabular text-right">92%</td>
+<td class="px-md py-sm text-data-tabular text-right">6.4</td>
+<td class="px-md py-sm text-data-tabular text-right">$4,250</td>
+<td class="px-md py-sm">
+<span class="bg-secondary/10 text-secondary text-[11px] font-bold px-sm py-0.5 rounded-full uppercase">Optimal</span>
+</td>
+<td class="px-md py-sm text-center">
+<button class="p-1 hover:bg-surface-variant rounded text-on-surface-variant transition-colors"><span class="material-symbols-outlined text-lg">analytics</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-md py-sm text-data-tabular font-bold text-primary">VAN-4022</td>
+<td class="px-md py-sm text-body-sm">Light Delivery</td>
+<td class="px-md py-sm text-data-tabular text-right">78%</td>
+<td class="px-md py-sm text-data-tabular text-right">18.2</td>
+<td class="px-md py-sm text-data-tabular text-right">$1,120</td>
+<td class="px-md py-sm">
+<span class="bg-secondary/10 text-secondary text-[11px] font-bold px-sm py-0.5 rounded-full uppercase">Optimal</span>
+</td>
+<td class="px-md py-sm text-center">
+<button class="p-1 hover:bg-surface-variant rounded text-on-surface-variant transition-colors"><span class="material-symbols-outlined text-lg">analytics</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-md py-sm text-data-tabular font-bold text-primary">TRK-3112</td>
+<td class="px-md py-sm text-body-sm">Heavy Duty</td>
+<td class="px-md py-sm text-data-tabular text-right">45%</td>
+<td class="px-md py-sm text-data-tabular text-right">5.1</td>
+<td class="px-md py-sm text-data-tabular text-right">$9,840</td>
+<td class="px-md py-sm">
+<span class="bg-tertiary/10 text-tertiary text-[11px] font-bold px-sm py-0.5 rounded-full uppercase">In Shop</span>
+</td>
+<td class="px-md py-sm text-center">
+<button class="p-1 hover:bg-surface-variant rounded text-on-surface-variant transition-colors"><span class="material-symbols-outlined text-lg">analytics</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-md py-sm text-data-tabular font-bold text-primary">SPR-1205</td>
+<td class="px-md py-sm text-body-sm">Sprinter</td>
+<td class="px-md py-sm text-data-tabular text-right">88%</td>
+<td class="px-md py-sm text-data-tabular text-right">22.4</td>
+<td class="px-md py-sm text-data-tabular text-right">$850</td>
+<td class="px-md py-sm">
+<span class="bg-secondary/10 text-secondary text-[11px] font-bold px-sm py-0.5 rounded-full uppercase">Optimal</span>
+</td>
+<td class="px-md py-sm text-center">
+<button class="p-1 hover:bg-surface-variant rounded text-on-surface-variant transition-colors"><span class="material-symbols-outlined text-lg">analytics</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Help/Assistant -->
+<button class="fixed bottom-lg right-lg w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 group">
+<span class="material-symbols-outlined text-3xl group-hover:rotate-12 transition-transform">smart_toy</span>
+<span class="absolute right-full mr-4 bg-inverse-surface text-inverse-on-surface text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap shadow-lg border border-white/10">Ask TransitOps AI Assistant</span>
+</button>
+<script>
+        // Simple interactivity for demonstration
+        document.querySelectorAll('select').forEach(select => {
+            select.addEventListener('change', () => {
+                const main = document.querySelector('main');
+                main.style.opacity = '0.7';
+                setTimeout(() => {
+                    main.style.opacity = '1';
+                }, 300);
+            });
+        });
+
+        // Toggle Switch Animation
+        const switchBtn = document.querySelector('[role="switch"]');
+        if (switchBtn) {
+            switchBtn.addEventListener('click', () => {
+                const dot = switchBtn.querySelector('span');
+                const isActive = dot.classList.contains('translate-x-5');
+                if (isActive) {
+                    dot.classList.remove('translate-x-5');
+                    dot.classList.add('translate-x-0');
+                    switchBtn.classList.remove('bg-primary-container');
+                    switchBtn.classList.add('bg-outline-variant');
+                } else {
+                    dot.classList.remove('translate-x-0');
+                    dot.classList.add('translate-x-5');
+                    switchBtn.classList.remove('bg-outline-variant');
+                    switchBtn.classList.add('bg-primary-container');
+                }
+            });
+        }
+    </script>
+</body></html>

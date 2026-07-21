@@ -73,7 +73,7 @@ def create_vehicle(
     - Capacity must be positive
     """
     service = VehicleService(db)
-    vehicle = service.create_vehicle(vehicle_data)
+    vehicle = service.create_vehicle(vehicle_data, current_user)
     return VehicleResponse.model_validate(vehicle)
 
 
@@ -111,7 +111,7 @@ def update_vehicle(
     - Cannot change status while 'On Trip'
     """
     service = VehicleService(db)
-    vehicle = service.update_vehicle(vehicle_id, vehicle_data)
+    vehicle = service.update_vehicle(vehicle_id, vehicle_data, current_user)
     return VehicleResponse.model_validate(vehicle)
 
 
@@ -130,7 +130,7 @@ def delete_vehicle(
     - Cannot delete vehicle that is 'On Trip' or 'In Shop'
     """
     service = VehicleService(db)
-    service.delete_vehicle(vehicle_id)
+    service.delete_vehicle(vehicle_id, current_user)
     return SuccessResponse(
         success=True,
         message="Vehicle deleted successfully"

@@ -76,7 +76,7 @@ def create_driver(
     - License expiry date must be after issue date
     """
     service = DriverService(db)
-    driver = service.create_driver(driver_data)
+    driver = service.create_driver(driver_data, current_user)
     return DriverResponse.model_validate(driver)
 
 
@@ -115,7 +115,7 @@ def update_driver(
     - License dates must be valid
     """
     service = DriverService(db)
-    driver = service.update_driver(driver_id, driver_data)
+    driver = service.update_driver(driver_id, driver_data, current_user)
     return DriverResponse.model_validate(driver)
 
 
@@ -134,7 +134,7 @@ def delete_driver(
     - Cannot delete driver that is 'On Trip'
     """
     service = DriverService(db)
-    service.delete_driver(driver_id)
+    service.delete_driver(driver_id, current_user)
     return SuccessResponse(
         success=True,
         message="Driver deleted successfully"

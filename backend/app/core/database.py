@@ -56,4 +56,7 @@ def init_db() -> None:
     Initialize database tables.
     Creates all tables defined in models.
     """
+    # Import models to ensure they are registered with Base.metadata
+    from app.models.inventory import InventoryItem, ProcurementRequest, PurchaseOrder, InventoryHistory
+    
     Base.metadata.create_all(bind=engine)

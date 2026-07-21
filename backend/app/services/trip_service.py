@@ -18,6 +18,10 @@ from app.utils.exceptions import (
     BusinessLogicError,
     ValidationError
 )
+from app.services.activity_service import activity_service
+from app.schemas.activity import ActivityCreate
+from app.models.activity import ModuleEnum, ActivityTypeEnum, SeverityEnum
+from app.models.user import User
 
 
 class TripService:
@@ -159,9 +163,23 @@ class TripService:
         if created_by:
             trip_dict["created_by"] = created_by
         
-        return self.repository.create(trip_dict)
+        trip = self.repository.create(trip_dict)
+        
+        if created_by:
+            activity_service.log_activity(self.db, ActivityCreate(
+                module=ModuleEnum.TRIP,
+                activity_type=ActivityTypeEnum.CREATED,
+                title="Route Generated",
+                description=f"Standard logistics route mapped for Trip {trip.trip_number}.",
+                severity=SeverityEnum.INFO,
+                status="Success",
+                user_id=created_by,
+                trip_id=trip.id
+            ))
+            
+        return trip
     
-    def update_trip(self, trip_id: UUID, trip_data: TripUpdate) -> Trip:
+    def update_trip(self, trip_id: UUID, trip_data: TripUpdate, current_user: User = None) -> Trip:
         """
         Update an existing trip.
         
@@ -242,9 +260,23 @@ class TripService:
                     code="BIZ_005"
                 )
         
-        return self.repository.update(trip, update_data)
+        updated_trip = self.repository.update(trip, update_data)
+        
+        if current_user:
+            activity_service.log_activity(self.db, ActivityCreate(
+                module=ModuleEnum.TRIP,
+                activity_type=ActivityTypeEnum.UPDATED,
+                title=f"Trip {updated_trip.trip_number} updated",
+                description="Trip parameters were modified.",
+                severity=SeverityEnum.INFO,
+                status="Success",
+                user_id=current_user.id,
+                trip_id=updated_trip.id
+            ))
+            
+        return updated_trip
     
-    def dispatch_trip(self, trip_id: UUID, dispatch_data: TripDispatch) -> Trip:
+    def dispatch_trip(self, trip_id: UUID, dispatch_data: TripDispatch, current_user: User = None) -> Trip:
         """
         Dispatch a trip.
         
@@ -307,9 +339,23 @@ class TripService:
             "actual_departure": datetime.utcnow()
         }
         
-        return self.repository.update(trip, update_data)
+        dispatched_trip = self.repository.update(trip, update_data)
+        
+        if current_user:
+            activity_service.log_activity(self.db, ActivityCreate(
+                module=ModuleEnum.TRIP,
+                activity_type=ActivityTypeEnum.ASSIGNED,
+                title="Trip Dispatched",
+                description=f"Trip {dispatched_trip.trip_number} dispatched successfully.",
+                severity=SeverityEnum.INFO,
+                status="Success",
+                user_id=current_user.id,
+                trip_id=dispatched_trip.id
+            ))
+            
+        return dispatched_trip
     
-    def complete_trip(self, trip_id: UUID, complete_data: TripComplete) -> Trip:
+    def complete_trip(self, trip_id: UUID, complete_data: TripComplete, current_user: User = None) -> Trip:
         """
         Complete a trip.
         
@@ -369,9 +415,26 @@ class TripService:
         if complete_data.notes is not None:
             update_data["notes"] = complete_data.notes
         
-        return self.repository.update(trip, update_data)
+        completed_trip = self.repository.update(trip, update_data)
+        
+        if current_user:
+            driver_name = driver.user.full_name if driver.user else "Driver"
+            activity_service.log_activity(self.db, ActivityCreate(
+                module=ModuleEnum.TRIP,
+                activity_type=ActivityTypeEnum.COMPLETED,
+                title=f"{driver_name} completed Route #{completed_trip.trip_number}",
+                description="All waypoints hit and cargo delivered securely.",
+                severity=SeverityEnum.SUCCESS,
+                status="Success",
+                user_id=current_user.id,
+                trip_id=completed_trip.id,
+                driver_id=driver.id,
+                vehicle_id=vehicle.id
+            ))
+            
+        return completed_trip
     
-    def cancel_trip(self, trip_id: UUID, cancel_data: TripCancel) -> Trip:
+    def cancel_trip(self, trip_id: UUID, cancel_data: TripCancel, current_user: User = None) -> Trip:
         """
         Cancel a trip.
         
@@ -411,9 +474,23 @@ class TripService:
             )
         }
         
-        return self.repository.update(trip, update_data)
+        cancelled_trip = self.repository.update(trip, update_data)
+        
+        if current_user:
+            activity_service.log_activity(self.db, ActivityCreate(
+                module=ModuleEnum.TRIP,
+                activity_type=ActivityTypeEnum.CANCELLED,
+                title=f"Trip Cancelled: {cancel_data.reason}",
+                description=f"Route aborted by dispatcher.",
+                severity=SeverityEnum.WARNING,
+                status="Failed",
+                user_id=current_user.id,
+                trip_id=cancelled_trip.id
+            ))
+            
+        return cancelled_trip
     
-    def delete_trip(self, trip_id: UUID) -> None:
+    def delete_trip(self, trip_id: UUID, current_user: User = None) -> None:
         """
         Delete a trip.
         
@@ -441,6 +518,19 @@ class TripService:
                 code="BIZ_014"
             )
         
+        
+        trip_num = trip.trip_number
+        if current_user:
+            activity_service.log_activity(self.db, ActivityCreate(
+                module=ModuleEnum.TRIP,
+                activity_type=ActivityTypeEnum.DELETED,
+                title=f"Trip {trip_num} deleted",
+                description="Trip record removed from database.",
+                severity=SeverityEnum.WARNING,
+                status="Success",
+                user_id=current_user.id
+            ))
+            
         self.repository.delete(trip)
     
     def get_trip_statistics(self) -> dict:

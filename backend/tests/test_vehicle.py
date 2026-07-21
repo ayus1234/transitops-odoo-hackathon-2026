@@ -325,11 +325,12 @@ def test_search_vehicles(
     db_session.commit()
     
     response = client.get(
-        "/api/v1/vehicles/search?query=Pickup",
+        "/api/v1/vehicles?search=Tata",
         headers={"Authorization": f"Bearer {fleet_manager_token}"}
     )
     
     assert response.status_code == 200
     data = response.json()
-    assert isinstance(data, list)
-    assert len(data) > 0
+    assert data["success"] is True
+    assert isinstance(data["data"], list)
+    assert len(data["data"]) > 0

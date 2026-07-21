@@ -12,8 +12,8 @@ from app.core.database import Base, get_db
 from app.core.config import settings
 
 
-# Test database URL (use a separate test database)
-TEST_DATABASE_URL = "postgresql://postgres:password@localhost:5432/transitops_test"
+# Use a Postgres test database
+TEST_DATABASE_URL = "postgresql+psycopg2://postgres:1234@localhost:5432/transitops_test"
 
 # Create test engine
 test_engine = create_engine(TEST_DATABASE_URL, pool_pre_ping=True)
@@ -30,10 +30,12 @@ def db_engine():
 
 @pytest.fixture(scope="function")
 def db_session(db_engine) -> Generator[Session, None, None]:
-    """Create a new database session for a test."""
+    """Create a new database session for a test with nested transactions."""
     connection = db_engine.connect()
     transaction = connection.begin()
-    session = TestingSessionLocal(bind=connection)
+    
+    # Use nested transaction so test commits don't actually commit to DB
+    session = TestingSessionLocal(bind=connection, join_transaction_mode="create_savepoint")
     
     yield session
     
@@ -94,3 +96,47 @@ def auth_headers(client: TestClient, db_session: Session) -> dict:
     
     token = response.json()["access_token"]
     return {"Authorization": f"Bearer {token}"}
+
+@pytest.fixture(scope="function")
+def admin_token_headers(client: TestClient, db_session: Session) -> dict:
+    """Create authentication headers for a System Admin."""
+    from app.models.role import Role
+    from app.models.user import User
+    from app.core.security import get_password_hash
+    
+    role = Role(name="System Admin", permissions={"all": ["read", "create", "update", "delete"]})
+    db_session.add(role)
+    db_session.commit()
+    
+    user = User(
+        email="admin@transitops.com", password_hash=get_password_hash("testpass123"),
+        first_name="Admin", last_name="User", role_id=role.id, is_active=True
+    )
+    db_session.add(user)
+    db_session.commit()
+    
+    response = client.post("/api/v1/auth/login", json={"email": "admin@transitops.com", "password": "testpass123"})
+    return {"Authorization": f"Bearer {response.json()['access_token']}"}
+
+@pytest.fixture(scope="function")
+def driver_token_headers(client: TestClient, db_session: Session) -> dict:
+    """Create authentication headers for a Driver."""
+    from app.models.role import Role
+    from app.models.user import User
+    from app.core.security import get_password_hash
+    
+    role = Role(name="Driver", permissions={"trips": ["read"]})
+    db_session.add(role)
+    db_session.commit()
+    
+    user = User(
+        email="driver@transitops.com", password_hash=get_password_hash("testpass123"),
+        first_name="Driver", last_name="User", role_id=role.id, is_active=True
+    )
+    db_session.add(user)
+    db_session.commit()
+    
+    response = client.post("/api/v1/auth/login", json={"email": "driver@transitops.com", "password": "testpass123"})
+    return {"Authorization": f"Bearer {response.json()['access_token']}"}
+
+# Removed duplicate fixtures

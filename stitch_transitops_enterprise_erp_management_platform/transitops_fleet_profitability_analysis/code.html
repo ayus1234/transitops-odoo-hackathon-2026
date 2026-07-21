@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fleet Profitability Report | TransitOps</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#ffcfb7",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed": "#001847",
+                        "tertiary-fixed": "#ffdbca",
+                        "surface-variant": "#e1e3e4",
+                        "on-secondary-fixed": "#002204",
+                        "surface": "#f8f9fa",
+                        "on-surface": "#191c1d",
+                        "on-tertiary-fixed-variant": "#773300",
+                        "on-secondary-fixed-variant": "#005312",
+                        "outline-variant": "#c3c6d6",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed-dim": "#ffb68e",
+                        "primary": "#0040a1",
+                        "surface-bright": "#f8f9fa",
+                        "surface-container": "#edeeef",
+                        "on-tertiary-fixed": "#331200",
+                        "on-secondary-container": "#217128",
+                        "inverse-on-surface": "#f0f1f2",
+                        "surface-dim": "#d9dadb",
+                        "error-container": "#ffdad6",
+                        "inverse-surface": "#2e3132",
+                        "on-primary-fixed-variant": "#0040a1",
+                        "secondary-container": "#a0f399",
+                        "outline": "#737785",
+                        "secondary": "#1b6d24",
+                        "surface-tint": "#0056d2",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-surface-variant": "#424654",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary": "#773300",
+                        "surface-container-low": "#f3f4f5",
+                        "on-error": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#a3f69c",
+                        "inverse-primary": "#b2c5ff",
+                        "surface-container-high": "#e7e8e9",
+                        "on-background": "#191c1d",
+                        "primary-container": "#0056d2",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#ccd8ff",
+                        "on-secondary": "#ffffff",
+                        "tertiary-container": "#9c4500",
+                        "secondary-fixed-dim": "#88d982",
+                        "background": "#f8f9fa",
+                        "primary-fixed": "#dae2ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "gutter": "16px",
+                        "xs": "4px",
+                        "sidebar_width": "240px",
+                        "base": "8px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "title-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "data-tabular": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "data-tabular": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .sidebar-active-pill { border-left-width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e1e3e4; border-radius: 10px; }
+        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(224, 224, 224, 0.5); }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopNavBar Implementation -->
+<header class="flex justify-between items-center h-16 px-md w-full sticky top-0 z-50 bg-surface shadow-sm border-b border-outline-variant">
+<div class="flex items-center gap-md">
+<span class="font-headline-md text-headline-md font-extrabold text-primary">TransitOps</span>
+<div class="hidden md:flex ml-lg">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2 text-body-sm w-64 focus:ring-2 focus:ring-primary" placeholder="Search reports..." type="text"/>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-on-surface-variant">help</span>
+</button>
+<button class="flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-lg font-title-sm hover:opacity-90 transition-all">
+<span class="material-symbols-outlined text-[20px]">add</span>
+<span>Add Vehicle</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a senior logistics fleet manager in a modern office environment, with soft natural lighting and a clean, minimalist corporate background. The person looks confident and approachable, wearing smart casual business attire, reflecting an atmosphere of operational control and expertise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_zFo-yZVFdwFQ-9Djrfb8kh-mapcDLsONgUj_uE-FlO9IraVLg6R3KeWpGy0cd4CpRkM4NVwC2org2GxeHB4HcIeMcMegrSSO5FIbxHgS_0yOHeU3-_kC3HT28ABiKX2M6lRh3xXWKc99DiAgjan_nlbNJgWSY26gMWryAqmI9WwFFizutUZdgjZhep50rT4YnLDJWRZW2VGK1WbN0Hq3cDdFd9TstZrOUYhBPLG8Rwfz8zo2IbRr"/>
+</div>
+</div>
+</header>
+<div class="flex h-[calc(100vh-64px)] overflow-hidden">
+<!-- SideNav Implementation -->
+<aside class="flex flex-col h-full w-[240px] border-r border-outline-variant bg-surface-container shrink-0">
+<nav class="flex-1 py-4 overflow-y-auto custom-scrollbar">
+<div class="px-4 mb-2">
+<span class="text-on-surface-variant font-label-caps uppercase text-[10px] tracking-widest">Main Modules</span>
+</div>
+<ul class="space-y-1">
+<li><a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant font-medium hover:bg-surface-variant/20 transition-colors" href="#"><span class="material-symbols-outlined">dashboard</span>Dashboard</a></li>
+<li><a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant font-medium hover:bg-surface-variant/20 transition-colors" href="#"><span class="material-symbols-outlined">local_shipping</span>Vehicle Registry</a></li>
+<li><a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant font-medium hover:bg-surface-variant/20 transition-colors" href="#"><span class="material-symbols-outlined">person_pin</span>Driver Management</a></li>
+<li><a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant font-medium hover:bg-surface-variant/20 transition-colors" href="#"><span class="material-symbols-outlined">route</span>Trip Management</a></li>
+<li><a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant font-medium hover:bg-surface-variant/20 transition-colors" href="#"><span class="material-symbols-outlined">build</span>Maintenance</a></li>
+<li><a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant font-medium hover:bg-surface-variant/20 transition-colors" href="#"><span class="material-symbols-outlined">local_gas_station</span>Fuel Logs</a></li>
+<li><a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant font-medium hover:bg-surface-variant/20 transition-colors" href="#"><span class="material-symbols-outlined">payments</span>Expenses</a></li>
+<li><a class="flex items-center gap-3 px-4 py-2.5 text-primary font-bold border-l-4 border-primary bg-primary-container/10 transition-colors" href="#"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bar_chart</span>Reports</a></li>
+<li><a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant font-medium hover:bg-surface-variant/20 transition-colors" href="#"><span class="material-symbols-outlined">settings</span>Settings</a></li>
+</ul>
+</nav>
+<div class="p-4 border-t border-outline-variant bg-surface-container-low">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary/10 rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">analytics</span>
+</div>
+<div>
+<p class="font-body-sm font-bold text-on-surface">v2.4.0-pro</p>
+<p class="text-[10px] text-on-surface-variant">Last sync: 2m ago</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto bg-surface p-lg custom-scrollbar">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-lg gap-md">
+<div>
+<nav class="flex items-center gap-2 text-body-sm text-on-surface-variant mb-2">
+<span>Operational Reporting</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-primary font-bold">Fleet Profitability</span>
+</nav>
+<h1 class="font-display-lg text-display-lg text-on-surface">Fleet Profitability Report</h1>
+<p class="text-body-md text-on-surface-variant mt-1">Real-time analysis of margins, operational efficiency, and predictive cost modeling.</p>
+</div>
+<div class="flex gap-sm">
+<div class="flex bg-surface-container rounded-lg p-1">
+<button class="px-4 py-1.5 text-body-sm font-bold bg-white shadow-sm rounded-md">Real-time</button>
+<button class="px-4 py-1.5 text-body-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors">Quarterly</button>
+</div>
+<button class="flex items-center gap-2 border border-outline px-4 py-1.5 rounded-lg text-body-sm font-medium hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+<span>Date Range</span>
+</button>
+<button class="flex items-center gap-2 border border-outline px-4 py-1.5 rounded-lg text-body-sm font-medium hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span>Export</span>
+</button>
+</div>
+</div>
+<!-- KPI Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md mb-lg">
+<div class="bg-white border border-outline-variant p-md rounded-lg shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<span class="text-label-caps text-on-surface-variant">AVERAGE PROFIT / KM</span>
+<span class="text-secondary font-bold text-[12px] flex items-center bg-secondary-container/20 px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> 4.2%
+                        </span>
+</div>
+<div class="font-display-lg text-display-lg">$1.42</div>
+<p class="text-[11px] text-on-surface-variant mt-2 font-medium">Target: $1.35</p>
+</div>
+<div class="bg-white border border-outline-variant p-md rounded-lg shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<span class="text-label-caps text-on-surface-variant">FLEET UTILIZATION</span>
+<span class="text-error font-bold text-[12px] flex items-center bg-error-container/20 px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-[14px]">trending_down</span> 1.8%
+                        </span>
+</div>
+<div class="font-display-lg text-display-lg">84.6%</div>
+<p class="text-[11px] text-on-surface-variant mt-2 font-medium">12 vehicles currently in shop</p>
+</div>
+<div class="bg-white border border-outline-variant p-md rounded-lg shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<span class="text-label-caps text-on-surface-variant">TOTAL OPEX</span>
+<span class="text-on-surface-variant font-bold text-[12px] flex items-center bg-surface-container px-2 py-0.5 rounded">
+                            STABLE
+                        </span>
+</div>
+<div class="font-display-lg text-display-lg font-data-tabular">$422.1K</div>
+<p class="text-[11px] text-on-surface-variant mt-2 font-medium">Period: Last 30 Days</p>
+</div>
+<div class="bg-primary text-on-primary p-md rounded-lg shadow-md flex flex-col justify-between">
+<div>
+<span class="text-label-caps text-on-primary-container opacity-80">ESTIMATED NEXT MONTH</span>
+<div class="font-display-lg text-display-lg mt-2 font-data-tabular">$458.8K</div>
+</div>
+<div class="flex items-center gap-2 mt-2">
+<div class="h-1 flex-1 bg-on-primary/20 rounded-full overflow-hidden">
+<div class="h-full bg-on-primary w-[75%]"></div>
+</div>
+<span class="text-[10px] font-bold">+8.2% Proj.</span>
+</div>
+</div>
+</div>
+<!-- Bento Grid - Detailed Reports -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Vehicle/Route Ranking Table -->
+<div class="col-span-12 lg:col-span-8 bg-white border border-outline-variant rounded-lg overflow-hidden shadow-sm flex flex-col">
+<div class="px-md py-4 border-b border-outline-variant flex justify-between items-center">
+<h3 class="font-title-sm text-title-sm text-on-surface">Top Performing Assets &amp; Routes</h3>
+<div class="flex gap-2">
+<select class="text-body-sm bg-surface border border-outline-variant rounded px-3 py-1 focus:ring-1 focus:ring-primary">
+<option>Sort by Margin</option>
+<option>Sort by Volume</option>
+</select>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-md py-3 text-label-caps text-on-surface-variant">VEHICLE ID / ROUTE</th>
+<th class="px-md py-3 text-label-caps text-on-surface-variant">TRIPS</th>
+<th class="px-md py-3 text-label-caps text-on-surface-variant">REVENUE</th>
+<th class="px-md py-3 text-label-caps text-on-surface-variant text-right">OPERATING COST</th>
+<th class="px-md py-3 text-label-caps text-on-surface-variant text-right">NET PROFIT</th>
+<th class="px-md py-3 text-label-caps text-on-surface-variant text-center">MARGIN</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface transition-colors">
+<td class="px-md py-4">
+<div class="flex flex-col">
+<span class="font-bold text-body-md text-primary">V-2024-X12</span>
+<span class="text-body-sm text-on-surface-variant">Chicago → Detroit Express</span>
+</div>
+</td>
+<td class="px-md py-4 font-data-tabular">142</td>
+<td class="px-md py-4 font-data-tabular">$28,450</td>
+<td class="px-md py-4 font-data-tabular text-right">$12,200</td>
+<td class="px-md py-4 font-data-tabular text-right text-secondary font-bold">+$16,250</td>
+<td class="px-md py-4 text-center">
+<div class="inline-flex items-center px-2 py-1 rounded bg-secondary-container/20 text-secondary text-[12px] font-bold">
+                                            57.1%
+                                        </div>
+</td>
+</tr>
+<tr class="hover:bg-surface transition-colors">
+<td class="px-md py-4">
+<div class="flex flex-col">
+<span class="font-bold text-body-md text-primary">V-2023-F99</span>
+<span class="text-body-sm text-on-surface-variant">Houston → Dallas Hub</span>
+</div>
+</td>
+<td class="px-md py-4 font-data-tabular">189</td>
+<td class="px-md py-4 font-data-tabular">$31,200</td>
+<td class="px-md py-4 font-data-tabular text-right">$15,800</td>
+<td class="px-md py-4 font-data-tabular text-right text-secondary font-bold">+$15,400</td>
+<td class="px-md py-4 text-center">
+<div class="inline-flex items-center px-2 py-1 rounded bg-secondary-container/20 text-secondary text-[12px] font-bold">
+                                            49.3%
+                                        </div>
+</td>
+</tr>
+<tr class="hover:bg-surface transition-colors">
+<td class="px-md py-4">
+<div class="flex flex-col">
+<span class="font-bold text-body-md text-primary">V-2024-Z45</span>
+<span class="text-body-sm text-on-surface-variant">Miami → Atlanta Local</span>
+</div>
+</td>
+<td class="px-md py-4 font-data-tabular">94</td>
+<td class="px-md py-4 font-data-tabular">$18,900</td>
+<td class="px-md py-4 font-data-tabular text-right">$11,450</td>
+<td class="px-md py-4 font-data-tabular text-right text-secondary font-bold">+$7,450</td>
+<td class="px-md py-4 text-center">
+<div class="inline-flex items-center px-2 py-1 rounded bg-on-tertiary-fixed-variant/10 text-on-tertiary-fixed-variant text-[12px] font-bold">
+                                            39.4%
+                                        </div>
+</td>
+</tr>
+<tr class="hover:bg-surface transition-colors">
+<td class="px-md py-4">
+<div class="flex flex-col">
+<span class="font-bold text-body-md text-primary">V-2021-B08</span>
+<span class="text-body-sm text-on-surface-variant">LA → San Diego Corridor</span>
+</div>
+</td>
+<td class="px-md py-4 font-data-tabular">210</td>
+<td class="px-md py-4 font-data-tabular">$42,500</td>
+<td class="px-md py-4 font-data-tabular text-right">$35,200</td>
+<td class="px-md py-4 font-data-tabular text-right text-on-surface-variant font-bold">+$7,300</td>
+<td class="px-md py-4 text-center">
+<div class="inline-flex items-center px-2 py-1 rounded bg-error-container/20 text-error text-[12px] font-bold">
+                                            17.1%
+                                        </div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-md bg-surface-container-low border-t border-outline-variant mt-auto">
+<button class="w-full text-center text-primary font-bold text-body-sm hover:underline">View Detailed Rankings (38 more)</button>
+</div>
+</div>
+<!-- Maintenance Cost Heatmap -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-gutter">
+<div class="bg-white border border-outline-variant rounded-lg p-md shadow-sm h-full flex flex-col">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-title-sm text-title-sm text-on-surface">Maintenance Heatmap</h3>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer">info</span>
+</div>
+<p class="text-body-sm text-on-surface-variant mb-4">Cost intensity by fleet age and model group.</p>
+<div class="flex-1 grid grid-cols-4 grid-rows-5 gap-1.5 mb-2">
+<!-- Heatmap Cells (Simulated) -->
+<div class="bg-secondary-fixed opacity-40 rounded-sm"></div>
+<div class="bg-secondary-fixed opacity-60 rounded-sm"></div>
+<div class="bg-secondary-fixed opacity-20 rounded-sm"></div>
+<div class="bg-secondary-fixed opacity-30 rounded-sm"></div>
+<div class="bg-secondary-fixed opacity-70 rounded-sm"></div>
+<div class="bg-tertiary-fixed-dim opacity-40 rounded-sm"></div>
+<div class="bg-tertiary-fixed-dim opacity-60 rounded-sm"></div>
+<div class="bg-secondary-fixed opacity-50 rounded-sm"></div>
+<div class="bg-tertiary-fixed-dim opacity-80 rounded-sm"></div>
+<div class="bg-error-container rounded-sm"></div>
+<div class="bg-error-container opacity-60 rounded-sm"></div>
+<div class="bg-tertiary-fixed-dim opacity-70 rounded-sm"></div>
+<div class="bg-error-container opacity-90 rounded-sm"></div>
+<div class="bg-error rounded-sm"></div>
+<div class="bg-error opacity-80 rounded-sm"></div>
+<div class="bg-error-container opacity-70 rounded-sm"></div>
+<div class="bg-error-container opacity-50 rounded-sm"></div>
+<div class="bg-error opacity-60 rounded-sm"></div>
+<div class="bg-error-container rounded-sm"></div>
+<div class="bg-tertiary-fixed-dim opacity-40 rounded-sm"></div>
+</div>
+<div class="flex justify-between text-[10px] font-bold text-on-surface-variant uppercase mt-2">
+<span>New Fleet</span>
+<span>Aged Fleet</span>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-variant space-y-3">
+<div class="flex justify-between items-center text-body-sm">
+<span class="flex items-center gap-2"><div class="w-3 h-3 bg-error rounded-full"></div>Critical Focus</span>
+<span class="font-bold">Kenworth T680 (2018)</span>
+</div>
+<div class="flex justify-between items-center text-body-sm">
+<span class="flex items-center gap-2"><div class="w-3 h-3 bg-secondary rounded-full"></div>Optimal Cost</span>
+<span class="font-bold">Tesla Semi (Gen 1)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Projection Tool (Simulated Interactive) -->
+<div class="col-span-12 bg-white border border-outline-variant rounded-lg p-lg shadow-sm">
+<div class="flex flex-col lg:flex-row gap-lg">
+<div class="lg:w-1/3">
+<h3 class="font-title-sm text-title-sm text-on-surface mb-2">Cost Projection Tool</h3>
+<p class="text-body-sm text-on-surface-variant mb-6">Adjust parameters to simulate future operational expenses based on historical maintenance cycles and fuel volatility.</p>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between mb-2">
+<label class="text-body-sm font-bold text-on-surface">Fuel Price Sensitivity</label>
+<span class="text-body-sm font-data-tabular text-primary font-bold">+$0.40/gal</span>
+</div>
+<input class="w-full h-1.5 bg-surface-container rounded-lg appearance-none cursor-pointer accent-primary" type="range"/>
+</div>
+<div>
+<div class="flex justify-between mb-2">
+<label class="text-body-sm font-bold text-on-surface">Maintenance Labor Inflation</label>
+<span class="text-body-sm font-data-tabular text-primary font-bold">+5%</span>
+</div>
+<input class="w-full h-1.5 bg-surface-container rounded-lg appearance-none cursor-pointer accent-primary" type="range"/>
+</div>
+<div>
+<div class="flex justify-between mb-2">
+<label class="text-body-sm font-bold text-on-surface">Fleet Growth Projection</label>
+<span class="text-body-sm font-data-tabular text-primary font-bold">+12 Vehicles</span>
+</div>
+<input class="w-full h-1.5 bg-surface-container rounded-lg appearance-none cursor-pointer accent-primary" type="range"/>
+</div>
+</div>
+<div class="mt-8 p-4 bg-primary-container/10 rounded-lg border border-primary/20">
+<div class="text-label-caps text-primary mb-1">PROJECTED OPEX (Q4)</div>
+<div class="text-headline-md font-extrabold text-primary">$1.84M</div>
+<div class="text-[11px] text-on-surface-variant mt-2">Simulation accounts for seasonal route variation and fleet aging factors.</div>
+</div>
+</div>
+<div class="lg:w-2/3 h-64 md:h-80 relative bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden">
+<!-- Visual Graph Placeholder -->
+<div class="absolute inset-0 flex items-end px-md pb-8 gap-1">
+<!-- Bars simulated with height -->
+<div class="flex-1 bg-surface-container-high h-[40%] rounded-t-sm"></div>
+<div class="flex-1 bg-surface-container-high h-[45%] rounded-t-sm"></div>
+<div class="flex-1 bg-surface-container-high h-[50%] rounded-t-sm"></div>
+<div class="flex-1 bg-surface-container-high h-[48%] rounded-t-sm"></div>
+<div class="flex-1 bg-surface-container-high h-[55%] rounded-t-sm"></div>
+<div class="flex-1 bg-surface-container-high h-[52%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/40 h-[65%] rounded-t-sm border-t-2 border-primary"></div>
+<div class="flex-1 bg-primary/50 h-[72%] rounded-t-sm border-t-2 border-primary"></div>
+<div class="flex-1 bg-primary/60 h-[78%] rounded-t-sm border-t-2 border-primary"></div>
+<div class="flex-1 bg-primary/70 h-[82%] rounded-t-sm border-t-2 border-primary"></div>
+<div class="flex-1 bg-primary/80 h-[88%] rounded-t-sm border-t-2 border-primary"></div>
+<div class="flex-1 bg-primary h-[95%] rounded-t-sm border-t-2 border-primary"></div>
+</div>
+<div class="absolute inset-0 p-4 pointer-events-none">
+<div class="flex justify-between text-[10px] text-on-surface-variant uppercase font-bold">
+<span>Jan - Jun (Historical)</span>
+<span>Jul - Dec (Projected)</span>
+</div>
+</div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-10 pointer-events-none">
+<span class="material-symbols-outlined text-[120px]">show_chart</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Strategic Recommendations Card -->
+<div class="col-span-12 lg:col-span-12 bg-surface-container-low border border-outline-variant rounded-lg p-md shadow-sm">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-8 h-8 bg-tertiary-container rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[18px]">lightbulb</span>
+</div>
+<h3 class="font-title-sm text-title-sm text-on-surface">TransitOps Intelligence: Recommended Actions</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<div class="bg-white p-4 rounded border border-outline-variant">
+<p class="font-bold text-body-md mb-1">Route Optimization</p>
+<p class="text-body-sm text-on-surface-variant">The Houston-Dallas route has seen a 12% fuel increase. Recommend shifting 4 vehicles to the night corridor.</p>
+<a class="text-[12px] font-bold text-primary mt-2 block hover:underline" href="#">Apply Optimization →</a>
+</div>
+<div class="bg-white p-4 rounded border border-outline-variant">
+<p class="font-bold text-body-md mb-1">Predictive Maintenance</p>
+<p class="text-body-sm text-on-surface-variant">Fleet group "V-2021" is approaching the high-cost maintenance threshold. Schedule overhaul for 5 units now to save $12k.</p>
+<a class="text-[12px] font-bold text-primary mt-2 block hover:underline" href="#">View Schedule →</a>
+</div>
+<div class="bg-white p-4 rounded border border-outline-variant">
+<p class="font-bold text-body-md mb-1">Asset Decommissioning</p>
+<p class="text-body-sm text-on-surface-variant">2 units (V-2017-H02, V-2017-H05) are currently operating at a net loss. Evaluate for auction or replacement.</p>
+<a class="text-[12px] font-bold text-primary mt-2 block hover:underline" href="#">Compare Replacement Models →</a>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Floating Tooltip for Data points (Hidden by default) -->
+<div class="fixed pointer-events-none opacity-0 bg-inverse-surface text-inverse-on-surface px-3 py-1.5 rounded-md text-[12px] shadow-lg transition-opacity duration-200 z-[100]" id="data-tooltip">
+        Value: $12,450.00
+    </div>
+<script>
+        // Micro-interactions for heatmap cells
+        document.querySelectorAll('.grid > div[class*="opacity-"]').forEach(cell => {
+            cell.addEventListener('mouseenter', (e) => {
+                const tooltip = document.getElementById('data-tooltip');
+                tooltip.style.opacity = '1';
+                tooltip.innerText = `Operational Cost Index: ${Math.floor(Math.random() * 100)}`;
+            });
+            cell.addEventListener('mousemove', (e) => {
+                const tooltip = document.getElementById('data-tooltip');
+                tooltip.style.left = (e.clientX + 10) + 'px';
+                tooltip.style.top = (e.clientY + 10) + 'px';
+            });
+            cell.addEventListener('mouseleave', () => {
+                const tooltip = document.getElementById('data-tooltip');
+                tooltip.style.opacity = '0';
+            });
+        });
+
+        // Simple Range Slider Value Update simulation
+        document.querySelectorAll('input[type="range"]').forEach(slider => {
+            slider.addEventListener('input', (e) => {
+                const target = e.target.previousElementSibling.querySelector('span');
+                const val = e.target.value;
+                if(target.innerText.includes('$')) {
+                    target.innerText = `+$${(val * 0.01).toFixed(2)}/gal`;
+                } else if(target.innerText.includes('%')) {
+                    target.innerText = `+${Math.floor(val/2)}%`;
+                } else {
+                    target.innerText = `+${Math.floor(val/5)} Vehicles`;
+                }
+            });
+        });
+    </script>
+</body></html>

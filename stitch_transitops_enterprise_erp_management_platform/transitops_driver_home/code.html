@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TransitOps Driver - Active Trip</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#ffcfb7",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed": "#001847",
+                        "tertiary-fixed": "#ffdbca",
+                        "surface-variant": "#e1e3e4",
+                        "on-secondary-fixed": "#002204",
+                        "surface": "#f8f9fa",
+                        "on-surface": "#191c1d",
+                        "on-tertiary-fixed-variant": "#773300",
+                        "on-secondary-fixed-variant": "#005312",
+                        "outline-variant": "#c3c6d6",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed-dim": "#ffb68e",
+                        "primary": "#0040a1",
+                        "surface-bright": "#f8f9fa",
+                        "surface-container": "#edeeef",
+                        "on-tertiary-fixed": "#331200",
+                        "on-secondary-container": "#217128",
+                        "inverse-on-surface": "#f0f1f2",
+                        "surface-dim": "#d9dadb",
+                        "error-container": "#ffdad6",
+                        "inverse-surface": "#2e3132",
+                        "on-primary-fixed-variant": "#0040a1",
+                        "secondary-container": "#a0f399",
+                        "outline": "#737785",
+                        "secondary": "#1b6d24",
+                        "surface-tint": "#0056d2",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-surface-variant": "#424654",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary": "#773300",
+                        "surface-container-low": "#f3f4f5",
+                        "on-error": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#a3f69c",
+                        "inverse-primary": "#b2c5ff",
+                        "surface-container-high": "#e7e8e9",
+                        "on-background": "#191c1d",
+                        "primary-container": "#0056d2",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#ccd8ff",
+                        "on-secondary": "#ffffff",
+                        "tertiary-container": "#9c4500",
+                        "secondary-fixed-dim": "#88d982",
+                        "background": "#f8f9fa",
+                        "primary-fixed": "#dae2ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "gutter": "16px",
+                        "xs": "4px",
+                        "sidebar_width": "240px",
+                        "base": "8px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "title-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "data-tabular": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "data-tabular": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .scroll-hide::-webkit-scrollbar { display: none; }
+        .scroll-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface flex flex-col min-h-screen">
+<!-- Top App Bar -->
+<header class="flex justify-between items-center h-16 px-lg w-full bg-surface shadow-sm border-b border-outline-variant sticky top-0 z-40">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary text-[28px]">local_shipping</span>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">TransitOps Central</h1>
+</div>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer">notifications</span>
+<div class="w-8 h-8 rounded-full bg-primary-fixed overflow-hidden border border-outline">
+<img class="w-full h-full object-cover" data-alt="A professional close-up portrait of a transport fleet dispatcher in a high-tech control center. The lighting is crisp and blue-toned, reflecting off modern monitors in the background. The dispatcher is wearing a headset and has a focused, efficient expression, perfectly capturing the authoritative and precise brand identity of TransitOps logistics enterprise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBapbwItraK67UvF-dqqxbffwTnRxJ2W6FNl5Nq5J1j_YHiSoaLu7AOHc9jntaxbPaL88onVhl9wHzP1UtSnVy2cbjEQCWHXVwkGAQFFicLSfZZQxUlfETp9Dh0CGJAgvKegNXCK65U56EtSGT7t53jKeFBtTJ3FrsPpBm2ZAJ_k_pfZxA_ah-9Uy88upomGINMDyBRrailFP6y9pnVPDnBFMGjj5Boo-Nj00Pc_6gOimKUZKegIf5d"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow p-gutter pb-32">
+<!-- Welcome & Status Banner -->
+<section class="mb-lg">
+<div class="flex justify-between items-end mb-sm">
+<div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Welcome back, Marcus</p>
+<h2 class="font-title-sm text-title-sm">Current Assignment</h2>
+</div>
+<span class="bg-secondary/10 text-secondary px-md py-1 rounded-full font-label-caps text-label-caps">ON TRIP</span>
+</div>
+</section>
+<!-- Active Trip Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<!-- Map & Route Overview (Large Card) -->
+<div class="md:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+<div class="relative h-64 w-full">
+<div class="absolute inset-0 bg-surface-dim" data-location="Chicago, IL" style="">
+<!-- Map Placeholder -->
+<img class="w-full h-full object-cover opacity-80" data-alt="A high-contrast professional GPS navigation map view of a city route. The map shows clean lines, simplified road structures, and a clear blue highlighted path from a starting point to a destination pin in a dense urban environment. The aesthetic is modern and data-driven, using the TransitOps primary blue and neutral grey palette for maximum readability." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcg4VUVMX1FaWh1P9ygrqixDIdiL2A9glLQV7sFpvLb0yVSreVZ9Usu6pyYFIQc773CCkG-2-RSs5FYN7X5nqy2gQl9G-DdcrMJFgj3WMSwL15URqPXT7Wwiebxe_9YS4T5tf3f1Nhj5RkD8yw_4TeCYoYEZ9ijxG-nIfBdmMtBm3Qa2EMhZ9-ACBrAkgf3SGiHo14_uDvlzOzyFeCbgEJtY1dtLyGsEasZSdkoG8p-4BMZAOxyesq"/>
+</div>
+<div class="absolute top-md left-md bg-surface/90 backdrop-blur-md p-md rounded-lg border border-outline-variant shadow-lg max-w-[200px]">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-xs">NEXT STOP</p>
+<p class="font-body-md text-body-md font-bold">Terminal 4 - Logistics Hub</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">12.4 miles • 18 mins</p>
+</div>
+</div>
+<div class="p-md flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Trip ID</span>
+<span class="font-data-tabular text-data-tabular font-bold">#TRP-90214-B</span>
+</div>
+<button class="bg-primary text-on-primary font-title-sm text-title-sm px-xl py-md rounded-lg shadow-lg active:scale-95 transition-transform flex items-center gap-sm">
+                        Complete Step <span class="material-symbols-outlined">check_circle</span>
+</button>
+</div>
+</div>
+<!-- Vehicle Status (Small Card) -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-sm mb-md">
+<span class="material-symbols-outlined text-primary">local_shipping</span>
+<h3 class="font-title-sm text-title-sm">Volvo FH16</h3>
+</div>
+<div class="space-y-md">
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Fuel Level</span>
+<span class="font-data-tabular text-data-tabular font-bold text-secondary">68%</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full" style="width: 68%"></div>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Tire Pressure</span>
+<span class="font-data-tabular text-data-tabular font-bold">Optimal</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Next Service</span>
+<span class="font-data-tabular text-data-tabular font-bold">1,240 mi</span>
+</div>
+</div>
+</div>
+<button class="mt-lg w-full border border-outline text-on-surface-variant font-label-caps text-label-caps py-sm rounded-md flex items-center justify-center gap-sm hover:bg-surface-variant/20 transition-colors">
+                    FULL STATUS <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Quick Actions Grid -->
+<section class="mt-xl">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-md uppercase">Operations</h3>
+<div class="grid grid-cols-3 gap-md">
+<button class="flex flex-col items-center justify-center bg-surface-container-lowest border border-outline-variant p-lg rounded-xl shadow-sm hover:border-primary transition-colors group">
+<div class="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center mb-sm group-hover:bg-primary-container/20">
+<span class="material-symbols-outlined text-primary">ev_station</span>
+</div>
+<span class="font-body-sm text-body-sm font-bold">Log Fuel</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-surface-container-lowest border border-outline-variant p-lg rounded-xl shadow-sm hover:border-error transition-colors group">
+<div class="w-12 h-12 rounded-full bg-error-container/20 flex items-center justify-center mb-sm group-hover:bg-error-container/40">
+<span class="material-symbols-outlined text-error">report_problem</span>
+</div>
+<span class="font-body-sm text-body-sm font-bold">Report Issue</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-surface-container-lowest border border-outline-variant p-lg rounded-xl shadow-sm hover:border-primary transition-colors group">
+<div class="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center mb-sm group-hover:bg-primary-container/20">
+<span class="material-symbols-outlined text-primary">description</span>
+</div>
+<span class="font-body-sm text-body-sm font-bold">Documents</span>
+</button>
+</div>
+</section>
+<!-- Recent Notifications / Log -->
+<section class="mt-xl">
+<div class="flex justify-between items-center mb-md">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase">Recent Activity</h3>
+<button class="text-primary font-label-caps text-label-caps">VIEW ALL</button>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+<div class="p-md border-b border-outline-variant flex gap-md items-start">
+<span class="material-symbols-outlined text-secondary mt-1">check_circle</span>
+<div>
+<p class="font-body-md text-body-md">Pickup Completed at ORD Warehouse</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">10:45 AM • 12 Items Loaded</p>
+</div>
+</div>
+<div class="p-md flex gap-md items-start">
+<span class="material-symbols-outlined text-primary mt-1">info</span>
+<div>
+<p class="font-body-md text-body-md">Route Update: Construction on I-90</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">09:12 AM • Rerouting recommended</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface shadow-lg border-t border-outline-variant">
+<div class="flex justify-around items-center px-md py-sm w-full">
+<!-- Work Orders (Active) -->
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 transition-transform scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">assignment</span>
+<span class="font-label-caps text-label-caps">Work Orders</span>
+</div>
+<!-- Parts -->
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 transition-transform active:scale-95">
+<span class="material-symbols-outlined">precision_manufacturing</span>
+<span class="font-label-caps text-label-caps">Parts</span>
+</div>
+<!-- Maintenance -->
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 transition-transform active:scale-95">
+<span class="material-symbols-outlined">build_circle</span>
+<span class="font-label-caps text-label-caps">Maintenance</span>
+</div>
+<!-- Profile -->
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 transition-transform active:scale-95">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-caps text-label-caps">Profile</span>
+</div>
+</div>
+</nav>
+<!-- Floating Atmosphere Micro-interaction Script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Subtle hover effects for cards
+            const cards = document.querySelectorAll('.rounded-xl');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-2px)';
+                    card.style.transition = 'transform 0.2s ease-out';
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Simulate loading state on action buttons
+            const primaryBtns = document.querySelectorAll('button.bg-primary');
+            primaryBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const originalContent = this.innerHTML;
+                    this.innerHTML = '<span class="material-symbols-outlined animate-spin">refresh</span> Processing...';
+                    this.disabled = true;
+                    setTimeout(() => {
+                        this.innerHTML = originalContent;
+                        this.disabled = false;
+                    }, 1500);
+                });
+            });
+        });
+    </script>
+</body></html>

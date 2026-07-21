@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TransitOps - Maintenance Module</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .fill-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+        /* Custom scrollbar for mobile cleanliness */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#f8f9fa",
+                        "on-primary-fixed": "#001847",
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#0056d2",
+                        "secondary-fixed": "#a3f69c",
+                        "outline-variant": "#c3c6d6",
+                        "inverse-primary": "#b2c5ff",
+                        "on-surface": "#191c1d",
+                        "tertiary": "#773300",
+                        "surface-bright": "#f8f9fa",
+                        "on-tertiary-fixed-variant": "#773300",
+                        "tertiary-container": "#9c4500",
+                        "on-secondary-fixed": "#002204",
+                        "primary": "#0040a1",
+                        "surface-container-highest": "#e1e3e4",
+                        "surface-variant": "#e1e3e4",
+                        "surface-container-low": "#f3f4f5",
+                        "secondary-container": "#a0f399",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#dae2ff",
+                        "surface-dim": "#d9dadb",
+                        "inverse-surface": "#2e3132",
+                        "surface": "#f8f9fa",
+                        "surface-container-high": "#e7e8e9",
+                        "surface-container": "#edeeef",
+                        "on-primary-fixed-variant": "#0040a1",
+                        "inverse-on-surface": "#f0f1f2",
+                        "on-primary": "#ffffff",
+                        "on-secondary-container": "#217128",
+                        "tertiary-fixed": "#ffdbca",
+                        "outline": "#737785",
+                        "on-background": "#191c1d",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#ccd8ff",
+                        "on-tertiary-fixed": "#331200",
+                        "on-surface-variant": "#424654",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "secondary": "#1b6d24",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#88d982",
+                        "on-secondary-fixed-variant": "#005312",
+                        "on-error": "#ffffff",
+                        "error": "#ba1a1a",
+                        "primary-container": "#0056d2",
+                        "tertiary-fixed-dim": "#ffb68e",
+                        "on-tertiary-container": "#ffcfb7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "32px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "sm": "8px",
+                        "sidebar_width": "240px",
+                        "base": "8px",
+                        "xs": "4px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "data-tabular": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "title-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "data-tabular": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary-fixed">
+<!-- Top Navigation Bar (Mobile View) -->
+<header class="flex justify-between items-center h-16 px-md w-full sticky top-0 z-50 bg-surface dark:bg-surface border-b border-outline-variant shadow-sm">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="menu">menu</span>
+<h1 class="font-headline-md text-headline-md font-extrabold text-primary dark:text-primary-fixed-dim">TransitOps</h1>
+</div>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden border border-outline">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a fleet operations manager in a high-tech logistics control room. Soft cinematic lighting highlights a focused expression, wearing a clean corporate uniform with a subtle company logo. The background shows blurred digital fleet tracking screens in cool blue and grey tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq5LZ5QqxEgq89TkoC19J8ob6fwx2iUMeTkEEOsQ1Xk900sk7CDFi2XzitcUOfMaONQ6Q98oNWVCM1Fz_soVeD0gLu9nZxlWFC0NovVBBWvjuWK_m46legrIsHD7Jh-UHxcpUHn5iVbYgt_ARWLXWS5HslIZETrwxkA-jOnESMwpqlyHupIYy2260k57aRfe9ohL2cVviS05pQBrndYeiVdHkDQV9oQ8kUm-O4Za_y09JtU630MrXV"/>
+</div>
+</div>
+</header>
+<main class="pb-24 pt-4 px-md space-y-md max-w-md mx-auto">
+<!-- Critical Alert Banner -->
+<div class="bg-error-container text-on-error-container p-sm rounded-lg flex items-center gap-sm shadow-sm animate-pulse">
+<span class="material-symbols-outlined text-[20px]" data-icon="warning">warning</span>
+<div class="flex-1">
+<p class="font-label-caps text-label-caps uppercase">Critical Shortage</p>
+<p class="font-body-sm text-body-sm font-bold">Brake Pads (Heavy Duty) - 2 units left</p>
+</div>
+<button class="text-on-error-container hover:bg-error/10 p-1 rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<!-- KPI Bento Section -->
+<section class="grid grid-cols-2 gap-sm">
+<div class="col-span-1 bg-surface-container-lowest border border-outline-variant p-md rounded-xl shadow-sm">
+<div class="flex flex-col">
+<span class="material-symbols-outlined text-primary mb-1" data-icon="pending_actions">pending_actions</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Pending</span>
+<span class="font-display-lg text-display-lg text-on-surface">14</span>
+</div>
+</div>
+<div class="col-span-1 bg-surface-container-lowest border border-outline-variant p-md rounded-xl shadow-sm">
+<div class="flex flex-col">
+<span class="material-symbols-outlined text-secondary mb-1" data-icon="sync">sync</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">In Progress</span>
+<span class="font-display-lg text-display-lg text-on-surface">06</span>
+</div>
+</div>
+<div class="col-span-2 bg-surface-container-lowest border border-outline-variant p-md rounded-xl shadow-sm flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm text-on-surface-variant uppercase font-bold tracking-wider">Total Downtime (MTD)</span>
+<span class="font-display-lg text-display-lg text-error">128.4 <span class="text-headline-md font-medium">Hrs</span></span>
+</div>
+<div class="w-16 h-16 opacity-20">
+<span class="material-symbols-outlined text-[64px]" data-icon="event_busy">event_busy</span>
+</div>
+</div>
+</section>
+<!-- Search & Filter Row -->
+<section class="flex gap-sm">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]" data-icon="search">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-lg font-body-sm focus:ring-2 focus:ring-primary" placeholder="Search vehicle ID..." type="text"/>
+</div>
+<button class="bg-surface-container-low p-2 rounded-lg border border-outline-variant hover:bg-surface-variant transition-all">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="filter_list">filter_list</span>
+</button>
+</section>
+<!-- Maintenance List -->
+<div class="space-y-md">
+<h2 class="font-title-sm text-title-sm text-on-surface-variant px-1">Active Maintenance Records</h2>
+<!-- Card 1: In Progress / High Priority -->
+<div class="bg-white border border-outline-variant rounded-xl p-md shadow-sm space-y-md active:scale-[0.98] transition-transform">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-data-tabular text-data-tabular font-bold text-primary">TRK-9902</span>
+<span class="bg-error/10 text-error px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-tighter">High Priority</span>
+</div>
+<h3 class="font-title-sm text-title-sm text-on-surface leading-tight">Engine Overheating &amp; Fluid Leak</h3>
+</div>
+<div class="bg-secondary/10 text-on-secondary-container px-2 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] animate-spin" data-icon="sync" style="animation-duration: 3s;">sync</span>
+<span class="text-[11px] font-bold">In Progress</span>
+</div>
+</div>
+<div class="flex items-center justify-between border-t border-outline-variant pt-md">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Close up portrait of a senior diesel mechanic with grease-stained hands and a focused, expert expression. He is wearing a dark grey work jumpsuit with reflective safety strips. The background shows an out-of-focus industrial garage with heavy-duty tools and vehicle parts." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDa-spxCfnalpz_Tg0WiQ0BngDahvx_dysswVWsMrqMbYQMw_wkePN4WGykmcAQs4K-2TUxLgFLgtPqTIHdp7NAjudzExFnazLpZSyy2BrWVPj8sS--tsfKFEa1FVui_nahbKhgUMAAdf3ZVKxQ6FVVWHSatnBh98ytQ1XdBDCexzavhnreDeNPd3aoBY-EbravEXKRbOdn9ZXjFJmFaXRB1rO73inkufxdF9qtLyVV6tlcvPJKzou1"/>
+</div>
+<div class="flex flex-col">
+<span class="text-[11px] text-on-surface-variant">Technician</span>
+<span class="font-body-sm text-body-sm font-semibold">Marcus Thorne</span>
+</div>
+</div>
+<button class="text-primary font-body-sm font-bold flex items-center">
+                        Details <span class="material-symbols-outlined text-[18px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Card 2: Pending / Medium Priority -->
+<div class="bg-white border border-outline-variant rounded-xl p-md shadow-sm space-y-md">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-data-tabular text-data-tabular font-bold text-primary">VAN-4021</span>
+<span class="bg-tertiary-container/20 text-tertiary-container px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-tighter">Medium Priority</span>
+</div>
+<h3 class="font-title-sm text-title-sm text-on-surface leading-tight">Scheduled Brake Inspection</h3>
+</div>
+<div class="bg-surface-container-highest text-on-surface-variant px-2 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="schedule">schedule</span>
+<span class="text-[11px] font-bold">Pending</span>
+</div>
+</div>
+<div class="flex items-center justify-between border-t border-outline-variant pt-md">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A younger maintenance technician with short hair and a neat beard, wearing a branded logistics polo shirt. The lighting is bright and clean, typical of a modern corporate maintenance facility. His expression is helpful and professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBy3Lh3B4q1YGae6c-RbEGoE5yAeQmzwX9ykOdcIbW0Z9531d0FPlNmirQlKsft_2QZcoXJ-7dierQIRMi0TJK4M-5UxTsbPOvCdXRBaRbSKWpoS8mfDBi6tWn2MqERQCf4hyPMkGtWbtVMuf5Ju60j7YIJp7vfmS70rLOSEzP4rM-2bflWXpjXeKkp6oWQd4Gk77RiBWQCXxhm43JObTuVw6ouWutJov2adapdwxP57IYqGYjKEabL"/>
+</div>
+<div class="flex flex-col">
+<span class="text-[11px] text-on-surface-variant">Technician</span>
+<span class="font-body-sm text-body-sm font-semibold">Sarah Jenkins</span>
+</div>
+</div>
+<button class="text-primary font-body-sm font-bold flex items-center">
+                        Assign <span class="material-symbols-outlined text-[18px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Card 3: Completed / Low Priority -->
+<div class="bg-white/60 border border-outline-variant rounded-xl p-md shadow-sm space-y-md opacity-80">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-data-tabular text-data-tabular font-bold text-on-surface-variant">TRK-1122</span>
+<span class="bg-secondary-fixed/30 text-on-secondary-fixed-variant px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-tighter">Low Priority</span>
+</div>
+<h3 class="font-title-sm text-title-sm text-on-surface-variant leading-tight line-through">Taillight Replacement</h3>
+</div>
+<div class="bg-secondary-container/30 text-on-secondary-container px-2 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] fill-icon" data-icon="check_circle">check_circle</span>
+<span class="text-[11px] font-bold">Completed</span>
+</div>
+</div>
+<div class="flex items-center justify-between border-t border-outline-variant pt-md">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden grayscale">
+<img class="w-full h-full object-cover" data-alt="A mechanic in the distance working in a very clean, high-tech automotive service bay. The image has a cool blue tint and suggests a completed, orderly task. Modern equipment and pristine floors are visible." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_2E0CHIlKkeJK4e4N94ypJN924oUHXp7-3gvHNm_kSkjn55jb_S9-aXeeACgBIhdN7mel2pRSZ8bzKk9XYCg-QEiyNOXXLPdtby514F08kbrc7De8wc78Shks4WlgImpxmS52P2HhiHgfMadjBrre6WYVTSK5pukL-5rjfNrDwyWFdw1IKFZWG8pq7h1fv3VAgxzZjV1bpwqoKfF9lwOIXs8odhEBh34resSfTeUUaL65uVA8cN7I"/>
+</div>
+<div class="flex flex-col">
+<span class="text-[11px] text-on-surface-variant">Technician</span>
+<span class="font-body-sm text-body-sm font-semibold">Auto-Assigned</span>
+</div>
+</div>
+<button class="text-on-surface-variant font-body-sm font-bold flex items-center">
+                        View Log <span class="material-symbols-outlined text-[18px]" data-icon="history">history</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed bottom-24 right-md w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center active:scale-90 transition-transform z-40">
+<span class="material-symbols-outlined text-[28px]" data-icon="add">add</span>
+</button>
+<!-- Bottom Navigation Bar (Mobile Anchor) -->
+<nav class="fixed bottom-0 left-0 right-0 h-16 bg-surface border-t border-outline-variant flex justify-around items-center px-4 z-50">
+<div class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-[10px] font-medium">Dashboard</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="local_shipping">local_shipping</span>
+<span class="text-[10px] font-medium">Vehicles</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-primary font-bold">
+<div class="bg-primary-container/20 px-4 py-1 rounded-full flex flex-col items-center">
+<span class="material-symbols-outlined fill-icon" data-icon="build">build</span>
+<span class="text-[10px]">Maintenance</span>
+</div>
+</div>
+<div class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="text-[10px] font-medium">Expenses</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</div>
+</nav>
+<script>
+        // Simple Micro-interactions
+        document.querySelectorAll('button, .active\\:scale-\\[0\\.98\\]').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.classList.add('scale-95');
+            });
+            el.addEventListener('mouseup', () => {
+                el.classList.remove('scale-95');
+            });
+            el.addEventListener('mouseleave', () => {
+                el.classList.remove('scale-95');
+            });
+        });
+
+        // Search highlight simulation
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            document.querySelectorAll('.space-y-md > div.bg-white').forEach(card => {
+                const text = card.innerText.toLowerCase();
+                if (text.includes(val)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body></html>

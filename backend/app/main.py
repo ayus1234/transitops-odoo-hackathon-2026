@@ -11,7 +11,12 @@ from app.core.config import settings
 from app.core.database import engine, Base
 from app.api.v1 import api_router
 from app.utils.exceptions import TransitOpsException
+from app.core.demo_engine import start_demo_engine
+import asyncio
 
+
+from fastapi.staticfiles import StaticFiles
+import os
 
 # Create FastAPI application
 app = FastAPI(
@@ -22,6 +27,10 @@ app = FastAPI(
     redoc_url="/redoc",
     openapi_url="/openapi.json"
 )
+
+# Ensure uploads directory exists and mount it
+os.makedirs("uploads", exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 
 # Configure CORS
@@ -65,7 +74,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
             "error": {
                 "code": "VAL_001",
                 "message": "Validation error",
-                "details": exc.errors()
+                "details": str(exc.errors())
             }
         }
     )
@@ -80,7 +89,7 @@ async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
             "success": False,
             "error": {
                 "code": "SYS_001",
-                "message": "Database error occurred",
+                "message": f"Database error occurred: {str(exc)}",
                 "details": {}
             }
         }
@@ -144,8 +153,11 @@ async def startup_event():
     
     # Create tables (only for development, use Alembic for production)
     if settings.ENVIRONMENT == "development":
-        Base.metadata.create_all(bind=engine)
+        # Base.metadata.create_all(bind=engine)
         print("Database tables created")
+        
+    # Start Live Simulation Engine
+    asyncio.create_task(start_demo_engine())
 
 
 # Shutdown event

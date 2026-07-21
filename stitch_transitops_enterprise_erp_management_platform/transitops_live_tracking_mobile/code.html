@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TransitOps - Real-Time Fleet Map</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-secondary": "#ffffff",
+                "on-primary-fixed": "#001847",
+                "surface-variant": "#e1e3e4",
+                "on-primary-fixed-variant": "#0040a1",
+                "on-tertiary-fixed": "#331200",
+                "on-background": "#191c1d",
+                "surface-container-lowest": "#ffffff",
+                "primary-container": "#0056d2",
+                "background": "#f8f9fa",
+                "primary-fixed-dim": "#b2c5ff",
+                "on-secondary-container": "#217128",
+                "surface-bright": "#f8f9fa",
+                "on-error-container": "#93000a",
+                "tertiary-container": "#9c4500",
+                "surface-container-high": "#e7e8e9",
+                "surface-container": "#edeeef",
+                "outline-variant": "#c3c6d6",
+                "surface": "#f8f9fa",
+                "tertiary": "#773300",
+                "tertiary-fixed-dim": "#ffb68e",
+                "inverse-surface": "#2e3132",
+                "surface-container-low": "#f3f4f5",
+                "secondary": "#1b6d24",
+                "on-surface": "#191c1d",
+                "on-tertiary-fixed-variant": "#773300",
+                "inverse-on-surface": "#f0f1f2",
+                "outline": "#737785",
+                "tertiary-fixed": "#ffdbca",
+                "on-surface-variant": "#424654",
+                "primary": "#0040a1",
+                "on-primary-container": "#ccd8ff",
+                "inverse-primary": "#b2c5ff",
+                "on-primary": "#ffffff",
+                "error-container": "#ffdad6",
+                "error": "#ba1a1a",
+                "on-tertiary-container": "#ffcfb7",
+                "on-error": "#ffffff",
+                "surface-dim": "#d9dadb",
+                "on-tertiary": "#ffffff",
+                "primary-fixed": "#dae2ff",
+                "on-secondary-fixed": "#002204",
+                "surface-container-highest": "#e1e3e4",
+                "secondary-container": "#a0f399",
+                "surface-tint": "#0056d2",
+                "secondary-fixed-dim": "#88d982",
+                "on-secondary-fixed-variant": "#005312",
+                "secondary-fixed": "#a3f69c"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "lg": "24px",
+                "xl": "32px",
+                "gutter": "16px",
+                "xs": "4px",
+                "sidebar_width": "240px",
+                "base": "8px",
+                "sm": "8px",
+                "md": "16px"
+            },
+            "fontFamily": {
+                "body-sm": ["Inter"],
+                "title-sm": ["Inter"],
+                "data-tabular": ["Inter"],
+                "label-caps": ["Inter"],
+                "display-lg": ["Inter"],
+                "body-md": ["Inter"],
+                "headline-md": ["Inter"]
+            },
+            "fontSize": {
+                "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                "data-tabular": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            user-select: none;
+        }
+        .map-container {
+            height: calc(100vh - 120px);
+        }
+        .backdrop-blur-md {
+            backdrop-filter: blur(12px);
+        }
+        /* Custom scrollbar for enterprise look */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c3c6d6; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md overflow-hidden">
+<!-- Main Navigation Content Placeholder for Logic -->
+<!-- This screen is "Task-Focused" (Real-time tracking), so we hide global shells to prioritize the Map Canvas -->
+<main class="relative w-full h-screen overflow-hidden flex flex-col">
+<!-- Full-Screen Map Canvas -->
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-surface-variant flex items-center justify-center relative overflow-hidden" data-alt="A high-resolution, professional light-themed enterprise GIS map of a modern metropolitan area with clean white and light gray road networks. The map shows subtle terrain elevation, blue-tinted water bodies, and minimal landmark icons. Several small vehicle markers in blue and orange are scattered across the grid, representing a live logistics fleet movement in a corporate ERP interface style. The lighting is neutral and even, emphasizing clarity and operational efficiency." data-location="Chicago" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuATK1xilQfguR2R4PMUrbTBlKz15vh_SpPy1640BjdV5YgX-HBTk8tjseNAgFzNtZc2aXJW8lkOUrhQ-xGzssNV_9f7JrrIundpo2lsF75js0uxFezaZfYsNe3D2ZG-PD4D4DhXGBcErH4U_-CNHflDtIE3B0iFJICtcvpfF-nmjI6WV_V2-FShYWEIyVZh5L9PHUjkWUSSw7Rkgp04lXyra3x4UHimkgo1hEfN71AlbcrQzoBTQZ6-')">
+<!-- Vehicle Pins (Simulated Interactive Icons) -->
+<div class="absolute top-[30%] left-[45%] group cursor-pointer">
+<div class="flex flex-col items-center">
+<div class="bg-primary p-xs rounded-full shadow-lg border-2 border-white animate-bounce">
+<span class="material-symbols-outlined text-white text-[18px]" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+</div>
+<div class="bg-white/90 px-xs py-[2px] rounded-sm mt-xs shadow-sm border border-outline-variant">
+<span class="font-label-caps text-label-caps text-primary">TRK-9021</span>
+</div>
+</div>
+</div>
+<div class="absolute top-[55%] left-[20%] group cursor-pointer opacity-80">
+<div class="flex flex-col items-center">
+<div class="bg-secondary p-xs rounded-full shadow-md border-2 border-white">
+<span class="material-symbols-outlined text-white text-[18px]" style="font-variation-settings: 'FILL' 1;">fire_truck</span>
+</div>
+<div class="bg-white/90 px-xs py-[2px] rounded-sm mt-xs shadow-sm border border-outline-variant">
+<span class="font-label-caps text-label-caps text-secondary">VAN-1104</span>
+</div>
+</div>
+</div>
+<div class="absolute top-[40%] right-[30%] group cursor-pointer opacity-80">
+<div class="flex flex-col items-center">
+<div class="bg-tertiary p-xs rounded-full shadow-md border-2 border-white">
+<span class="material-symbols-outlined text-white text-[18px]" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+</div>
+<div class="bg-white/90 px-xs py-[2px] rounded-sm mt-xs shadow-sm border border-outline-variant">
+<span class="font-label-caps text-label-caps text-tertiary">TRK-4492</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Top Floating Interface -->
+<div class="relative z-10 p-md flex flex-col gap-md">
+<!-- Search Bar -->
+<div class="flex items-center gap-sm bg-white/90 backdrop-blur-md h-[48px] px-md rounded-lg shadow-sm border border-outline-variant w-full max-w-md mx-auto">
+<span class="material-symbols-outlined text-on-surface-variant">search</span>
+<input class="bg-transparent border-none focus:ring-0 w-full font-body-md text-on-surface placeholder:text-outline" placeholder="Search Vehicle ID or Trip ID..." type="text"/>
+<div class="h-6 w-[1px] bg-outline-variant mx-xs"></div>
+<button class="p-xs hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined text-primary">tune</span>
+</button>
+</div>
+<!-- Fleet Quick Stats -->
+<div class="flex gap-sm overflow-x-auto pb-xs scroll-smooth no-scrollbar">
+<div class="flex-shrink-0 bg-white/90 backdrop-blur-md px-md py-sm rounded-lg border border-outline-variant shadow-sm flex items-center gap-sm">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">12 ACTIVE</span>
+</div>
+<div class="flex-shrink-0 bg-white/90 backdrop-blur-md px-md py-sm rounded-lg border border-outline-variant shadow-sm flex items-center gap-sm">
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">3 DELAYED</span>
+</div>
+<div class="flex-shrink-0 bg-white/90 backdrop-blur-md px-md py-sm rounded-lg border border-outline-variant shadow-sm flex items-center gap-sm">
+<div class="w-2 h-2 rounded-full bg-outline"></div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">5 IDLE</span>
+</div>
+</div>
+</div>
+<!-- Spacer for Map Center -->
+<div class="flex-grow"></div>
+<!-- Floating Action Buttons (Map Controls) -->
+<div class="relative z-10 flex flex-col items-end px-md pb-md gap-sm">
+<button class="w-12 h-12 bg-white rounded-lg shadow-md border border-outline-variant flex items-center justify-center text-primary active:scale-95 transition-transform">
+<span class="material-symbols-outlined">my_location</span>
+</button>
+<div class="flex flex-col bg-white rounded-lg shadow-md border border-outline-variant overflow-hidden">
+<button class="w-12 h-12 flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors border-b border-outline-variant">
+<span class="material-symbols-outlined">add</span>
+</button>
+<button class="w-12 h-12 flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">remove</span>
+</button>
+</div>
+</div>
+<!-- Trip Detail Card (Bottom Sheet Style) -->
+<div class="relative z-20 w-full bg-white rounded-t-xl shadow-[0_-8px_24px_rgba(0,0,0,0.1)] border-t border-outline-variant transform transition-transform duration-300">
+<!-- Pull Handle -->
+<div class="flex justify-center py-sm">
+<div class="w-12 h-1 bg-surface-container-highest rounded-full"></div>
+</div>
+<!-- Card Content -->
+<div class="px-lg pb-xl">
+<!-- Header Info -->
+<div class="flex justify-between items-start mb-md">
+<div>
+<div class="flex items-center gap-sm mb-xs">
+<h2 class="font-headline-md text-headline-md text-primary font-bold">TRK-9021</h2>
+<span class="px-sm py-[2px] bg-secondary/10 text-secondary text-label-caps font-label-caps rounded-full border border-secondary/20">On Trip</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Current Route: <span class="font-semibold text-on-surface">CHI-LOG-42</span></p>
+</div>
+<button class="bg-primary-container text-on-primary-container font-title-sm text-title-sm px-md py-sm rounded-lg hover:brightness-110 active:scale-[0.98] transition-all">
+                        Assign Issue
+                    </button>
+</div>
+<!-- Bento Grid Layout for Details -->
+<div class="grid grid-cols-2 gap-md">
+<!-- Driver Info -->
+<div class="col-span-2 md:col-span-1 bg-surface-container-low p-md rounded-lg flex items-center gap-md border border-outline-variant/30">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a middle-aged male logistics driver named Marcus Thompson. He is wearing a clean navy blue polo shirt with a subtle company logo. He has a friendly, reliable expression and is set against a blurred background of a modern industrial warehouse with bright, high-key lighting, maintaining a clean corporate ERP aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDU4o7OLvBpmTlulfDSvqD0soOs0xBWbo-0GQeD-5_zLehB91ePHUFko19U3--CAdLVldt_n1olm-5FP-lxEeIEOeRqM-hFaoA3q_tnhqslDF5x_yqnhbT8BdaBjwD24Qm68B82JUoRiZZYFCRz-R94hzig8u4s6N7aE6RbZ_YnvvKB3XLy5r4rrGq5QsLSuRhgtz6VcQCA1RbXXTIkiVuwpDsnH7kYiCKZjmgsvcmZ7HbTK6PMf32T"/>
+</div>
+<div>
+<p class="font-label-caps text-label-caps text-outline uppercase">Driver</p>
+<p class="font-title-sm text-title-sm text-on-surface">Marcus Thompson</p>
+</div>
+<button class="ml-auto w-10 h-10 bg-secondary/10 text-secondary rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">call</span>
+</button>
+</div>
+<!-- ETA Block -->
+<div class="bg-primary/5 p-md rounded-lg border border-primary/20">
+<p class="font-label-caps text-label-caps text-primary uppercase">Estimated Arrival</p>
+<div class="flex items-baseline gap-xs">
+<span class="font-display-lg text-display-lg text-primary">14:30</span>
+<span class="font-title-sm text-title-sm text-primary/70">PM</span>
+</div>
+<p class="font-body-sm text-body-sm text-primary/80 mt-xs">22 mins remaining</p>
+</div>
+<!-- Cargo Info -->
+<div class="bg-surface-container-low p-md rounded-lg border border-outline-variant/30">
+<p class="font-label-caps text-label-caps text-outline uppercase">Payload Status</p>
+<div class="mt-xs">
+<div class="flex justify-between items-center mb-xs">
+<span class="font-data-tabular text-data-tabular text-on-surface">84% Capacity</span>
+<span class="material-symbols-outlined text-secondary text-[16px]">verified</span>
+</div>
+<div class="w-full bg-surface-variant h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full w-[84%]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Timeline / Next Stops Preview (Desktop Only / Expandable) -->
+<div class="mt-lg pt-lg border-t border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-lg overflow-x-auto no-scrollbar">
+<div class="flex items-center gap-sm">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-outline">ORIGIN</span>
+<span class="font-body-md text-body-md whitespace-nowrap">Dist. Center A</span>
+</div>
+</div>
+<div class="h-[1px] w-8 bg-outline-variant"></div>
+<div class="flex items-center gap-sm">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-primary">CURRENT</span>
+<span class="font-body-md text-body-md whitespace-nowrap">I-90 Eastbound</span>
+</div>
+</div>
+<div class="h-[1px] w-8 bg-outline-variant"></div>
+<div class="flex items-center gap-sm opacity-50">
+<div class="w-2 h-2 rounded-full border border-outline"></div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-outline">DESTINATION</span>
+<span class="font-body-md text-body-md whitespace-nowrap">Retail Hub 04</span>
+</div>
+</div>
+</div>
+<button class="p-sm text-on-surface-variant hover:bg-surface-container rounded-lg">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation (Shared Component Integration) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-white h-[64px] border-t border-outline-variant flex justify-around items-center px-md z-30">
+<div class="flex flex-col items-center gap-xs text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-caps text-label-caps">Home</span>
+</div>
+<div class="flex flex-col items-center gap-xs text-primary font-bold transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">route</span>
+<span class="font-label-caps text-label-caps">Tracking</span>
+</div>
+<div class="flex flex-col items-center gap-xs text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined">local_shipping</span>
+<span class="font-label-caps text-label-caps">Fleet</span>
+</div>
+<div class="flex flex-col items-center gap-xs text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-caps text-label-caps">Logs</span>
+</div>
+<div class="flex flex-col items-center gap-xs text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-caps text-label-caps">More</span>
+</div>
+</nav>
+<script>
+        // Micro-interaction for the search bar
+        const searchInput = document.querySelector('input');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('ring-2', 'ring-primary/20', 'border-primary');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('ring-2', 'ring-primary/20', 'border-primary');
+        });
+
+        // Simple mock for "center-on-user"
+        const centerBtn = document.querySelector('button .material-symbols-outlined:contains("my_location")')?.parentElement;
+        if (centerBtn) {
+            centerBtn.addEventListener('click', () => {
+                alert('Centering map on fleet control center...');
+            });
+        }
+    </script>
+</body></html>

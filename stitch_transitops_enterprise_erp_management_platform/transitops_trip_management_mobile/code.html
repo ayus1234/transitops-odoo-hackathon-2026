@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TransitOps - Trip Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        /* Custom scrollbar for KPI horizontal scroll */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .trip-card-active { transform: scale(0.98); transition: transform 0.1s ease; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen pb-20">
+<!-- Top Navigation Bar -->
+<header class="flex justify-between items-center h-16 px-md w-full sticky top-0 z-50 bg-surface dark:bg-surface border-b border-outline-variant shadow-sm">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-headline-md" data-icon="route">route</span>
+<h1 class="font-headline-md text-headline-md font-extrabold text-primary dark:text-primary-fixed-dim">TransitOps</h1>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer transition-all duration-200" data-icon="notifications">notifications</span>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a logistics fleet manager in a modern corporate setting. The lighting is soft and natural, emphasizing a bright light-mode aesthetic. The individual has a confident, efficient expression, consistent with a high-stakes enterprise environment. The background is a blurred office with clean white and blue tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBp_nWJTkKP-smUtMTBRhbQmAOzd-6SNQrL4VNUC39fQgoa52kZ5akIS4IDIQ85uVwIJmv9N3I3cDDD3WpyHig1gQG3tGBPEb9cxEUp0DzJErIT6TlEuFuntA0BZ_0ioNvU4wpBmPOCmPhHvPJ0rP1mXrFyyYx9FlUML6TtzA8rR-sKCJ5-ZL6fukVxng4CWrsTzc4VhrwwkDqYJYcSBQUrcfNL9sZX59Ze7r4tGBfR6loMF55xX8h"/>
+</div>
+</div>
+</header>
+<main class="p-md space-y-lg">
+<!-- Search and Action Row -->
+<div class="flex flex-col gap-4">
+<div class="flex justify-between items-end">
+<div>
+<h2 class="font-title-sm text-title-sm text-on-surface">Trip Management</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Real-time logistics monitoring</p>
+</div>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-title-sm text-body-md flex items-center gap-2 shadow-sm active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+                    Create Trip
+                </button>
+</div>
+<!-- Mobile Search -->
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg pl-10 pr-4 py-2 font-body-md focus:outline-none focus:border-primary transition-colors" placeholder="Search Trip ID or Route..." type="text"/>
+</div>
+</div>
+<!-- KPI Cards - Horizontally Scrollable -->
+<section class="flex overflow-x-auto gap-4 no-scrollbar pb-2 -mx-md px-md">
+<!-- Active Trips -->
+<div class="flex-shrink-0 w-64 bg-surface-container-lowest border border-outline-variant p-md rounded-xl shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<span class="material-symbols-outlined text-primary bg-primary-container/10 p-2 rounded-lg" data-icon="alt_route">alt_route</span>
+<span class="text-secondary font-bold text-body-sm flex items-center">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span> 12%
+                    </span>
+</div>
+<h3 class="font-body-sm text-on-surface-variant font-medium">Active Trips</h3>
+<p class="font-display-lg text-display-lg text-on-surface mt-1">42</p>
+</div>
+<!-- Delayed -->
+<div class="flex-shrink-0 w-64 bg-surface-container-lowest border border-outline-variant p-md rounded-xl shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<span class="material-symbols-outlined text-error bg-error-container/20 p-2 rounded-lg" data-icon="warning">warning</span>
+<span class="text-error font-bold text-body-sm flex items-center">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span> 3
+                    </span>
+</div>
+<h3 class="font-body-sm text-on-surface-variant font-medium">Delayed</h3>
+<p class="font-display-lg text-display-lg text-on-surface mt-1">08</p>
+</div>
+<!-- Completed Today -->
+<div class="flex-shrink-0 w-64 bg-surface-container-lowest border border-outline-variant p-md rounded-xl shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<span class="material-symbols-outlined text-secondary bg-secondary-container/20 p-2 rounded-lg" data-icon="check_circle">check_circle</span>
+<span class="text-secondary font-bold text-body-sm flex items-center">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span> 8%
+                    </span>
+</div>
+<h3 class="font-body-sm text-on-surface-variant font-medium">Completed (24h)</h3>
+<p class="font-display-lg text-display-lg text-on-surface mt-1">124</p>
+</div>
+</section>
+<!-- Active Trips List -->
+<section class="space-y-4">
+<div class="flex justify-between items-center">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Active Trips List</h3>
+<button class="text-primary font-body-sm font-bold flex items-center gap-1">
+                    Filter <span class="material-symbols-outlined text-[18px]" data-icon="filter_list">filter_list</span>
+</button>
+</div>
+<!-- Trip Cards Container -->
+<div class="space-y-3">
+<!-- Trip Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl shadow-sm active:bg-surface-container-low transition-colors cursor-pointer" onclick="this.classList.toggle('trip-card-active')">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<span class="font-data-tabular font-bold text-primary">TRP-8821</span>
+<span class="px-2 py-0.5 rounded-full bg-blue-100 text-primary text-[11px] font-bold uppercase tracking-tight">On Trip</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="more_vert">more_vert</span>
+</div>
+<div class="flex items-start gap-4 mb-4">
+<div class="flex flex-col items-center gap-1 mt-1">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div class="w-0.5 h-8 bg-outline-variant"></div>
+<div class="w-2 h-2 rounded-full border-2 border-primary"></div>
+</div>
+<div class="flex-1 space-y-3">
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold tracking-tighter">Origin</p>
+<p class="font-body-md text-on-surface font-semibold">Chicago Hub (ORD-4)</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold tracking-tighter">Destination</p>
+<p class="font-body-md text-on-surface font-semibold">New York Terminal (JFK-1)</p>
+</div>
+</div>
+</div>
+<div class="flex justify-between items-center pt-3 border-t border-outline-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]" data-icon="local_shipping">local_shipping</span>
+<span class="font-body-sm text-on-surface-variant">Volvo FH16 • John D.</span>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-on-surface-variant uppercase font-bold">ETA</p>
+<p class="font-data-tabular text-on-surface font-bold">14:30 PM</p>
+</div>
+</div>
+</div>
+<!-- Trip Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl shadow-sm active:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<span class="font-data-tabular font-bold text-primary">TRP-8942</span>
+<span class="px-2 py-0.5 rounded-full bg-orange-100 text-tertiary text-[11px] font-bold uppercase tracking-tight">In Shop</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="more_vert">more_vert</span>
+</div>
+<div class="flex items-start gap-4 mb-4">
+<div class="flex flex-col items-center gap-1 mt-1">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div class="w-0.5 h-8 bg-outline-variant"></div>
+<div class="w-2 h-2 rounded-full border-2 border-primary"></div>
+</div>
+<div class="flex-1 space-y-3">
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold tracking-tighter">Origin</p>
+<p class="font-body-md text-on-surface font-semibold">Austin Warehouse</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold tracking-tighter">Destination</p>
+<p class="font-body-md text-on-surface font-semibold">Houston Port Annex</p>
+</div>
+</div>
+</div>
+<div class="flex justify-between items-center pt-3 border-t border-outline-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]" data-icon="local_shipping">local_shipping</span>
+<span class="font-body-sm text-on-surface-variant">Scania R500 • Sarah L.</span>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-error uppercase font-bold">DELAYED</p>
+<p class="font-data-tabular text-error font-bold">+45m</p>
+</div>
+</div>
+</div>
+<!-- Trip Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl shadow-sm active:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<span class="font-data-tabular font-bold text-primary">TRP-9003</span>
+<span class="px-2 py-0.5 rounded-full bg-green-100 text-secondary text-[11px] font-bold uppercase tracking-tight">Available</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="more_vert">more_vert</span>
+</div>
+<div class="flex items-start gap-4 mb-4">
+<div class="flex flex-col items-center gap-1 mt-1">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div class="w-0.5 h-8 bg-outline-variant"></div>
+<div class="w-2 h-2 rounded-full border-2 border-primary"></div>
+</div>
+<div class="flex-1 space-y-3">
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold tracking-tighter">Origin</p>
+<p class="font-body-md text-on-surface font-semibold">Seattle Logistics Park</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold tracking-tighter">Destination</p>
+<p class="font-body-md text-on-surface font-semibold">Portland Distribution</p>
+</div>
+</div>
+</div>
+<div class="flex justify-between items-center pt-3 border-t border-outline-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]" data-icon="local_shipping">local_shipping</span>
+<span class="font-body-sm text-on-surface-variant">MAN TGX • Mike R.</span>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-on-surface-variant uppercase font-bold">DEPARTURE</p>
+<p class="font-data-tabular text-on-surface font-bold">16:15 PM</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Map Context Widget (Small Mobile version) -->
+<section class="px-md mb-8">
+<div class="relative w-full h-40 rounded-xl overflow-hidden border border-outline-variant group">
+<div class="absolute inset-0 z-0" data-location="Chicago" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAwkbrwr8Q28N_KrgtlwyqFzIlTMtRX-qrNdy055uNBGsUzF9EQie8fV39p0J40W-kz9VgRp15l2HpkKNWkPDShu0PUDNe596PEsQK3T0Iwp_LjR4dS4ECUz5PCyCrC0tBlD5MNcf8KrhwurtKM5F8ivskCpQcE-60B6HEfG9a6rYQZEXMwzteJWBifqMe1shry0yJoLvkmE2IhT9mA7zu30-d5SZ3ojDT2BhKxWBzp4wRHi_9tIoP9')"></div>
+<!-- Overlay Info -->
+<div class="absolute bottom-2 left-2 right-2 bg-white/90 backdrop-blur-sm p-2 rounded-lg flex items-center justify-between border border-outline-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="map">map</span>
+<span class="font-body-sm font-bold text-on-surface">Fleet View: Northeast</span>
+</div>
+<button class="bg-primary text-on-primary text-[10px] font-bold px-2 py-1 rounded">FULL MAP</button>
+</div>
+</div>
+</section>
+<!-- Mobile Bottom Navigation Shell -->
+<nav class="fixed bottom-0 left-0 right-0 h-16 bg-surface border-t border-outline-variant flex items-center justify-around z-50">
+<div class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-[10px] font-medium">Dashboard</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="local_shipping">local_shipping</span>
+<span class="text-[10px] font-medium">Vehicles</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-primary">
+<div class="relative">
+<span class="material-symbols-outlined" data-icon="route" style="font-variation-settings: 'FILL' 1;">route</span>
+<div class="absolute -top-1 -right-1 w-2 h-2 bg-error rounded-full border-2 border-surface"></div>
+</div>
+<span class="text-[10px] font-bold">Trips</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="text-[10px] font-medium">Expenses</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</div>
+</nav>
+<script>
+        // Simple Micro-interaction for Trip Cards
+        document.querySelectorAll('.cursor-pointer').forEach(card => {
+            card.addEventListener('touchstart', () => {
+                card.style.transform = 'scale(0.98)';
+            });
+            card.addEventListener('touchend', () => {
+                card.style.transform = 'scale(1)';
+            });
+        });
+
+        // Sticky Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 10) {
+                header.classList.add('shadow-md');
+            } else {
+                header.classList.remove('shadow-md');
+            }
+        });
+    </script>
+</body></html>
