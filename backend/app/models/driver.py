@@ -5,7 +5,7 @@ from datetime import datetime, date
 from typing import TYPE_CHECKING, Optional
 from uuid import uuid4
 from sqlalchemy import String, Numeric, Date, DateTime, Integer, CheckConstraint, ForeignKey, func
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Uuid as UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -105,16 +105,27 @@ class Driver(Base):
         default=func.current_date()
     )
     
+    # Location Tracking
+    latitude: Mapped[Optional[float]] = mapped_column(
+        Numeric(10, 6),
+        nullable=True
+    )
+    
+    longitude: Mapped[Optional[float]] = mapped_column(
+        Numeric(10, 6),
+        nullable=True
+    )
+    
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        server_default=func.now(),
+        default=datetime.utcnow,
         nullable=False
     )
     
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        server_default=func.now(),
+        default=datetime.utcnow,
         onupdate=func.now(),
         nullable=False
     )

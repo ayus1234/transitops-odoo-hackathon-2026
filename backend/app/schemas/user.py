@@ -44,6 +44,7 @@ class UserResponse(UserBase):
     Schema for user responses.
     """
     id: UUID
+    full_name: str
     role: RoleResponse
     is_active: bool
     last_login: Optional[datetime]

@@ -13,6 +13,10 @@ from app.utils.exceptions import (
     DuplicateEntryError,
     BusinessLogicError
 )
+from app.services.activity_service import activity_service
+from app.schemas.activity import ActivityCreate
+from app.models.activity import ModuleEnum, ActivityTypeEnum, SeverityEnum
+from app.models.user import User
 
 
 class VehicleService:
@@ -57,7 +61,7 @@ class VehicleService:
             search=search
         )
     
-    def create_vehicle(self, vehicle_data: VehicleCreate) -> Vehicle:
+    def create_vehicle(self, vehicle_data: VehicleCreate, current_user: User = None) -> Vehicle:
         """
         Create a new vehicle.
         
@@ -75,9 +79,24 @@ class VehicleService:
             )
         
         # Create vehicle
-        return self.repository.create(vehicle_data)
+        vehicle = self.repository.create(vehicle_data)
+        
+        # Log activity
+        if current_user:
+            activity_service.log_activity(self.db, ActivityCreate(
+                module=ModuleEnum.VEHICLE,
+                activity_type=ActivityTypeEnum.CREATED,
+                title=f"Vehicle {vehicle.registration_number} registered successfully",
+                description=f"New vehicle {vehicle.vehicle_name} ({vehicle.vehicle_type}) added to fleet.",
+                severity=SeverityEnum.SUCCESS,
+                status="Success",
+                user_id=current_user.id,
+                vehicle_id=vehicle.id
+            ))
+            
+        return vehicle
     
-    def update_vehicle(self, vehicle_id: UUID, vehicle_data: VehicleUpdate) -> Vehicle:
+    def update_vehicle(self, vehicle_id: UUID, vehicle_data: VehicleUpdate, current_user: User = None) -> Vehicle:
         """
         Update an existing vehicle.
         
@@ -104,12 +123,37 @@ class VehicleService:
                 )
         
         # Validate status change
+        current_status = vehicle.status
         if vehicle_data.status and vehicle_data.status != vehicle.status:
             self._validate_status_change(vehicle, vehicle_data.status)
         
-        return self.repository.update(vehicle, vehicle_data)
+        updated_vehicle = self.repository.update(vehicle, vehicle_data)
+        
+        if current_user:
+            # Check for specific status changes or general updates
+            if vehicle_data.status and vehicle_data.status != current_status:
+                title = f"Vehicle {updated_vehicle.registration_number} status changed"
+                desc = f"Status updated to {vehicle_data.status}."
+                act_type = ActivityTypeEnum.SYSTEM if vehicle_data.status == 'In Shop' else ActivityTypeEnum.UPDATED
+            else:
+                title = f"Vehicle {updated_vehicle.registration_number} updated"
+                desc = "Vehicle registry details modified."
+                act_type = ActivityTypeEnum.UPDATED
+                
+            activity_service.log_activity(self.db, ActivityCreate(
+                module=ModuleEnum.VEHICLE,
+                activity_type=act_type,
+                title=title,
+                description=desc,
+                severity=SeverityEnum.INFO,
+                status="Success",
+                user_id=current_user.id,
+                vehicle_id=updated_vehicle.id
+            ))
+            
+        return updated_vehicle
     
-    def delete_vehicle(self, vehicle_id: UUID) -> None:
+    def delete_vehicle(self, vehicle_id: UUID, current_user: User = None) -> None:
         """
         Delete a vehicle.
         
@@ -130,6 +174,20 @@ class VehicleService:
                 code="BIZ_001"
             )
         
+        
+        # Log before deletion
+        reg_number = vehicle.registration_number
+        if current_user:
+            activity_service.log_activity(self.db, ActivityCreate(
+                module=ModuleEnum.VEHICLE,
+                activity_type=ActivityTypeEnum.DELETED,
+                title=f"Vehicle {reg_number} deleted",
+                description="Vehicle removed from active registry.",
+                severity=SeverityEnum.WARNING,
+                status="Success",
+                user_id=current_user.id
+            ))
+            
         self.repository.delete(vehicle)
     
     def get_available_vehicles(self) -> List[Vehicle]:

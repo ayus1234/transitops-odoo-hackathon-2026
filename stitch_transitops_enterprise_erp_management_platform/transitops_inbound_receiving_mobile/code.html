@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TransitOps Central - Inbound Receiving</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed": "#331200",
+                    "secondary-fixed": "#a3f69c",
+                    "outline-variant": "#c3c6d6",
+                    "on-primary-fixed": "#001847",
+                    "on-tertiary-container": "#ffcfb7",
+                    "secondary-fixed-dim": "#88d982",
+                    "on-secondary": "#ffffff",
+                    "tertiary-fixed": "#ffdbca",
+                    "on-surface": "#191c1d",
+                    "on-secondary-fixed-variant": "#005312",
+                    "outline": "#737785",
+                    "error": "#ba1a1a",
+                    "tertiary-fixed-dim": "#ffb68e",
+                    "surface-variant": "#e1e3e4",
+                    "surface-container-low": "#f3f4f5",
+                    "on-tertiary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "surface-dim": "#d9dadb",
+                    "on-secondary-fixed": "#002204",
+                    "background": "#f8f9fa",
+                    "on-tertiary-fixed-variant": "#773300",
+                    "primary-container": "#0056d2",
+                    "primary-fixed-dim": "#b2c5ff",
+                    "surface-container": "#edeeef",
+                    "on-secondary-container": "#217128",
+                    "primary-fixed": "#dae2ff",
+                    "primary": "#0040a1",
+                    "surface-container-highest": "#e1e3e4",
+                    "on-error-container": "#93000a",
+                    "surface": "#f8f9fa",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed-variant": "#0040a1",
+                    "error-container": "#ffdad6",
+                    "surface-tint": "#0056d2",
+                    "on-primary": "#ffffff",
+                    "inverse-primary": "#b2c5ff",
+                    "inverse-on-surface": "#f0f1f2",
+                    "surface-container-high": "#e7e8e9",
+                    "secondary-container": "#a0f399",
+                    "on-primary-container": "#ccd8ff",
+                    "tertiary": "#773300",
+                    "on-surface-variant": "#424654",
+                    "secondary": "#1b6d24",
+                    "on-background": "#191c1d",
+                    "inverse-surface": "#2e3132",
+                    "surface-bright": "#f8f9fa",
+                    "tertiary-container": "#9c4500"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "8px",
+                    "xl": "32px",
+                    "sidebar_width": "240px",
+                    "gutter": "16px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "lg": "24px"
+            },
+            "fontFamily": {
+                    "label-caps": ["Inter"],
+                    "body-md": ["Inter"],
+                    "title-sm": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "data-tabular": ["Inter"]
+            },
+            "fontSize": {
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "data-tabular": ["14px", {"lineHeight": "20px", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .touch-target {
+            min-height: 48px;
+            min-width: 48px;
+        }
+        body {
+            background-color: #f8f9fa;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Custom scroll hide */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md text-on-surface select-none">
+<!-- Top Navigation Bar -->
+<header class="bg-surface sticky top-0 z-40 border-b border-outline-variant shadow-sm flex flex-col pt-sm">
+<div class="flex justify-between items-center h-16 px-md w-full">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Inbound Receiving</h1>
+<div class="flex gap-md">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer">account_circle</span>
+</div>
+</div>
+<!-- Search Bar -->
+<div class="px-md pb-md">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full h-11 bg-surface-container-low border border-outline rounded-lg pl-10 pr-md font-body-md focus:ring-2 focus:ring-primary focus:border-transparent outline-none" placeholder="Search PO or Tracking #" type="text"/>
+</div>
+</div>
+</header>
+<main class="p-md pb-32 space-y-lg max-w-md mx-auto">
+<!-- Primary Action: Scan Shipment -->
+<section>
+<button class="w-full bg-primary text-on-primary py-lg rounded-xl shadow-lg flex flex-col items-center justify-center gap-sm active:scale-95 transition-transform duration-100">
+<span class="material-symbols-outlined text-[48px]" style="font-variation-settings: 'FILL' 1;">qr_code_scanner</span>
+<span class="font-title-sm text-title-sm font-bold">Scan Shipment</span>
+</button>
+</section>
+<!-- Expected Deliveries Today -->
+<section class="space-y-md">
+<div class="flex justify-between items-center">
+<h2 class="font-title-sm text-title-sm text-on-surface">Expected Today</h2>
+<span class="font-label-caps text-label-caps text-primary cursor-pointer">VIEW ALL</span>
+</div>
+<!-- PO Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-sm active:bg-surface-container-low transition-colors" onclick="openDetails()">
+<div class="flex justify-between items-start mb-sm">
+<div>
+<p class="font-label-caps text-label-caps text-on-surface-variant">VENDOR</p>
+<p class="font-title-sm text-title-sm font-bold">Brembo Fleet Systems</p>
+</div>
+<span class="bg-secondary-container text-on-secondary-container text-[10px] px-2 py-0.5 rounded-full font-bold">IN TRANSIT</span>
+</div>
+<div class="flex justify-between items-end">
+<div class="space-y-1">
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">shopping_cart</span>
+<span class="font-data-tabular text-data-tabular">PO-99283-B</span>
+</div>
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">inventory_2</span>
+<span class="font-data-tabular text-data-tabular">12 Items</span>
+</div>
+</div>
+<div class="flex items-center text-primary font-bold">
+<span class="text-body-sm">Start Receiving</span>
+<span class="material-symbols-outlined">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- PO Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-sm active:bg-surface-container-low transition-colors">
+<div class="flex justify-between items-start mb-sm">
+<div>
+<p class="font-label-caps text-label-caps text-on-surface-variant">VENDOR</p>
+<p class="font-title-sm text-title-sm font-bold">Global Logistics Inc.</p>
+</div>
+<span class="bg-primary-container text-on-primary-container text-[10px] px-2 py-0.5 rounded-full font-bold">DUE 2PM</span>
+</div>
+<div class="flex justify-between items-end">
+<div class="space-y-1">
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">shopping_cart</span>
+<span class="font-data-tabular text-data-tabular">PO-99401-G</span>
+</div>
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">inventory_2</span>
+<span class="font-data-tabular text-data-tabular">5 Items</span>
+</div>
+</div>
+<div class="flex items-center text-on-surface-variant opacity-50">
+<span class="material-symbols-outlined">chevron_right</span>
+</div>
+</div>
+</div>
+</section>
+<!-- KPI Briefing -->
+<section class="grid grid-cols-2 gap-md">
+<div class="bg-surface-container-high p-md rounded-xl">
+<p class="font-label-caps text-label-caps text-on-surface-variant">REC'D TODAY</p>
+<p class="font-display-lg text-display-lg text-primary">14</p>
+<p class="font-body-sm text-body-sm text-secondary font-medium">+2 over avg</p>
+</div>
+<div class="bg-surface-container-high p-md rounded-xl">
+<p class="font-label-caps text-label-caps text-on-surface-variant">PENDING</p>
+<p class="font-display-lg text-display-lg text-tertiary">08</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Due by EOD</p>
+</div>
+</section>
+</main>
+<!-- Detailed Receiving Sheet (Initially Hidden Overlay) -->
+<div class="fixed inset-0 z-50 bg-background translate-y-full transition-transform duration-300 ease-in-out overflow-y-auto no-scrollbar" id="receivingOverlay">
+<header class="bg-surface px-md py-md sticky top-0 z-50 flex items-center gap-md border-b border-outline-variant shadow-sm">
+<button class="touch-target flex items-center justify-center" onclick="closeDetails()">
+<span class="material-symbols-outlined">close</span>
+</button>
+<div>
+<h3 class="font-title-sm text-title-sm font-bold">PO-99283-B</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Receiving: Brembo Fleet Systems</p>
+</div>
+</header>
+<div class="p-md space-y-lg">
+<!-- Receiving Checklist -->
+<div class="space-y-md">
+<h4 class="font-label-caps text-label-caps text-on-surface-variant">CONFIRM LINE ITEMS</h4>
+<!-- Item Card 1 -->
+<div class="bg-surface-container-lowest border border-outline rounded-xl p-md space-y-md">
+<div class="flex justify-between items-start">
+<div class="flex gap-md">
+<div class="w-16 h-16 bg-surface-container rounded-lg flex-shrink-0" data-alt="A macro studio photograph of a high-performance ceramic brake pad against a clean white industrial background. The lighting is sharp and technical, emphasizing the metallic textures and the precision-engineered shape of the part. The overall aesthetic is professional, minimalist, and high-contrast, fitting a modern warehouse management system interface." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBcaC_hWoz2cJA74OEGSwkbiQ2A2XjDcd6Smt8vsNSCfnLdof-C_9VZtunpXDutl-HEHls6UitNzItHbpUCBCwJ-oTdGuBvcMrCjIoPZAqjrzNzW__g7ZUYGfIPsgKPfezD9oaTavaDBEEXfLY_cu2whDlUBskIjYcrZ3BsCevWX8ubQaLzDhNLjGJc9adY8JCFkIIfGqzvvkr8gXkGTP7jbCSI_KnAxjvjQZE3G8uCwbI0oVI-GxCB')"></div>
+<div>
+<p class="font-body-md font-bold">Heavy-Duty Brake Pads</p>
+<p class="font-body-sm text-on-surface-variant">SKU: BP-HD-001</p>
+<p class="font-body-sm text-on-primary-container bg-primary-container/20 px-2 rounded-full inline-block mt-1">Suggested: Aisle 4 / Bin B2</p>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between gap-md border-t border-outline-variant pt-md">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant">RECEIVED</span>
+<div class="flex items-center gap-sm mt-1">
+<button class="w-10 h-10 border border-outline rounded-full flex items-center justify-center active:bg-surface-variant" onclick="this.nextElementSibling.value = Math.max(0, parseInt(this.nextElementSibling.value)-1)">-</button>
+<input class="w-12 text-center font-bold text-title-sm border-none bg-transparent" type="number" value="12"/>
+<button class="w-10 h-10 border border-outline rounded-full flex items-center justify-center active:bg-surface-variant" onclick="this.previousElementSibling.value = parseInt(this.previousElementSibling.value)+1">+</button>
+<span class="text-on-surface-variant font-bold">/ 12</span>
+</div>
+</div>
+<button class="flex items-center gap-xs text-error font-bold" onclick="showDamageReport()">
+<span class="material-symbols-outlined">report_problem</span>
+<span class="text-body-sm">DAMAGE</span>
+</button>
+</div>
+</div>
+<!-- Item Card 2 -->
+<div class="bg-surface-container-lowest border border-outline rounded-xl p-md space-y-md opacity-80">
+<div class="flex justify-between items-start">
+<div class="flex gap-md">
+<div class="w-16 h-16 bg-surface-container rounded-lg flex-shrink-0" data-alt="A clean, professional product shot of an industrial oil filter in a bright warehouse setting. The filter has a glossy black finish with technical specifications printed in crisp white lettering. Soft diffused light illuminates the metallic and rubber components, highlighting the high-quality engineering. The background is a neutral grey that maintains focus on the product." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBfYMYVL5xMMoNfk-iPBzT7-VCR3uyFfrqWE2bU7moxV7gEw45LjxRKWK4RXWXgRCi1mxsEFffifw7BbNryYz36tO-4DWMizh2e-nRAqhUunQd5V0_401jC7D2oStd6H7OQLet_te27Odz0W4mcoug1zFnoLFduMTUVboLD5djLBg2kCOMz3VE4qB6Exz7H03oMlvjOztravUnvP_QrGuw0ceGBTP-Ki2saVMbZT4xKMmnKmrd7ptim')"></div>
+<div>
+<p class="font-body-md font-bold">Industrial Oil Filter</p>
+<p class="font-body-sm text-on-surface-variant">SKU: OF-IND-442</p>
+<p class="font-body-sm text-on-secondary-container bg-secondary-container/20 px-2 rounded-full inline-block mt-1">Suggested: Aisle 1 / Bin A8</p>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between gap-md border-t border-outline-variant pt-md">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant">RECEIVED</span>
+<div class="flex items-center gap-sm mt-1">
+<button class="w-10 h-10 border border-outline rounded-full flex items-center justify-center active:bg-surface-variant">-</button>
+<input class="w-12 text-center font-bold text-title-sm border-none bg-transparent" type="number" value="0"/>
+<button class="w-10 h-10 border border-outline rounded-full flex items-center justify-center active:bg-surface-variant">+</button>
+<span class="text-on-surface-variant font-bold">/ 50</span>
+</div>
+</div>
+<button class="flex items-center gap-xs text-on-surface-variant font-bold">
+<span class="material-symbols-outlined">report_problem</span>
+<span class="text-body-sm">DAMAGE</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Footer Action for Overlay -->
+<div class="pt-lg">
+<button class="w-full bg-primary text-on-primary h-14 rounded-xl font-bold text-title-sm flex items-center justify-center gap-sm shadow-md" onclick="submitReceiving()">
+<span class="material-symbols-outlined">check_circle</span>
+                    Complete Receiving
+                </button>
+</div>
+</div>
+</div>
+<!-- Damage Report Modal (Simple Overlay) -->
+<div class="fixed inset-0 z-[60] bg-black/50 hidden flex items-end p-md" id="damageModal">
+<div class="bg-surface w-full rounded-t-3xl p-lg space-y-md">
+<h5 class="font-title-sm text-title-sm font-bold text-error flex items-center gap-sm">
+<span class="material-symbols-outlined">warning</span>
+                Report Damaged Item
+            </h5>
+<p class="font-body-sm text-on-surface-variant">Please document the damage for Heavy-Duty Brake Pads (SKU: BP-HD-001).</p>
+<div class="grid grid-cols-2 gap-md">
+<button class="aspect-square bg-surface-container border-2 border-dashed border-outline rounded-xl flex flex-col items-center justify-center gap-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[32px]">add_a_photo</span>
+<span class="text-body-sm">Add Photo</span>
+</button>
+<div class="relative">
+<textarea class="w-full h-full bg-surface-container border border-outline rounded-xl p-sm font-body-sm resize-none" placeholder="Describe damage..."></textarea>
+</div>
+</div>
+<div class="flex gap-md pt-md">
+<button class="flex-1 h-12 border border-outline rounded-lg font-bold" onclick="hideDamageReport()">Cancel</button>
+<button class="flex-1 h-12 bg-error text-on-error rounded-lg font-bold shadow-sm" onclick="hideDamageReport()">Submit Report</button>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface shadow-[0_-2px_10px_rgba(0,0,0,0.05)] flex justify-around items-center px-md py-sm">
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+<span class="font-label-caps text-label-caps">Work Orders</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1">
+<span class="material-symbols-outlined" data-icon="precision_manufacturing">precision_manufacturing</span>
+<span class="font-label-caps text-label-caps">Parts</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
+<span class="material-symbols-outlined" data-icon="build_circle">build_circle</span>
+<span class="font-label-caps text-label-caps">Maintenance</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-caps text-label-caps">Profile</span>
+</div>
+</nav>
+<script>
+        function openDetails() {
+            const overlay = document.getElementById('receivingOverlay');
+            overlay.classList.remove('translate-y-full');
+            overlay.classList.add('translate-y-0');
+        }
+
+        function closeDetails() {
+            const overlay = document.getElementById('receivingOverlay');
+            overlay.classList.remove('translate-y-0');
+            overlay.classList.add('translate-y-full');
+        }
+
+        function showDamageReport() {
+            document.getElementById('damageModal').classList.remove('hidden');
+        }
+
+        function hideDamageReport() {
+            document.getElementById('damageModal').classList.add('hidden');
+        }
+
+        function submitReceiving() {
+            alert('Receiving record submitted successfully.');
+            closeDetails();
+        }
+
+        // Apply Material Symbols Fill Logic from JSON
+        document.querySelectorAll('.material-symbols-outlined').forEach(span => {
+            if (span.getAttribute('data-weight') === 'fill') {
+                span.style.fontVariationSettings = "'FILL' 1";
+            }
+        });
+    </script>
+</body></html>

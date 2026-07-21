@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Create Purchase Order - TransitOps</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#e1e3e4",
+                        "on-primary-fixed-variant": "#0040a1",
+                        "on-secondary-fixed-variant": "#005312",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-surface": "#2e3132",
+                        "tertiary-fixed-dim": "#ffb68e",
+                        "surface-bright": "#f8f9fa",
+                        "outline-variant": "#c3c6d6",
+                        "on-primary-container": "#ccd8ff",
+                        "on-background": "#191c1d",
+                        "tertiary-container": "#9c4500",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "inverse-primary": "#b2c5ff",
+                        "on-primary-fixed": "#001847",
+                        "secondary-fixed": "#a3f69c",
+                        "primary": "#0040a1",
+                        "on-surface-variant": "#424654",
+                        "primary-container": "#0056d2",
+                        "on-tertiary-fixed": "#331200",
+                        "tertiary": "#773300",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#f0f1f2",
+                        "secondary": "#1b6d24",
+                        "surface": "#f8f9fa",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#ffdbca",
+                        "outline": "#737785",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#a0f399",
+                        "background": "#f8f9fa",
+                        "surface-tint": "#0056d2",
+                        "surface-dim": "#d9dadb",
+                        "surface-container-high": "#e7e8e9",
+                        "primary-fixed": "#dae2ff",
+                        "on-secondary-fixed": "#002204",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-tertiary-fixed-variant": "#773300",
+                        "on-surface": "#191c1d",
+                        "on-secondary-container": "#217128",
+                        "on-error": "#ffffff",
+                        "secondary-fixed-dim": "#88d982",
+                        "on-tertiary-container": "#ffcfb7",
+                        "surface-container-low": "#f3f4f5",
+                        "on-error-container": "#93000a",
+                        "surface-container": "#edeeef"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "base": "8px",
+                        "md": "16px",
+                        "sidebar_width": "240px",
+                        "lg": "24px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "data-tabular": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "data-tabular": ["14px", {"lineHeight": "20px", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Inter', sans-serif;
+        }
+        .form-input-focus:focus {
+            outline: none;
+            border-color: #0040a1;
+            box-shadow: 0 0 0 2px rgba(0, 64, 161, 0.1);
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="text-on-surface overflow-hidden">
+<!-- Sidebar (Shared Component: SideNavBar) -->
+<aside class="w-60 h-full fixed left-0 top-0 bg-surface-container-low dark:bg-inverse-surface border-r border-outline-variant flex flex-col py-md z-40 hidden md:flex">
+<div class="px-md mb-xl">
+<h1 class="font-display-lg text-display-lg font-bold text-primary dark:text-primary-fixed-dim">TransitOps</h1>
+<p class="text-on-surface-variant font-body-sm">Enterprise Logistics</p>
+</div>
+<nav class="flex-1 space-y-xs px-sm">
+<a class="flex items-center gap-md px-md py-sm transition-all duration-200 ease-in-out hover:bg-surface-variant/50 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm transition-all duration-200 ease-in-out text-primary dark:text-primary-fixed-dim border-l-4 border-primary font-bold bg-primary-container/10" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="font-body-md">Purchase Orders</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm transition-all duration-200 ease-in-out hover:bg-surface-variant/50 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-body-md">Inventory</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm transition-all duration-200 ease-in-out hover:bg-surface-variant/50 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">build</span>
+<span class="font-body-md">Work Orders</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm transition-all duration-200 ease-in-out hover:bg-surface-variant/50 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">engineering</span>
+<span class="font-body-md">Maintenance</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm transition-all duration-200 ease-in-out hover:bg-surface-variant/50 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+<span class="font-body-md">Fleet</span>
+</a>
+</nav>
+<div class="mt-auto px-sm border-t border-outline-variant pt-md">
+<a class="flex items-center gap-md px-md py-sm transition-all duration-200 ease-in-out hover:bg-surface-variant/50 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm transition-all duration-200 ease-in-out hover:bg-surface-variant/50 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-md">Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="md:ml-60 min-h-screen flex flex-col">
+<!-- Top Bar (Shared Component: TopAppBar) -->
+<header class="flex justify-between items-center h-16 px-lg w-full bg-surface dark:bg-background border-b border-outline-variant shadow-sm z-30">
+<div class="flex items-center gap-lg flex-1">
+<h2 class="font-headline-md text-headline-md font-bold text-primary">TransitOps Central</h2>
+<div class="hidden lg:flex items-center bg-surface-container rounded-full px-md py-xs w-96 max-w-full">
+<span class="material-symbols-outlined text-outline">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md w-full" placeholder="Search POs, parts, or vendors..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="bg-primary text-on-primary px-lg py-xs rounded-lg font-title-sm hover:opacity-90 active:opacity-80 transition-opacity">
+                    Create PO
+                </button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="Close-up professional portrait of a senior logistics dispatcher in a bright modern office with multiple screens blurred in the background. The aesthetic is clean, corporate, and high-efficiency with soft daylight and professional blue accents throughout the scene." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQnBJIMjogfS9BiKweGbsfPN03SWcORk-vNW4B1onxrrUmgv08tEX9-7xoegobqegCDlsXgrK66e9nH32a7z0NMTE5nKTDR7fOsvaZAbiwhUKAM8isUQSPHC5SHfoRUXUvpacrqjM8Iy8rKXuNIfVlp4ZBS51CuP5a2BmIe8ENsprre3cG8-J0ch9G3pnp6ppP0rW5pdpu0iLGlTmY0-feM9CiV_2EQg9tElHI4MBwRBOoPyiv7BMi"/>
+</div>
+</div>
+</header>
+<!-- Form Content -->
+<section class="flex-1 p-lg overflow-y-auto hide-scrollbar pb-32">
+<div class="max-w-6xl mx-auto">
+<div class="mb-lg flex items-center justify-between">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">New Purchase Order</h3>
+<p class="text-on-surface-variant font-body-md">Drafting PO-2023-4429</p>
+</div>
+<div class="flex items-center gap-sm">
+<span class="bg-secondary-container text-on-secondary-container px-md py-xs rounded-full font-label-caps">DRAFTING</span>
+<span class="text-on-surface-variant font-body-sm">Created: Oct 24, 2023</span>
+</div>
+</div>
+<!-- Header Information Cards -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-md mb-lg">
+<!-- Basic Info -->
+<div class="lg:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-xl p-lg shadow-sm">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<div class="space-y-sm">
+<label class="block font-body-sm font-bold text-on-surface-variant">Vendor Selection</label>
+<div class="relative">
+<select class="w-full h-10 px-md rounded-lg border border-outline bg-surface focus:border-primary focus:ring-1 focus:ring-primary text-body-md appearance-none">
+<option>Global Truck Parts Inc.</option>
+<option>Metro Logistics Equipment</option>
+<option>FastFix Fleet Supplies</option>
+<option>Heavy Duty Components Co.</option>
+</select>
+<span class="material-symbols-outlined absolute right-md top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
+</div>
+</div>
+<div class="space-y-sm">
+<label class="block font-body-sm font-bold text-on-surface-variant">Expected Delivery Date</label>
+<input class="w-full h-10 px-md rounded-lg border border-outline bg-surface focus:border-primary focus:ring-1 focus:ring-primary text-body-md" type="date" value="2023-11-05"/>
+</div>
+<div class="space-y-sm md:col-span-2">
+<label class="block font-body-sm font-bold text-on-surface-variant">Shipping Address</label>
+<textarea class="w-full p-md rounded-lg border border-outline bg-surface focus:border-primary focus:ring-1 focus:ring-primary text-body-md" placeholder="Enter warehouse address..." rows="2"></textarea>
+</div>
+</div>
+</div>
+<!-- Notes/Metadata -->
+<div class="lg:col-span-4 bg-surface-container-lowest border border-outline-variant rounded-xl p-lg shadow-sm flex flex-col">
+<div class="space-y-sm flex-1">
+<label class="block font-body-sm font-bold text-on-surface-variant">Internal Notes</label>
+<textarea class="w-full p-md rounded-lg border border-outline bg-surface focus:border-primary focus:ring-1 focus:ring-primary text-body-md" placeholder="Add procurement details or special instructions..." rows="5"></textarea>
+</div>
+</div>
+</div>
+<!-- Line Item Table -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+<div class="px-lg py-md border-b border-outline-variant flex items-center justify-between bg-surface-container-low">
+<h4 class="font-title-sm text-title-sm text-on-surface">Order Line Items</h4>
+<button class="flex items-center gap-xs text-primary font-bold text-body-sm hover:underline">
+<span class="material-symbols-outlined">add_circle</span>
+                            Add Item
+                        </button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container text-on-surface-variant font-label-caps border-b border-outline-variant">
+<th class="px-lg py-md">Item Description / Part #</th>
+<th class="px-lg py-md w-32">Quantity</th>
+<th class="px-lg py-md w-40 text-right">Unit Price</th>
+<th class="px-lg py-md w-40 text-right">Line Total</th>
+<th class="px-lg py-md w-16"></th>
+</tr>
+</thead>
+<tbody class="text-body-md divide-y divide-outline-variant">
+<tr class="hover:bg-surface-bright transition-colors group">
+<td class="px-lg py-md">
+<div class="flex flex-col">
+<span class="font-bold">Heavy-Duty Brake Pad Set</span>
+<span class="text-on-surface-variant text-body-sm">P/N: BK-9942-HD</span>
+</div>
+</td>
+<td class="px-lg py-md">
+<input class="w-20 h-9 px-sm border border-outline rounded focus:ring-1 focus:ring-primary text-data-tabular" type="number" value="12"/>
+</td>
+<td class="px-lg py-md text-right font-data-tabular">$145.00</td>
+<td class="px-lg py-md text-right font-bold font-data-tabular">$1,740.00</td>
+<td class="px-lg py-md text-right">
+<button class="text-outline hover:text-error opacity-0 group-hover:opacity-100 transition-all">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-bright transition-colors group">
+<td class="px-lg py-md">
+<div class="flex flex-col">
+<span class="font-bold">Synthetic Oil Filter - XL Series</span>
+<span class="text-on-surface-variant text-body-sm">P/N: FL-302-SYN</span>
+</div>
+</td>
+<td class="px-lg py-md">
+<input class="w-20 h-9 px-sm border border-outline rounded focus:ring-1 focus:ring-primary text-data-tabular" type="number" value="24"/>
+</td>
+<td class="px-lg py-md text-right font-data-tabular">$22.50</td>
+<td class="px-lg py-md text-right font-bold font-data-tabular">$540.00</td>
+<td class="px-lg py-md text-right">
+<button class="text-outline hover:text-error opacity-0 group-hover:opacity-100 transition-all">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-bright transition-colors group">
+<td class="px-lg py-md">
+<div class="flex items-center gap-sm">
+<input class="w-full h-9 px-sm border border-outline rounded focus:ring-1 focus:ring-primary bg-surface-container-low text-body-sm" placeholder="Search part..." type="text"/>
+</div>
+</td>
+<td class="px-lg py-md">
+<input class="w-20 h-9 px-sm border border-outline-variant bg-surface-container-high rounded text-data-tabular text-outline" disabled="" type="number"/>
+</td>
+<td class="px-lg py-md text-right font-data-tabular text-outline">—</td>
+<td class="px-lg py-md text-right font-bold font-data-tabular text-outline">—</td>
+<td class="px-lg py-md text-right"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer Bar (Floating Action Area) -->
+<footer class="fixed bottom-0 left-0 md:left-60 right-0 h-20 bg-surface border-t border-outline-variant shadow-[0_-4px_12px_rgba(0,0,0,0.05)] z-40 px-lg flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-on-surface-variant font-label-caps">ESTIMATED TOTAL AMOUNT</span>
+<span class="text-display-lg font-display-lg text-primary">$2,280.00</span>
+</div>
+<div class="flex items-center gap-md">
+<button class="px-xl py-md border border-outline text-on-surface font-bold rounded-lg hover:bg-surface-container transition-colors">
+                    Save Draft
+                </button>
+<button class="px-xl py-md bg-primary text-on-primary font-bold rounded-lg hover:shadow-lg hover:opacity-95 active:scale-95 transition-all flex items-center gap-sm">
+<span class="material-symbols-outlined">send</span>
+                    Send PO
+                </button>
+</div>
+</footer>
+<!-- Mobile Bottom Nav (Shared Component: BottomNavBar) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 rounded-t-xl bg-surface dark:bg-inverse-surface shadow-lg flex justify-around items-center px-md py-sm">
+<a class="flex flex-col items-center justify-center bg-primary-container dark:bg-primary-container text-on-primary-container rounded-xl px-4 py-1" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-label-caps">Work Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1" href="#">
+<span class="material-symbols-outlined">precision_manufacturing</span>
+<span class="font-label-caps">Parts</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1" href="#">
+<span class="material-symbols-outlined">build_circle</span>
+<span class="font-label-caps">Maintenance</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-4 py-1" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-caps">Profile</span>
+</a>
+</nav>
+</main>
+<script>
+        // Simple logic to simulate interactivity for line items
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('input', function() {
+                // In a real app, this would recalculate totals
+                console.log('Recalculating...');
+            });
+        });
+
+        // Search highlight mock
+        const searchInput = document.querySelector('input[type="text"]');
+        if (searchInput) {
+            searchInput.addEventListener('focus', () => {
+                searchInput.parentElement.classList.add('ring-2', 'ring-primary/20', 'border-primary');
+            });
+            searchInput.addEventListener('blur', () => {
+                searchInput.parentElement.classList.remove('ring-2', 'ring-primary/20', 'border-primary');
+            });
+        }
+    </script>
+</body></html>

@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 from uuid import uuid4
 from sqlalchemy import String, Numeric, DateTime, Text, CheckConstraint, ForeignKey, func
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Uuid as UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -52,14 +52,14 @@ class Trip(Base):
     # Foreign Keys
     vehicle_id: Mapped[UUID] = mapped_column(
         UUID(as_uuid=True),
-        ForeignKey("vehicles.id", ondelete="RESTRICT"),
+        ForeignKey("vehicles.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )
     
     driver_id: Mapped[UUID] = mapped_column(
         UUID(as_uuid=True),
-        ForeignKey("drivers.id", ondelete="RESTRICT"),
+        ForeignKey("drivers.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )
@@ -73,6 +73,16 @@ class Trip(Base):
     destination: Mapped[str] = mapped_column(
         String(255),
         nullable=False
+    )
+    
+    route_information: Mapped[Optional[str]] = mapped_column(
+        Text,
+        nullable=True
+    )
+    
+    estimated_arrival_time: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True
     )
     
     # Cargo
@@ -155,13 +165,13 @@ class Trip(Base):
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        server_default=func.now(),
+        default=datetime.utcnow,
         nullable=False
     )
     
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        server_default=func.now(),
+        default=datetime.utcnow,
         onupdate=func.now(),
         nullable=False
     )
