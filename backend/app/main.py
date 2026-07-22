@@ -177,6 +177,7 @@ async def shutdown_event():
 async def setup_vercel_db():
     try:
         from app.core.database import Base, engine
+        Base.metadata.drop_all(bind=engine)
         Base.metadata.create_all(bind=engine)
         import sys
         import os

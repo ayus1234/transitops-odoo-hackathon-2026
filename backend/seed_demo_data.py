@@ -24,6 +24,9 @@ from app.models.quick_action import QuickAction
 from app.models.custom_report import CustomReport
 from app.models.settings import ApplicationSettings, OrganizationSettings
 
+# Fix the random seed so that running this locally and on Vercel produces EXACTLY the same data
+random.seed(42)
+
 # ---------------------------------------------------------
 # CONSTANTS & REALISTIC DATA POOLS
 # ---------------------------------------------------------
