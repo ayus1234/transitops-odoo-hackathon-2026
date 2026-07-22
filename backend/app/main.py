@@ -28,9 +28,11 @@ app = FastAPI(
     openapi_url="/openapi.json"
 )
 
-# Ensure uploads directory exists and mount it
-os.makedirs("uploads", exist_ok=True)
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+import tempfile
+# Ensure uploads directory exists and mount it (use /tmp for Vercel Serverless compatibility)
+UPLOAD_DIR = os.path.join(tempfile.gettempdir(), "uploads")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 
 # Configure CORS
