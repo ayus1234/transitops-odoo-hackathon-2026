@@ -63,12 +63,62 @@ Built from the ground up for scalability, responsiveness, and performance, Trans
 
 ---
 
+## 🗂️ Project Structure
+
+The repository is organized into two main monolithic components:
+
+```text
+transitops-odoo-hackathon-2026/
+├── backend/                  # FastAPI Application
+│   ├── alembic/              # Database migration scripts
+│   ├── app/                  
+│   │   ├── api/              # API Routers & Endpoints (v1)
+│   │   ├── core/             # Configuration & Security (JWT, Config)
+│   │   ├── models/           # SQLAlchemy ORM Models
+│   │   ├── repositories/     # Database access layer (Unit of Work)
+│   │   ├── schemas/          # Pydantic schemas (Validation)
+│   │   └── services/         # Business Logic Layer
+│   ├── scripts/              # Seed scripts, data generation
+│   └── tests/                # Pytest suites
+└── frontend/                 # React + Vite Application
+    ├── public/               # Static assets
+    ├── src/
+    │   ├── assets/           # Images, Fonts, Global CSS
+    │   ├── components/       # Reusable UI components (Layout, UI, Forms)
+    │   ├── context/          # React Context (Auth, Theme)
+    │   ├── hooks/            # Custom React Hooks
+    │   ├── pages/            # Page-level components (Dashboard, Fleet, Trips)
+    │   ├── services/         # Axios API clients
+    │   └── utils/            # Helper functions
+    └── tests/                # Playwright E2E Tests
+```
+
+---
+
+## ⚙️ Architecture Workflow
+
+TransitOps utilizes a highly scalable layered architecture design for both the frontend and backend.
+
+### Backend Request Lifecycle
+1. **Router (`api/v1/`):** Receives HTTP request, handles JWT authorization (RBAC), and validates payload using Pydantic schemas.
+2. **Service (`services/`):** Executes complex business logic (e.g., verifying driver availability, transitioning vehicle states).
+3. **Repository (`repositories/`):** Interacts securely with PostgreSQL via SQLAlchemy ORM, ensuring ACID transaction compliance.
+4. **Database:** PostgreSQL executes the query and returns data through the layers back to the client.
+
+### Frontend Component Lifecycle
+1. **Page/View (`pages/`):** React component mounts and uses `useEffect` to trigger a data fetch via custom hooks.
+2. **API Client (`services/`):** Axios sends an authenticated HTTP request to the FastAPI backend.
+3. **Context (`context/`):** Global states (like user permissions, toasts, and themes) dynamically update the UI based on the API response.
+4. **Rendering:** UI components render data using TailwindCSS and custom utility classes.
+
+---
+
 ## 🧪 Testing & Performance Validation
 
 TransitOps is rigorously tested for enterprise deployments:
 - **Backend Regression Tests:** 233/233 Pytest cases passing (100% coverage on core services).
 - **Frontend E2E Tests:** 15/15 Playwright E2E tests passing, covering cross-module workflows.
-- **Enterprise Dataset Benchmarking:** Application validated against a massive synthetic dataset (10,000+ logs, 2,000+ trips).
+- **Enterprise Dataset Benchmarking:** Application validated against a massive synthetic dataset (10,000+ logs, 2,000+ trips). The dataset is fully localized for the Indian context, featuring authentic Indian commercial vehicle models, regional registration number formats, and nationwide trip routing between major Indian cities.
 - **API Performance:** Sub-100ms P95 latency on paginated, heavily indexed queries.
 - **Database:** Full migration to PostgreSQL verified with ACID compliance.
 
