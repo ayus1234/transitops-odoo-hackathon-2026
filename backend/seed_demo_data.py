@@ -83,7 +83,7 @@ def run():
     print("Validating Roles & Admin User...")
     driver_role = db.query(Role).filter(Role.name == "Driver").first()
     fleet_manager_role = db.query(Role).filter(Role.name == "Fleet Manager").first()
-    admin_role = db.query(Role).filter(Role.name == "Administrator").first()
+    admin_role = db.query(Role).filter(Role.name == "Super Admin").first()
     
     if not driver_role:
         driver_role = Role(name="Driver", permissions={"dashboard": ["read"], "trips": ["read", "update"], "vehicles": ["read"], "fuel": ["read", "create"], "maintenance": ["read"], "expenses": ["read", "create"]})
@@ -92,7 +92,7 @@ def run():
         fleet_manager_role = Role(name="Fleet Manager", permissions={"dashboard": ["read"], "vehicles": ["read", "create", "update", "delete", "export"], "drivers": ["read", "create", "update", "delete", "assign"], "trips": ["read", "create", "update", "delete", "export"], "maintenance": ["read", "manage", "approve"], "fuel": ["read", "export"], "reports": ["read", "export"], "inventory": ["read", "manage", "approve"]})
         db.add(fleet_manager_role)
     if not admin_role:
-        admin_role = Role(name="Administrator", permissions={"all": ["read", "create", "update", "delete"]})
+        admin_role = Role(name="Super Admin", permissions={"all": ["read", "create", "update", "delete"]})
         db.add(admin_role)
     db.commit()
 
@@ -109,7 +109,7 @@ def run():
         db.add(admin_user)
         db.commit()
     else:
-        # Fix existing admin user if they were created as Fleet Manager
+        # Fix existing admin user
         admin_user.role_id = admin_role.id
         db.commit()
 
