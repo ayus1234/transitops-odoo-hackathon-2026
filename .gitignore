@@ -74,3 +74,5 @@ error*.txt
 
 # Scratch
 scratch/
+.vercel
+.env*
