@@ -11,9 +11,17 @@ try:
 except Exception as e:
     import traceback
     error_msg = traceback.format_exc()
-    from fastapi import FastAPI
-    from fastapi.responses import PlainTextResponse
-    app = FastAPI()
-    @app.api_route("/{path_name:path}", methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
-    def catch_all(path_name: str):
-        return PlainTextResponse(error_msg, status_code=200)
+    
+    async def app(scope, receive, send):
+        if scope['type'] == 'http':
+            await send({
+                'type': 'http.response.start',
+                'status': 200,
+                'headers': [
+                    [b'content-type', b'text/plain'],
+                ]
+            })
+            await send({
+                'type': 'http.response.body',
+                'body': error_msg.encode('utf-8'),
+            })
