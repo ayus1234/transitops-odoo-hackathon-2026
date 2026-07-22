@@ -1,5 +1,13 @@
+import os
+import sys
+
+# Add the backend directory to Python's path so 'from app...' imports work
+backend_path = os.path.join(os.path.dirname(__file__), 'backend')
+if backend_path not in sys.path:
+    sys.path.insert(0, backend_path)
+
 try:
-    from backend.app.main import app
+    from app.main import app
 except Exception as e:
     import traceback
     error_msg = traceback.format_exc()
