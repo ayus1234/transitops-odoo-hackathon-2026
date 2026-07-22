@@ -1,7 +1,9 @@
-import sys
 import os
+import sys
 
-backend_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'backend')
-sys.path.append(backend_dir)
+root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+backend_dir = os.path.join(root_dir, 'backend')
+sys.path.insert(0, root_dir)
+sys.path.insert(0, backend_dir)
 
-from app.main import app
+from backend.app.main import app
