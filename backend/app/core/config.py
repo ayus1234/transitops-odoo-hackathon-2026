@@ -2,7 +2,8 @@
 Application configuration using Pydantic Settings.
 Loads configuration from environment variables.
 """
-from typing import List
+import os
+from typing import List, Any
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -30,7 +31,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     
     # CORS
-    CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:5173"]
+    CORS_ORIGINS: Any = ["http://localhost:3000", "http://localhost:5173"]
     
     # Pagination
     DEFAULT_PAGE_SIZE: int = 20

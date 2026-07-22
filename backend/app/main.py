@@ -173,6 +173,21 @@ async def shutdown_event():
     """
     print(f"Shutting down {settings.APP_NAME}")
 
+@app.get("/api/v1/setup-vercel-db")
+async def setup_vercel_db():
+    try:
+        from app.core.database import Base, engine
+        Base.metadata.create_all(bind=engine)
+        import sys
+        import os
+        sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        import seed_demo_data
+        seed_demo_data.run()
+        return {"success": True, "message": "Database tables created and demo data seeded successfully!"}
+    except Exception as e:
+        import traceback
+        return {"success": False, "error": str(e), "traceback": traceback.format_exc()}
+
 
 if __name__ == "__main__":
     import uvicorn
