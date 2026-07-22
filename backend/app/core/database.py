@@ -10,12 +10,25 @@ from sqlalchemy.pool import NullPool
 from app.core.config import settings
 
 
+import ssl
+
+# Create SSL context for remote PostgreSQL connections (Neon, Supabase, etc.)
+ssl_context = ssl.create_default_context()
+ssl_context.check_hostname = False
+ssl_context.verify_mode = ssl.CERT_NONE
+
+connect_args = {}
+# Use SSL if this is a remote database (not localhost)
+if "localhost" not in settings.DATABASE_URL and "127.0.0.1" not in settings.DATABASE_URL:
+    connect_args["ssl_context"] = ssl_context
+
 # Create SQLAlchemy engine
 engine = create_engine(
     settings.DATABASE_URL,
     echo=settings.DATABASE_ECHO,
     pool_pre_ping=True,
     poolclass=NullPool if settings.ENVIRONMENT == "testing" else None,
+    connect_args=connect_args
 )
 
 # Create session factory
