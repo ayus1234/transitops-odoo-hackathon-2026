@@ -173,17 +173,33 @@ async def shutdown_event():
     """
     print(f"Shutting down {settings.APP_NAME}")
 
-@app.get("/api/v1/setup-vercel-db")
-async def setup_vercel_db():
+@app.get("/api/v1/test-login")
+async def test_login():
     try:
-        from app.core.database import Base, engine
-        Base.metadata.create_all(bind=engine)
-        import sys
-        import os
-        sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        import seed_demo_data
-        seed_demo_data.run()
-        return {"success": True, "message": "Database tables created and demo data seeded successfully!"}
+        from app.core.database import SessionLocal
+        from app.models.user import User
+        from app.schemas.activity import ActivityCreate
+        from app.models.activity import ModuleEnum, ActivityTypeEnum, SeverityEnum
+        from app.services.activity_service import activity_service
+        import traceback
+        
+        db = SessionLocal()
+        try:
+            user = db.query(User).filter(User.email == "admin@transitops.com").first()
+            if not user:
+                return {"success": False, "error": "User not found"}
+            
+            activity_service.log_activity(db, ActivityCreate(
+                module=ModuleEnum.AUTHENTICATION,
+                activity_type=ActivityTypeEnum.LOGIN,
+                title="Test Login Attempt",
+                description="Test",
+                severity=SeverityEnum.WARNING,
+                status="Failed"
+            ))
+            return {"success": True, "message": "Login test succeeded!"}
+        finally:
+            db.close()
     except Exception as e:
         import traceback
         return {"success": False, "error": str(e), "traceback": traceback.format_exc()}
