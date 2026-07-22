@@ -7,7 +7,6 @@ python-multipart==0.0.6
 sqlalchemy==2.0.25
 alembic==1.13.1
 pg8000==1.30.5
-asyncpg==0.29.0
 
 # Pydantic and Validation
 pydantic==2.5.3
