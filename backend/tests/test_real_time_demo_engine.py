@@ -35,7 +35,7 @@ def test_trip_completion_logic(engine, mock_db):
     mock_db.query.return_value.filter.return_value.all.return_value = [mock_trip]
     
     # Run the sub-engine
-    with patch("app.core.demo_engine.activity_service") as mock_activity:
+    with patch("backend.app.core.demo_engine.activity_service") as mock_activity:
         engine._run_trip_engine(mock_db, datetime.now(), 12, sys_user)
         
         # Verify status updates

@@ -63,3 +63,14 @@ backend/SETUP_INSTRUCTIONS.md
 backend/complete_setup.bat
 backend/install_deps.bat
 backend/verify_setup.py
+
+# Zips
+*.zip
+
+# Debug Output
+test_*.txt
+*_out*.txt
+error*.txt
+
+# Scratch
+scratch/
