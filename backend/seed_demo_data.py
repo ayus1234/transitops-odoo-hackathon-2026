@@ -83,6 +83,7 @@ def run():
     print("Validating Roles & Admin User...")
     driver_role = db.query(Role).filter(Role.name == "Driver").first()
     fleet_manager_role = db.query(Role).filter(Role.name == "Fleet Manager").first()
+    admin_role = db.query(Role).filter(Role.name == "Administrator").first()
     
     if not driver_role:
         driver_role = Role(name="Driver", permissions={"dashboard": ["read"], "trips": ["read", "update"], "vehicles": ["read"], "fuel": ["read", "create"], "maintenance": ["read"], "expenses": ["read", "create"]})
@@ -90,6 +91,9 @@ def run():
     if not fleet_manager_role:
         fleet_manager_role = Role(name="Fleet Manager", permissions={"dashboard": ["read"], "vehicles": ["read", "create", "update", "delete", "export"], "drivers": ["read", "create", "update", "delete", "assign"], "trips": ["read", "create", "update", "delete", "export"], "maintenance": ["read", "manage", "approve"], "fuel": ["read", "export"], "reports": ["read", "export"], "inventory": ["read", "manage", "approve"]})
         db.add(fleet_manager_role)
+    if not admin_role:
+        admin_role = Role(name="Administrator", permissions={"all": ["read", "create", "update", "delete"]})
+        db.add(admin_role)
     db.commit()
 
     admin_user = db.query(User).filter(User.email == "admin@transitops.com").first()
@@ -99,10 +103,14 @@ def run():
             password_hash=get_password_hash("admin123"),
             first_name="Admin",
             last_name="User",
-            role_id=fleet_manager_role.id,
+            role_id=admin_role.id,
             is_active=True
         )
         db.add(admin_user)
+        db.commit()
+    else:
+        # Fix existing admin user if they were created as Fleet Manager
+        admin_user.role_id = admin_role.id
         db.commit()
 
     # 1. SEED SETTINGS
