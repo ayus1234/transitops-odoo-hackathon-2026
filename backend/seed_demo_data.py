@@ -88,6 +88,13 @@ def run():
     fleet_manager_role = db.query(Role).filter(Role.name == "Fleet Manager").first()
     admin_role = db.query(Role).filter(Role.name == "Super Admin").first()
     
+    administrator_role = db.query(Role).filter(Role.name == "Administrator").first()
+    dispatcher_role = db.query(Role).filter(Role.name == "Dispatcher").first()
+    maintenance_manager_role = db.query(Role).filter(Role.name == "Maintenance Manager").first()
+    technician_role = db.query(Role).filter(Role.name == "Technician").first()
+    safety_officer_role = db.query(Role).filter(Role.name == "Safety Officer").first()
+    hr_role = db.query(Role).filter(Role.name == "HR/Operations").first()
+    
     if not driver_role:
         driver_role = Role(name="Driver", permissions={"dashboard": ["read"], "trips": ["read", "update"], "vehicles": ["read"], "fuel": ["read", "create"], "maintenance": ["read"], "expenses": ["read", "create"]})
         db.add(driver_role)
@@ -97,6 +104,26 @@ def run():
     if not admin_role:
         admin_role = Role(name="Super Admin", permissions={"all": ["read", "create", "update", "delete"]})
         db.add(admin_role)
+        
+    if not administrator_role:
+        administrator_role = Role(name="Administrator", permissions={"all": ["read", "create", "update", "delete"]})
+        db.add(administrator_role)
+    if not dispatcher_role:
+        dispatcher_role = Role(name="Dispatcher", permissions={"trips": ["read", "create", "update", "assign", "dispatch"], "vehicles": ["read"], "drivers": ["read"]})
+        db.add(dispatcher_role)
+    if not maintenance_manager_role:
+        maintenance_manager_role = Role(name="Maintenance Manager", permissions={"maintenance": ["read", "create", "update", "delete", "approve"], "vehicles": ["read", "update"], "inventory": ["read", "manage"]})
+        db.add(maintenance_manager_role)
+    if not technician_role:
+        technician_role = Role(name="Technician", permissions={"maintenance": ["read", "update"], "vehicles": ["read"]})
+        db.add(technician_role)
+    if not safety_officer_role:
+        safety_officer_role = Role(name="Safety Officer", permissions={"reports": ["read", "export"], "drivers": ["read", "update"], "vehicles": ["read"]})
+        db.add(safety_officer_role)
+    if not hr_role:
+        hr_role = Role(name="HR/Operations", permissions={"drivers": ["read", "create", "update", "delete"], "users": ["read", "create", "update"]})
+        db.add(hr_role)
+        
     db.commit()
 
     admin_user = db.query(User).filter(User.email == "admin@transitops.com").first()
@@ -194,6 +221,27 @@ def run():
         drivers_created.append(driver)
     db.commit()
     
+    # Add users for new roles
+    print("Seeding users for additional roles...")
+    for r in [administrator_role, dispatcher_role, maintenance_manager_role, technician_role, safety_officer_role, hr_role]:
+        if r:
+            existing_user = db.query(User).filter(User.role_id == r.id).first()
+            if not existing_user:
+                fname = random.choice(FIRST_NAMES)
+                lname = random.choice(LAST_NAMES)
+                email = f"{r.name.lower().replace(' ', '.').replace('/', '.')}.{fname.lower()}@transitops.com"
+                user = User(
+                    email=email,
+                    password_hash=get_password_hash("password123"),
+                    first_name=fname,
+                    last_name=lname,
+                    phone_number=f"+9198{random.randint(10000000, 99999999)}",
+                    role_id=r.id,
+                    is_active=True
+                )
+                db.add(user)
+    db.commit()
+
     all_drivers = db.query(Driver).all()
 
     # 3. SEED VEHICLES
