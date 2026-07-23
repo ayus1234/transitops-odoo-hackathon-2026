@@ -282,7 +282,7 @@ def run():
         
         m = Maintenance(
             maintenance_number=f"MNT-2026-{1000 + i}",
-            vehicle_id=random.choice(all_vehicles).id if all_vehicles else None,
+            vehicle_id=all_vehicles[i % len(all_vehicles)].id if all_vehicles else None,
             maintenance_type=random.choice(maint_types),
             description=f"Standard {random.choice(maint_types).lower()} for vehicle health.",
             priority=random.choice(["Low", "Medium", "High", "Critical"]),
