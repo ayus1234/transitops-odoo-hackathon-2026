@@ -52,7 +52,7 @@ def get_roles(
 def create_custom_role(
     schema: RoleCreate,
     service: RBACService = Depends(get_rbac_service),
-    current_user: User = Depends(RoleChecker(["Super Admin", "Administrator", "Fleet Manager"]))
+    current_user: User = Depends(RoleChecker(["Super Admin", "Administrator"]))
 ):
     """Create a new custom role."""
     return service.create_custom_role(schema, current_user)
@@ -62,7 +62,7 @@ def clone_role(
     role_id: UUID,
     schema: RoleCloneRequest,
     service: RBACService = Depends(get_rbac_service),
-    current_user: User = Depends(RoleChecker(["Super Admin", "Administrator", "Fleet Manager"]))
+    current_user: User = Depends(RoleChecker(["Super Admin", "Administrator"]))
 ):
     """Clone an existing role into a new custom role."""
     return service.clone_role(role_id, schema, current_user)
@@ -72,7 +72,7 @@ def update_custom_role(
     role_id: UUID,
     schema: RoleUpdate,
     service: RBACService = Depends(get_rbac_service),
-    current_user: User = Depends(RoleChecker(["Super Admin", "Administrator", "Fleet Manager"]))
+    current_user: User = Depends(RoleChecker(["Super Admin", "Administrator"]))
 ):
     """Update a custom role's permissions or details."""
     return service.update_role(role_id, schema, current_user)

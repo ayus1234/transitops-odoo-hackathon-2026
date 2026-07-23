@@ -43,6 +43,7 @@ router = APIRouter()
 
 # Only Super Admin, Administrator, and Fleet Manager can access settings endpoints
 admin_only = RoleChecker(["Super Admin", "Administrator", "Fleet Manager"])
+strict_admin = RoleChecker(["Super Admin", "Administrator"])
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -296,7 +297,7 @@ def list_roles(
 def create_role(
     data: AdminRoleCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(admin_only),
+    current_user: User = Depends(strict_admin),
 ):
     """
     Create a new role.
@@ -316,7 +317,7 @@ def update_role(
     role_id: UUID,
     data: AdminRoleUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(admin_only),
+    current_user: User = Depends(strict_admin),
 ):
     """
     Update an existing role.
@@ -335,7 +336,7 @@ def update_role(
 def delete_role(
     role_id: UUID,
     db: Session = Depends(get_db),
-    current_user: User = Depends(admin_only),
+    current_user: User = Depends(strict_admin),
 ):
     """
     Delete a role.
@@ -373,7 +374,7 @@ def list_permissions(
 def assign_permission(
     data: PermissionAssign,
     db: Session = Depends(get_db),
-    current_user: User = Depends(admin_only),
+    current_user: User = Depends(strict_admin),
 ):
     """
     Assign a permission to a role.
@@ -393,7 +394,7 @@ def assign_permission(
 def remove_permission(
     data: PermissionRemove,
     db: Session = Depends(get_db),
-    current_user: User = Depends(admin_only),
+    current_user: User = Depends(strict_admin),
 ):
     """
     Remove a permission from a role.

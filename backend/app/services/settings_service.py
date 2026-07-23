@@ -39,8 +39,8 @@ from app.models.activity import ModuleEnum, ActivityTypeEnum, SeverityEnum
 
 
 # System roles that cannot be deleted
-SYSTEM_ROLES = ["Super Admin", "Administrator", "Fleet Manager", "Driver", "Safety Officer", "Financial Analyst"]
-ADMIN_ROLES = ["Super Admin", "Administrator", "Fleet Manager"]
+SYSTEM_ROLES = ["Super Admin", "Administrator", "Fleet Manager", "Driver", "Safety Officer", "Financial Analyst", "Dispatcher", "Maintenance Manager", "Technician", "HR/Operations"]
+ADMIN_ROLES = ["Super Admin", "Administrator"]
 
 
 class SettingsService:
@@ -338,5 +338,5 @@ class PermissionService:
         """Verify user has super admin privileges."""
         if user.role.name not in ADMIN_ROLES:
             raise AuthorizationError(
-                "Only Super Admin (Fleet Manager) can manage permissions"
+                "Only Super Admin and Administrator can manage permissions"
             )

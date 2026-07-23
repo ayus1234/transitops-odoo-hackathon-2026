@@ -87,5 +87,21 @@ TEMPLATES = {
         "expenses": ["read", "create"],
         "reports": ["read"],
         "dashboard": ["read"]
+    },
+    "HR/Operations": {
+        "drivers": ["read", "create", "update", "delete"],
+        "users": ["read", "create", "update"],
+        "dashboard": ["read"]
+    },
+    "Dispatcher": {
+        "trips": ["read", "create", "update", "assign", "dispatch"],
+        "vehicles": ["read"],
+        "drivers": ["read"],
+        "dashboard": ["read"]
+    },
+    "Technician": {
+        "maintenance": ["read", "update"],
+        "vehicles": ["read"],
+        "dashboard": ["read"]
     }
 }
