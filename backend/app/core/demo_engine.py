@@ -73,8 +73,8 @@ class RealTimeDemoEngine:
                     trip.vehicle.status = "Available"
                     trip.vehicle.current_odometer_km = float(trip.vehicle.current_odometer_km or 0) + random.uniform(50.0, 300.0)
                 if trip.driver:
-                    # In evening, drivers go to Resting. During day, Available.
-                    trip.driver.status = "Resting" if hour >= 17 or hour < 5 else "Available"
+                    # In evening, drivers go to Off Duty. During day, Available.
+                    trip.driver.status = "Off Duty" if hour >= 17 or hour < 5 else "Available"
 
                 # Log Activity & Notification
                 self._notify(db, sys_user, f"Trip {trip.trip_number} Completed", f"Successfully arrived at {trip.destination}.", "Success", "Trips")

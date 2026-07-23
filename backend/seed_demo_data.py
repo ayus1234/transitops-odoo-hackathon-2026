@@ -69,10 +69,10 @@ VEHICLE_MANUFACTURERS = [
 ]
 
 def random_date_past(days_back=90):
-    return datetime.utcnow() - timedelta(days=random.randint(0, days_back), hours=random.randint(0, 23), minutes=random.randint(0, 59))
+    return datetime(2026, 7, 24, 0, 0, 0) - timedelta(days=random.randint(0, days_back), hours=random.randint(0, 23), minutes=random.randint(0, 59))
 
 def random_date_future(days_forward=30):
-    return datetime.utcnow() + timedelta(days=random.randint(1, days_forward), hours=random.randint(0, 23), minutes=random.randint(0, 59))
+    return datetime(2026, 7, 24, 0, 0, 0) + timedelta(days=random.randint(1, days_forward), hours=random.randint(0, 23), minutes=random.randint(0, 59))
 
 def run():
     db = SessionLocal()
@@ -181,9 +181,9 @@ def run():
             user_id=user.id,
             license_number=f"MH{random.randint(10, 99)} {random.randint(2010, 2023)} {random.randint(1000000, 9999999)}",
             license_category=random.choice(["LMV", "HMV", "HGMV"]),
-            license_issue_date=date.today() - timedelta(days=random.randint(1000, 3000)),
-            license_expiry_date=date.today() + timedelta(days=random.randint(100, 1000)),
-            date_of_birth=date.today() - timedelta(days=random.randint(25*365, 55*365)),
+            license_issue_date=date(2026, 7, 24) - timedelta(days=random.randint(1000, 3000)),
+            license_expiry_date=date(2026, 7, 24) + timedelta(days=random.randint(100, 1000)),
+            date_of_birth=date(2026, 7, 24) - timedelta(days=random.randint(25*365, 55*365)),
             safety_score=random.uniform(75, 100),
             total_trips=random.randint(10, 200),
             status=random.choice(['Available', 'Available', 'On Trip', 'On Trip', 'Off Duty']),
