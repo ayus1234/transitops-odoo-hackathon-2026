@@ -226,23 +226,23 @@ def run():
     
     # Also ensure there's a predictable Fleet Manager
     roles_to_seed = [
-        (administrator_role, "administrator@transitops.com", "Admin"),
-        (dispatcher_role, "dispatcher@transitops.com", "Dispatcher"),
-        (maintenance_manager_role, "maintenance@transitops.com", "Maintenance"),
-        (technician_role, "technician@transitops.com", "Technician"),
-        (safety_officer_role, "safety@transitops.com", "Safety"),
-        (hr_role, "hr@transitops.com", "HR"),
-        (fleet_manager_role, "fleet@transitops.com", "Fleet")
+        (administrator_role, "administrator@transitops.com", "Admin", "demo_pass_adminpass"),
+        (dispatcher_role, "dispatcher@transitops.com", "Dispatcher", "demo_pass_dispatch"),
+        (maintenance_manager_role, "maintenance@transitops.com", "Maintenance", "demo_pass_maint"),
+        (technician_role, "technician@transitops.com", "Technician", "demo_pass_tech"),
+        (safety_officer_role, "safety@transitops.com", "Safety", "demo_pass_safety"),
+        (hr_role, "hr@transitops.com", "HR", "demo_pass_hr"),
+        (fleet_manager_role, "fleet@transitops.com", "Fleet", "demo_pass_fleet")
     ]
     
-    for r, email, fname in roles_to_seed:
+    for r, email, fname, password in roles_to_seed:
         if r:
             existing_user = db.query(User).filter(User.email == email).first()
             if not existing_user:
                 lname = "User"
                 user = User(
                     email=email,
-                    password_hash=get_password_hash("password123"),
+                    password_hash=get_password_hash(password),
                     first_name=fname,
                     last_name=lname,
                     phone_number=f"+9198{random.randint(10000000, 99999999)}",
