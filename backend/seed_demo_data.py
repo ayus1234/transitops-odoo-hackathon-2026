@@ -54,17 +54,17 @@ LAST_NAMES = ["Sharma", "Patel", "Singh", "Kumar", "Das", "Bose", "Gupta", "Nair
               "Jain", "Verma", "Chauhan", "Yadav", "Pandey", "Iyer", "Pillai", "Mehta", "Deshmukh", "Joshi"]
 
 VEHICLE_MANUFACTURERS = [
-    ("Tata Motors", "Prima", "Heavy Duty"),
-    ("Tata Motors", "Signa", "Heavy Duty"),
-    ("Ashok Leyland", "Captain", "Heavy Duty"),
-    ("Ashok Leyland", "Boss", "Medium Duty"),
-    ("Mahindra", "Blazo", "Heavy Duty"),
-    ("Mahindra", "Furio", "Medium Duty"),
-    ("Volvo", "FH16", "Heavy Duty"),
-    ("Volvo", "FMX", "Heavy Duty"),
-    ("BharatBenz", "2823C", "Heavy Duty"),
-    ("Eicher", "Pro 3000", "Medium Duty"),
-    ("Eicher", "Pro 6000", "Heavy Duty"),
+    ("Tata Motors", "Prima", "Truck"),
+    ("Tata Motors", "Signa", "Truck"),
+    ("Ashok Leyland", "Captain", "Truck"),
+    ("Ashok Leyland", "Boss", "Truck"),
+    ("Mahindra", "Blazo", "Truck"),
+    ("Mahindra", "Furio", "Truck"),
+    ("Volvo", "FH16", "Truck"),
+    ("Volvo", "FMX", "Truck"),
+    ("BharatBenz", "2823C", "Truck"),
+    ("Eicher", "Pro 3000", "Truck"),
+    ("Eicher", "Pro 6000", "Truck"),
     ("Force Motors", "Traveller", "Van"),
 ]
 
