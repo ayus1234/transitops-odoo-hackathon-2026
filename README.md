@@ -159,8 +159,3 @@ npm run dev
 ```
 
 Visit `http://localhost:5173` to access the TransitOps application.
-
----
-
-## 📜 License
-Proprietary / Internal - Not for open-source distribution without explicit authorization. All rights reserved.
