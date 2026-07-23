@@ -251,7 +251,7 @@ def run():
         end_dt = start_dt + timedelta(days=random.randint(1, 4), hours=random.randint(1, 12)) if status == 'Completed' else None
         
         t = Trip(
-            trip_number=f"TRP-2026-{random.randint(10000, 99999)}",
+            trip_number=f"TRP-2026-{10000 + i}",
             vehicle_id=random.choice(all_vehicles).id if all_vehicles else None,
             driver_id=random.choice(all_drivers).id if all_drivers else None,
             source=source_city,
@@ -281,7 +281,7 @@ def run():
         sched_date = random_date_past(60) if status == 'Completed' else random_date_future(60)
         
         m = Maintenance(
-            maintenance_number=f"MNT-2026-{random.randint(1000, 9999)}",
+            maintenance_number=f"MNT-2026-{1000 + i}",
             vehicle_id=random.choice(all_vehicles).id if all_vehicles else None,
             maintenance_type=random.choice(maint_types),
             description=f"Standard {random.choice(maint_types).lower()} for vehicle health.",
@@ -376,7 +376,7 @@ def run():
     
     for i in range(tickets_to_create):
         t = SupportTicket(
-            ticket_number=f"TKT-2026-{random.randint(1000, 9999)}",
+            ticket_number=f"TKT-2026-{1000 + i}",
             created_by=admin_user.id,
             title=random.choice(["GPS Tracker Offline", "Dashboard Sync Error", "Unable to assign driver", "Fuel log mismatch", "Report generation failed"]),
             description="Detailed issue description provided by the user.",
