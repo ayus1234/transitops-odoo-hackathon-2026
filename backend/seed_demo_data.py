@@ -223,13 +223,23 @@ def run():
     
     # Add users for new roles
     print("Seeding users for additional roles...")
-    for r in [administrator_role, dispatcher_role, maintenance_manager_role, technician_role, safety_officer_role, hr_role]:
+    
+    # Also ensure there's a predictable Fleet Manager
+    roles_to_seed = [
+        (administrator_role, "administrator@transitops.com", "Admin"),
+        (dispatcher_role, "dispatcher@transitops.com", "Dispatcher"),
+        (maintenance_manager_role, "maintenance@transitops.com", "Maintenance"),
+        (technician_role, "technician@transitops.com", "Technician"),
+        (safety_officer_role, "safety@transitops.com", "Safety"),
+        (hr_role, "hr@transitops.com", "HR"),
+        (fleet_manager_role, "fleet@transitops.com", "Fleet")
+    ]
+    
+    for r, email, fname in roles_to_seed:
         if r:
-            existing_user = db.query(User).filter(User.role_id == r.id).first()
+            existing_user = db.query(User).filter(User.email == email).first()
             if not existing_user:
-                fname = random.choice(FIRST_NAMES)
-                lname = random.choice(LAST_NAMES)
-                email = f"{r.name.lower().replace(' ', '.').replace('/', '.')}.{fname.lower()}@transitops.com"
+                lname = "User"
                 user = User(
                     email=email,
                     password_hash=get_password_hash("password123"),
