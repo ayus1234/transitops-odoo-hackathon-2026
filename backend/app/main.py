@@ -159,10 +159,11 @@ async def startup_event():
         print("Database tables created")
         
     # Start Live Simulation Engine (only if not on Vercel/Lambda)
-    if not os.environ.get("VERCEL"):
-        asyncio.create_task(start_demo_engine())
-    else:
-        print("Vercel environment detected. Demo Engine disabled.")
+    # Disabled so local and Vercel stay perfectly identical
+    # if not os.environ.get("VERCEL"):
+    #     asyncio.create_task(start_demo_engine())
+    # else:
+    print("Demo Engine completely disabled to ensure 100% identical data.")
 
 
 # Shutdown event
