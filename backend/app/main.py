@@ -184,8 +184,17 @@ async def setup_vercel_db():
         import os
         sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         import seed_demo_data
+        import seed_inventory_demo_data
+        import seed_activity_demo_data
+        
+        print("Seeding core data...")
         seed_demo_data.run()
-        return {"success": True, "message": "Database tables created and demo data seeded successfully!"}
+        print("Seeding inventory data...")
+        seed_inventory_demo_data.seed_data()
+        print("Seeding activity data...")
+        seed_activity_demo_data.run()
+        
+        return {"success": True, "message": "Database tables created and ALL demo data (core, inventory, activity) seeded successfully!"}
     except Exception as e:
         import traceback
         return {"success": False, "error": str(e), "traceback": traceback.format_exc()}

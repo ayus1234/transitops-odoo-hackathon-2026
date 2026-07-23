@@ -34,9 +34,10 @@ def get_random_date_within_90_days():
     days_ago = random.randint(range_min, range_max)
     hours_ago = random.randint(0, 23)
     minutes_ago = random.randint(0, 59)
-    return datetime.utcnow() - timedelta(days=days_ago, hours=hours_ago, minutes=minutes_ago)
+    return datetime(2026, 7, 24, 0, 0, 0) - timedelta(days=days_ago, hours=hours_ago, minutes=minutes_ago)
 
 def run():
+    random.seed(42)
     print("Initializing Database Session...")
     db = SessionLocal()
     

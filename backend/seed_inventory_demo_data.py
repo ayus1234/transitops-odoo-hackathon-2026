@@ -11,6 +11,7 @@ import uuid
 from datetime import datetime, timedelta
 
 def seed_data():
+    random.seed(42)
     db: Session = SessionLocal()
     try:
         user = db.query(User).filter(User.email == "admin@transitops.com").first()
@@ -131,7 +132,7 @@ def seed_data():
                 procurement_request_id=po[0], vendor_name=po[1],
                 quantity=po[2], cost=po[3],
                 tracking_id=po[5], shipment_status=po[4],
-                delivery_date=datetime.now() + timedelta(days=random.randint(2, 14))
+                delivery_date=datetime(2026, 7, 24, 0, 0, 0) + timedelta(days=random.randint(2, 14))
             ))
             
         db.add_all(po_objects)
