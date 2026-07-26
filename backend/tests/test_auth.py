@@ -153,3 +153,30 @@ def test_logout(client: TestClient, auth_headers: dict):
     
     assert response.status_code == 200
     assert response.json()["success"] is True
+
+
+def test_list_demo_accounts(client: TestClient):
+    """Test retrieving list of dedicated role-based demo accounts for hackathon evaluation."""
+    response = client.get("/api/v1/auth/demo-accounts")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) == 13
+    roles = {account["role"] for account in data}
+    assert "Super Admin" in roles
+    assert "Administrator" in roles
+    assert "System Admin" in roles
+    assert "Fleet Manager" in roles
+    assert "Dispatcher" in roles
+    assert "Maintenance Manager" in roles
+    assert "Technician" in roles
+    assert "Safety Officer" in roles
+    assert "Financial Analyst" in roles
+    assert "Procurement Operations" in roles
+    assert "HR/Operations" in roles
+    assert "Support Agent" in roles
+    assert "Driver" in roles
+    for item in data:
+        assert "email" in item and item["email"].endswith("@transitops.com")
+        assert "password" in item and len(item["password"]) > 0
+        assert "description" in item and len(item["description"]) > 0

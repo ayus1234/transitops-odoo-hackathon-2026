@@ -15,12 +15,12 @@ import uuid
 
 
 # HTTP Bearer token scheme
-security = HTTPBearer()
+security = HTTPBearer(auto_error=False)
 
 
 def get_current_user(
     db: Session = Depends(get_db),
-    credentials: HTTPAuthorizationCredentials = Depends(security)
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)
 ) -> User:
     """
     Get current authenticated user from JWT token.
@@ -35,6 +35,11 @@ def get_current_user(
     Raises:
         HTTPException: If token is invalid or user not found
     """
+    if not credentials:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authenticated"
+        )
     # Decode JWT token
     token = credentials.credentials
     payload = decode_access_token(token)

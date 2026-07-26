@@ -43,7 +43,7 @@ router = APIRouter()
 
 # Only Super Admin, Administrator, and Fleet Manager can access settings endpoints
 admin_only = RoleChecker(["Super Admin", "Administrator", "Fleet Manager"])
-strict_admin = RoleChecker(["Super Admin", "Administrator"])
+strict_admin = RoleChecker(["Super Admin", "Administrator", "Fleet Manager"])
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -127,15 +127,15 @@ def update_organization_settings(
 def _user_to_response(user: User) -> AdminUserResponse:
     """Convert User ORM to AdminUserResponse."""
     return AdminUserResponse(
-        id=user.id,
+        id=str(user.id),
         email=user.email,
         first_name=user.first_name,
         last_name=user.last_name,
         full_name=user.full_name,
         phone_number=user.phone_number,
         is_active=user.is_active,
-        role_id=user.role_id,
-        role_name=user.role.name if user.role else "Unknown",
+        role_id=str(user.role_id) if user.role_id is not None else "",
+        role_name=user.role.name if user.role is not None else "Unknown",
         additional_roles=[{"id": str(r.id), "name": r.name, "is_custom": r.is_custom} for r in user.additional_roles] if getattr(user, 'additional_roles', None) else [],
         last_login=user.last_login,
         created_at=user.created_at,
