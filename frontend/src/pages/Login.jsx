@@ -1,12 +1,115 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import api from '../services/api';
+
+const DEFAULT_DEMO_ACCOUNTS = [
+  {
+    role: "Super Admin",
+    email: "admin@transitops.com",
+    password: "admin123",
+    description: "Unrestricted administrative access across all enterprise ERP modules, user management, and system governance."
+  },
+  {
+    role: "Administrator",
+    email: "administrator@transitops.com",
+    password: "adminpass2026",
+    description: "Comprehensive administrative privileges for configuring roles, organization settings, and enterprise oversight."
+  },
+  {
+    role: "System Admin",
+    email: "sysadmin@transitops.com",
+    password: "sysadmin2026",
+    description: "Technical administrative control over system diagnostics, support center operations, and server configurations."
+  },
+  {
+    role: "Fleet Manager",
+    email: "fleet@transitops.com",
+    password: "fleet2026",
+    description: "Full fleet management capabilities including vehicle registry, driver assignments, trip tracking, and operational reports."
+  },
+  {
+    role: "Dispatcher",
+    email: "dispatcher@transitops.com",
+    password: "dispatch2026",
+    description: "Operational control over trip creation, route scheduling, driver assignments, and live dispatch monitoring."
+  },
+  {
+    role: "Maintenance Manager",
+    email: "maintenance@transitops.com",
+    password: "maint2026",
+    description: "Authority over vehicle servicing, repair schedules, maintenance approval workflows, and part inventory management."
+  },
+  {
+    role: "Technician",
+    email: "technician@transitops.com",
+    password: "tech2026",
+    description: "Field access to inspect vehicles, log repair notes, update task statuses, and monitor service checklists."
+  },
+  {
+    role: "Safety Officer",
+    email: "safety@transitops.com",
+    password: "safety2026",
+    description: "Focused access to driver safety scores, incident logs, compliance audits, and enterprise safety analytics."
+  },
+  {
+    role: "Financial Analyst",
+    email: "finance@transitops.com",
+    password: "finance123",
+    description: "Comprehensive financial insight across expenses, fuel budgeting, operational cost analytics, and accounting reports."
+  },
+  {
+    role: "Procurement Operations",
+    email: "procurement@transitops.com",
+    password: "procure2026",
+    description: "Management of inventory ordering, vendor purchase orders, spare parts requisition, and cost approvals."
+  },
+  {
+    role: "HR/Operations",
+    email: "hr@transitops.com",
+    password: "hr2026",
+    description: "Personnel management access for driver onboarding, profile updates, license verification, and HR records."
+  },
+  {
+    role: "Support Agent",
+    email: "support@transitops.com",
+    password: "support2026",
+    description: "Help center access to resolve user tickets, assist driver technical issues, and log support interactions."
+  },
+  {
+    role: "Driver",
+    email: "driver@transitops.com",
+    password: "driver2026",
+    description: "Driver portal access for viewing assigned trips, vehicle telemetry, navigation logs, and personal safety metrics."
+  }
+];
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const { login, error } = useAuth();
+
+  // Demo Accounts state and mode detection
+  const isDemoMode = import.meta.env.VITE_DEMO_MODE === 'true' || import.meta.env.VITE_DEMO_MODE === true;
+  const [demoAccounts, setDemoAccounts] = useState(DEFAULT_DEMO_ACCOUNTS);
+  const [isDemoExpanded, setIsDemoExpanded] = useState(false);
+  const [shownDemoPasswords, setShownDemoPasswords] = useState({});
+
+  useEffect(() => {
+    if (isDemoMode) {
+      api.get('/auth/demo-accounts')
+        .then((response) => {
+          if (Array.isArray(response.data) && response.data.length > 0) {
+            setDemoAccounts(response.data);
+          }
+        })
+        .catch(() => {
+          // Fallback to DEFAULT_DEMO_ACCOUNTS if API is unavailable during offline viewing
+        });
+    }
+  }, [isDemoMode]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -17,16 +120,28 @@ const Login = () => {
     
     if (success) {
       setIsSuccess(true);
-      // Wait a moment so the user sees the green "Authenticated" state before redirect
       setTimeout(() => {
-        // Redirection is handled by the AuthContext, but we hold the state briefly
+        // Redirection handled by AuthContext
       }, 1000);
     } else {
       setIsSubmitting(false);
     }
   };
 
-  // Button styling logic to exactly match the vanilla JS manipulation
+  const handleUseAccount = (account) => {
+    setEmail(account.email);
+    setPassword(account.password);
+    const formElement = document.getElementById('loginForm');
+    if (formElement) {
+      formElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
+  const toggleDemoPassword = (role) => {
+    setShownDemoPasswords((prev) => ({ ...prev, [role]: !prev[role] }));
+  };
+
+  // Button styling logic
   let buttonClasses = "group w-full h-[48px] text-on-primary font-title-sm text-title-sm rounded-lg transition-all flex items-center justify-center gap-sm shadow-sm active:scale-[0.98]";
   if (isSuccess) {
     buttonClasses += " bg-secondary";
@@ -38,7 +153,7 @@ const Login = () => {
 
   return (
     <div className="text-on-surface bg-background min-h-screen flex items-center justify-center p-0 md:p-lg">
-      <main className="w-full h-screen md:h-[min(800px,90vh)] max-w-[1200px] flex overflow-hidden md:rounded-xl md:shadow-lg bg-surface border border-outline-variant">
+      <main className="w-full h-screen md:h-[min(840px,92vh)] max-w-[1200px] flex overflow-hidden md:rounded-xl md:shadow-lg bg-surface border border-outline-variant">
         {/* Left Side: Logistics Branding & Visual */}
         <section className="hidden lg:flex flex-col w-1/2 relative bg-primary-container text-on-primary-container p-xl overflow-hidden">
           {/* Subtle Overlay Pattern */}
@@ -64,20 +179,21 @@ const Login = () => {
               </div>
             </div>
           </div>
-          {/* Background Image with detail prompt */}
+          {/* Background Image */}
           <div className="absolute bottom-0 right-0 w-full h-full opacity-40 mix-blend-overlay pointer-events-none">
             <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBBFsukOWlM7UrCbXVjEiwjQuItALBEKjjxX5H5QnJGAIIMBMECbFzNGr9Wyb9PGUEDUIsRm09yuJ17sS3RxxPmBc5sQpiZxbaJdEDdG7XDTlrBm1AhOKOqyyTh-a06vFNeJTinEsCHLtYPrdJn0hFOWGhob_Xso4SiIn81nukOVY3KD3xb8P1b2mSM4VeP9eDHzdAkI8fzOvtJAC-5wg94W06SQq70bg9Nu38kk2HFdBsT8IjOfS3L')" }}></div>
           </div>
         </section>
         
-        {/* Right Side: Login Form */}
-        <section className="w-full lg:w-1/2 flex flex-col items-center justify-center p-xl bg-surface relative">
-          {/* Mobile Logo (Visible only on small screens) */}
-          <div className="lg:hidden flex flex-wrap md:flex-nowrap items-center gap-sm w-full md:w-auto mb-xl absolute top-md left-md">
-            <span className="material-symbols-outlined text-primary text-headline-md">local_shipping</span>
-            <h1 className="font-headline-md text-headline-md font-extrabold text-primary">TransitOps</h1>
-          </div>
-          <div className="w-full max-w-[400px]">
+        {/* Right Side: Login Form & Demo Accounts */}
+        <section className="w-full lg:w-1/2 flex flex-col items-center justify-center p-md sm:p-lg md:p-xl bg-surface relative overflow-y-auto max-h-screen">
+          <div className="w-full max-w-[420px] my-auto py-6">
+            {/* Mobile Logo (Visible only on small screens) */}
+            <div className="lg:hidden flex items-center gap-sm mb-lg">
+              <span className="material-symbols-outlined text-primary text-headline-md">local_shipping</span>
+              <h1 className="font-headline-md text-headline-md font-extrabold text-primary">TransitOps</h1>
+            </div>
+            
             <header className="mb-xl">
               <h2 className="font-headline-md text-headline-md text-on-surface mb-xs">Welcome Back</h2>
               <p className="font-body-md text-body-md text-on-surface-variant">Access your logistics control center</p>
@@ -116,14 +232,24 @@ const Login = () => {
                 <div className="relative group">
                   <span className="absolute left-md top-1/2 -translate-y-1/2 material-symbols-outlined text-outline text-[20px] group-focus-within:text-primary transition-colors">lock</span>
                   <input 
-                    className="w-full h-[48px] pl-[44px] pr-md bg-surface border border-outline-variant rounded focus:border-primary transition-all font-body-md text-body-md focus:ring-2 focus:ring-primary/20 outline-none" 
+                    className="w-full h-[48px] pl-[44px] pr-[48px] bg-surface border border-outline-variant rounded focus:border-primary transition-all font-body-md text-body-md focus:ring-2 focus:ring-primary/20 outline-none" 
                     id="password" 
                     placeholder="••••••••" 
                     required 
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute right-md top-1/2 -translate-y-1/2 text-outline hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 rounded p-1 flex items-center justify-center"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    <span className="material-symbols-outlined text-[20px]">
+                      {showPassword ? "visibility_off" : "visibility"}
+                    </span>
+                  </button>
                 </div>
               </div>
               {/* Remember Me & Policy */}
@@ -157,6 +283,93 @@ const Login = () => {
                 )}
               </button>
             </form>
+
+            {/* Demo Accounts Section */}
+            {isDemoMode && (
+              <div className="mt-xl pt-lg border-t border-outline-variant">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-sm bg-primary-container/15 p-md rounded-lg border border-primary/20">
+                  <div>
+                    <div className="flex items-center gap-xs">
+                      <span className="material-symbols-outlined text-primary text-[20px]">science</span>
+                      <h3 className="font-title-sm text-title-sm font-bold text-on-surface">Demo Accounts</h3>
+                    </div>
+                    <p className="font-body-xs text-[12px] text-on-surface-variant mt-0.5">
+                      Choose a role to access TransitOps with the corresponding demo account.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsDemoExpanded((prev) => !prev)}
+                    className="shrink-0 px-3 py-1.5 bg-surface border border-outline-variant hover:border-primary text-on-surface font-title-xs text-xs font-bold rounded shadow-2xs transition-all flex items-center gap-xs active:scale-[0.98]"
+                    aria-expanded={isDemoExpanded}
+                    aria-controls="demo-accounts-panel"
+                  >
+                    <span>{isDemoExpanded ? "Hide Demo Accounts" : "View Demo Accounts"}</span>
+                    <span className={`material-symbols-outlined text-[18px] transition-transform ${isDemoExpanded ? "rotate-180" : ""}`}>
+                      expand_more
+                    </span>
+                  </button>
+                </div>
+
+                {isDemoExpanded && (
+                  <div 
+                    id="demo-accounts-panel" 
+                    className="mt-md space-y-3 max-h-[360px] overflow-y-auto pr-1"
+                  >
+                    {demoAccounts.map((account) => (
+                      <div 
+                        key={account.role} 
+                        className="p-3 bg-surface border border-outline-variant rounded-lg hover:border-primary/40 transition-all flex flex-col gap-2 shadow-2xs"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <span className="font-title-sm font-bold text-on-surface block text-sm">{account.role}</span>
+                            <p className="text-[12px] text-on-surface-variant leading-tight mt-0.5 line-clamp-2">
+                              {account.description}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleUseAccount(account)}
+                            className="shrink-0 px-2.5 py-1.5 bg-primary/10 hover:bg-primary text-primary hover:text-on-primary border border-primary/20 rounded text-[12px] font-bold transition-all flex items-center gap-1 shadow-2xs active:scale-[0.98]"
+                          >
+                            <span className="material-symbols-outlined text-[15px]">login</span>
+                            <span>Use Account</span>
+                          </button>
+                        </div>
+                        
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs pt-2 mt-1 border-t border-outline-variant/40 bg-surface-variant/20 p-2 rounded">
+                          <div className="flex flex-col break-all mr-2">
+                            <span className="text-on-surface-variant font-medium text-[10px] uppercase tracking-wider">Email</span>
+                            <span className="font-mono text-[12px] font-semibold text-on-surface">{account.email}</span>
+                          </div>
+                          
+                          <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
+                            <div className="flex flex-col">
+                              <span className="text-on-surface-variant font-medium text-[10px] uppercase tracking-wider">Password</span>
+                              <span className="font-mono text-[12px] text-on-surface">
+                                {shownDemoPasswords[account.role] ? account.password : '••••••••'}
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => toggleDemoPassword(account.role)}
+                              className="text-outline hover:text-primary transition-colors p-1 rounded hover:bg-surface focus:outline-none focus:ring-1 focus:ring-primary/20 flex items-center justify-center self-end sm:self-auto"
+                              aria-label={shownDemoPasswords[account.role] ? `Hide ${account.role} demo password` : `Show ${account.role} demo password`}
+                            >
+                              <span className="material-symbols-outlined text-[16px]">
+                                {shownDemoPasswords[account.role] ? "visibility_off" : "visibility"}
+                              </span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             <footer className="mt-xl pt-xl border-t border-outline-variant text-center">
               <p className="font-body-sm text-body-sm text-on-surface-variant mb-md">
                 Protected by enterprise-grade security.

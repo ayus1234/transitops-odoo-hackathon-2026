@@ -40,7 +40,7 @@ from app.models.activity import ModuleEnum, ActivityTypeEnum, SeverityEnum
 
 # System roles that cannot be deleted
 SYSTEM_ROLES = ["Super Admin", "Administrator", "Fleet Manager", "Driver", "Safety Officer", "Financial Analyst", "Dispatcher", "Maintenance Manager", "Technician", "HR/Operations"]
-ADMIN_ROLES = ["Super Admin", "Administrator"]
+ADMIN_ROLES = ["Super Admin", "Administrator", "Fleet Manager"]
 
 
 class SettingsService:
@@ -60,7 +60,7 @@ class SettingsService:
             settings = self.app_repo.create_default()
         return settings
 
-    def update_app_settings(self, data: ApplicationSettingsUpdate, current_user: User = None) -> ApplicationSettings:
+    def update_app_settings(self, data: ApplicationSettingsUpdate, current_user: Optional[User] = None) -> ApplicationSettings:
         """Update application settings."""
         settings = self.get_app_settings()
         update_data = data.model_dump(exclude_unset=True)
@@ -68,7 +68,7 @@ class SettingsService:
             raise BusinessLogicError("No fields provided for update", code="BIZ_010")
         updated_settings = self.app_repo.update(settings, update_data)
         
-        if current_user:
+        if current_user is not None:
             activity_service.log_activity(self.db, ActivityCreate(
                 module=ModuleEnum.SETTINGS,
                 activity_type=ActivityTypeEnum.UPDATED,
@@ -76,7 +76,7 @@ class SettingsService:
                 description="Application configuration was modified.",
                 severity=SeverityEnum.INFO,
                 status="Success",
-                user_id=current_user.id
+                user_id=str(current_user.id)
             ))
             
         return updated_settings
@@ -90,7 +90,7 @@ class SettingsService:
             org = self.org_repo.create_default()
         return org
 
-    def update_org_settings(self, data: OrganizationSettingsUpdate, current_user: User = None) -> OrganizationSettings:
+    def update_org_settings(self, data: OrganizationSettingsUpdate, current_user: Optional[User] = None) -> OrganizationSettings:
         """Update organization settings."""
         org = self.get_org_settings()
         update_data = data.model_dump(exclude_unset=True)
@@ -98,7 +98,7 @@ class SettingsService:
             raise BusinessLogicError("No fields provided for update", code="BIZ_010")
         updated_org = self.org_repo.update(org, update_data)
         
-        if current_user:
+        if current_user is not None:
             activity_service.log_activity(self.db, ActivityCreate(
                 module=ModuleEnum.SETTINGS,
                 activity_type=ActivityTypeEnum.UPDATED,
@@ -106,7 +106,7 @@ class SettingsService:
                 description="Organization configuration was modified.",
                 severity=SeverityEnum.INFO,
                 status="Success",
-                user_id=current_user.id
+                user_id=str(current_user.id)
             ))
             
         return updated_org
@@ -338,5 +338,5 @@ class PermissionService:
         """Verify user has super admin privileges."""
         if user.role.name not in ADMIN_ROLES:
             raise AuthorizationError(
-                "Only Super Admin and Administrator can manage permissions"
+                "Only Super Admin (Fleet Manager) can manage permissions"
             )

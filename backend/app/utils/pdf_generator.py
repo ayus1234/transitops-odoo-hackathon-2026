@@ -28,7 +28,7 @@ def generate_pdf_table(title: str, headers: List[str], data: List[List[Any]]) ->
     # Headers
     pdf.set_font("helvetica", 'B', 10)
     for i, header in enumerate(headers):
-        pdf.cell(col_widths[i], 10, str(header), border=1, align='C')
+        pdf.cell(col_widths[i], 10, header, border=1, align='C')
     pdf.ln()
     
     # Rows
@@ -38,4 +38,5 @@ def generate_pdf_table(title: str, headers: List[str], data: List[List[Any]]) ->
             pdf.cell(col_widths[i], 10, str(item), border=1, align='C')
         pdf.ln()
         
-    return bytes(pdf.output())
+    res = pdf.output()
+    return res.encode('latin-1', 'replace') if isinstance(res, str) else bytes(res)

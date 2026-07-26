@@ -5,7 +5,7 @@ import csv
 import io
 from fpdf import FPDF
 from datetime import date
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
@@ -42,8 +42,8 @@ class ReportService:
             "Registration": v.registration_number,
             "Name": v.vehicle_name,
             "Type": v.vehicle_type,
-            "Capacity (kg)": float(v.capacity_kg),
-            "Odometer": float(v.current_odometer_km) if v.current_odometer_km else 0.0,
+            "Capacity (kg)": v.capacity_kg,
+            "Odometer": v.current_odometer_km if v.current_odometer_km else 0.0,
             "Status": v.status
         } for v in vehicles]
 
@@ -58,7 +58,7 @@ class ReportService:
             "License": d.license_number,
             "Type": d.license_category,
             "Expiry": str(d.license_expiry_date),
-            "Safety Score": float(d.safety_score),
+            "Safety Score": d.safety_score,
             "Trips": d.total_trips,
             "Status": d.status
         } for d in drivers]
@@ -84,7 +84,7 @@ class ReportService:
             "Driver": f"{t.driver.user.first_name} {t.driver.user.last_name}",
             "Source": t.source,
             "Destination": t.destination,
-            "Distance (km)": float(t.actual_distance_km) if t.actual_distance_km else 0.0,
+            "Distance (km)": t.actual_distance_km if t.actual_distance_km else 0.0,
             "Status": t.status
         } for t in trips]
 
@@ -108,7 +108,7 @@ class ReportService:
             "Vehicle": m.vehicle.registration_number,
             "Type": m.maintenance_type,
             "Priority": m.priority,
-            "Cost": float(m.actual_cost) if m.actual_cost else 0.0,
+            "Cost": m.actual_cost if m.actual_cost else 0.0,
             "Status": m.status
         } for m in maint]
 
@@ -127,8 +127,8 @@ class ReportService:
         return [{
             "Vehicle": f.vehicle.registration_number,
             "Type": f.fuel_type,
-            "Liters": float(f.quantity_liters),
-            "Cost": float(f.total_cost),
+            "Liters": f.quantity_liters,
+            "Cost": f.total_cost,
             "Date": str(f.refuel_date.date())
         } for f in fuels]
 
@@ -149,7 +149,7 @@ class ReportService:
         expenses = query.all()
         return [{
             "Type": e.expense_type,
-            "Amount": float(e.amount),
+            "Amount": e.amount,
             "Date": str(e.expense_date),
             "Vendor": e.vendor_name or "N/A",
             "Status": e.status
@@ -200,17 +200,17 @@ class ReportService:
         other_cost = float(other_q.scalar() or 0.0)
         
         return [
-            {"Category": "Fuel", "Total Cost": float(fuel_cost)},
-            {"Category": "Maintenance", "Total Cost": float(maint_cost)},
-            {"Category": "Other Operations", "Total Cost": float(other_cost)},
-            {"Category": "GRAND TOTAL", "Total Cost": float(fuel_cost + maint_cost + other_cost)}
+            {"Category": "Fuel", "Total Cost": fuel_cost},
+            {"Category": "Maintenance", "Total Cost": maint_cost},
+            {"Category": "Other Operations", "Total Cost": other_cost},
+            {"Category": "GRAND TOTAL", "Total Cost": fuel_cost + maint_cost + other_cost}
         ]
 
     # ============================================================
     # EXPORT FORMATTERS
     # ============================================================
 
-    def export_data(self, data: List[Dict[str, Any]], format_type: str, title: str, current_user: User = None) -> Tuple[Any, str, str]:
+    def export_data(self, data: List[Dict[str, Any]], format_type: str, title: str, current_user: Optional[User] = None) -> Tuple[Any, str, str]:
         """
         Export data to the requested format in memory.
         Returns (buffer/content, media_type, filename)
@@ -219,15 +219,15 @@ class ReportService:
             raise BusinessLogicError("No data available to export.")
 
         if format_type == "csv":
-            return self._export_csv(data, title)
+            output, media_type, filename = self._export_csv(data, title)
         elif format_type == "xlsx":
-            return self._export_xlsx_fallback(data, title)
+            output, media_type, filename = self._export_xlsx_fallback(data, title)
         elif format_type == "pdf":
-            return self._export_pdf_fallback(data, title)
+            output, media_type, filename = self._export_pdf_fallback(data, title)
         else:
             raise BusinessLogicError(f"Unsupported export format: {format_type}")
             
-        if current_user:
+        if current_user is not None:
             activity_service.log_activity(self.db, ActivityCreate(
                 module=ModuleEnum.REPORTS,
                 activity_type=ActivityTypeEnum.EXPORTED,
@@ -235,7 +235,7 @@ class ReportService:
                 description=f"Exported {title} as {format_type.upper()}.",
                 severity=SeverityEnum.INFO,
                 status="Success",
-                user_id=current_user.id
+                user_id=str(current_user.id)
             ))
             
         return output, media_type, filename
@@ -289,7 +289,7 @@ class ReportService:
         pdf.set_text_color(73, 83, 87)
         pdf.set_font('Helvetica', 'B', 8)
         for h in headers:
-            pdf.cell(col_width, 8, str(h)[:20], border=1, fill=True)
+            pdf.cell(col_width, 8, h[:20], border=1, fill=True)
         pdf.ln()
 
         # Table rows
@@ -315,7 +315,10 @@ class ReportService:
         pdf.set_text_color(134, 142, 150)
         pdf.cell(0, 5, '(C) 2026 TransitOps ERP. This report was auto-generated.', align='C')
 
-        byte_output = io.BytesIO(pdf.output())
+        res = pdf.output()
+        if isinstance(res, str):
+            res = res.encode('latin-1', 'replace')
+        byte_output = io.BytesIO(res)
         byte_output.seek(0)
         return byte_output, "application/pdf", f"{title.lower().replace(' ', '_')}_report.pdf"
 

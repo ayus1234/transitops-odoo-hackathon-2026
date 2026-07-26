@@ -94,6 +94,10 @@ def run():
     technician_role = db.query(Role).filter(Role.name == "Technician").first()
     safety_officer_role = db.query(Role).filter(Role.name == "Safety Officer").first()
     hr_role = db.query(Role).filter(Role.name == "HR/Operations").first()
+    financial_analyst_role = db.query(Role).filter(Role.name == "Financial Analyst").first()
+    sysadmin_role = db.query(Role).filter(Role.name == "System Admin").first()
+    support_role = db.query(Role).filter(Role.name == "Support Agent").first()
+    procurement_role = db.query(Role).filter(Role.name == "Procurement Operations").first()
     
     if not driver_role:
         driver_role = Role(name="Driver", permissions={"dashboard": ["read"], "trips": ["read", "update"], "vehicles": ["read"], "fuel": ["read", "create"], "maintenance": ["read"], "expenses": ["read", "create"]})
@@ -123,6 +127,18 @@ def run():
     if not hr_role:
         hr_role = Role(name="HR/Operations", permissions={"drivers": ["read", "create", "update", "delete"], "users": ["read", "create", "update"]})
         db.add(hr_role)
+    if not financial_analyst_role:
+        financial_analyst_role = Role(name="Financial Analyst", permissions={"expenses": ["read", "create", "update", "approve", "export"], "reports": ["read", "export"], "fuel": ["read"], "dashboard": ["read"]})
+        db.add(financial_analyst_role)
+    if not sysadmin_role:
+        sysadmin_role = Role(name="System Admin", permissions={"all": ["read", "create", "update", "delete"]})
+        db.add(sysadmin_role)
+    if not support_role:
+        support_role = Role(name="Support Agent", permissions={"help_center": ["read", "create", "update", "resolve"], "dashboard": ["read"], "users": ["read"]})
+        db.add(support_role)
+    if not procurement_role:
+        procurement_role = Role(name="Procurement Operations", permissions={"inventory": ["read", "create", "update", "approve"], "expenses": ["read", "create"], "reports": ["read"], "dashboard": ["read"]})
+        db.add(procurement_role)
         
     db.commit()
 
@@ -224,7 +240,6 @@ def run():
     # Add users for new roles
     print("Seeding users for additional roles...")
     
-    # Also ensure there's a predictable Fleet Manager
     roles_to_seed = [
         (administrator_role, "administrator@transitops.com", "Admin", "adminpass2026"),
         (dispatcher_role, "dispatcher@transitops.com", "Dispatcher", "dispatch2026"),
@@ -232,14 +247,19 @@ def run():
         (technician_role, "technician@transitops.com", "Technician", "tech2026"),
         (safety_officer_role, "safety@transitops.com", "Safety", "safety2026"),
         (hr_role, "hr@transitops.com", "HR", "hr2026"),
-        (fleet_manager_role, "fleet@transitops.com", "Fleet", "fleet2026")
+        (fleet_manager_role, "fleet@transitops.com", "Fleet", "fleet2026"),
+        (driver_role, "driver@transitops.com", "Demo Driver", "driver2026"),
+        (financial_analyst_role, "finance@transitops.com", "Finance", "finance123"),
+        (sysadmin_role, "sysadmin@transitops.com", "System Admin", "sysadmin2026"),
+        (support_role, "support@transitops.com", "Support Agent", "support2026"),
+        (procurement_role, "procurement@transitops.com", "Procurement", "procure2026"),
     ]
     
     for r, email, fname, password in roles_to_seed:
-        if r:
+        if r is not None:
             existing_user = db.query(User).filter(User.email == email).first()
             if not existing_user:
-                lname = "User"
+                lname = "User" if fname != "Demo Driver" else ""
                 user = User(
                     email=email,
                     password_hash=get_password_hash(password),
@@ -250,6 +270,28 @@ def run():
                     is_active=True
                 )
                 db.add(user)
+                db.flush()
+                target_user = user
+            else:
+                target_user = existing_user
+
+            if email == "driver@transitops.com" and target_user:
+                existing_driver_record = db.query(Driver).filter(Driver.user_id == target_user.id).first()
+                if not existing_driver_record:
+                    driver = Driver(
+                        user_id=target_user.id,
+                        license_number="DL-2026-DEMO",
+                        license_category="HGMV",
+                        license_issue_date=date(2021, 1, 1),
+                        license_expiry_date=date(2031, 1, 1),
+                        date_of_birth=date(1990, 5, 15),
+                        safety_score=98.5,
+                        total_trips=142,
+                        status="Available",
+                        latitude=12.9716,
+                        longitude=77.5946
+                    )
+                    db.add(driver)
     db.commit()
 
     all_drivers = db.query(Driver).all()
