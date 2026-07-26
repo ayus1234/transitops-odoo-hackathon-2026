@@ -91,8 +91,8 @@ const Login = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const { login, error } = useAuth();
 
-  // Demo Accounts state and mode detection
-  const isDemoMode = import.meta.env.VITE_DEMO_MODE === 'true' || import.meta.env.VITE_DEMO_MODE === true;
+  // Demo Accounts state and mode detection (defaults to true for hackathon evaluation unless explicitly disabled)
+  const isDemoMode = import.meta.env.VITE_DEMO_MODE !== 'false' && import.meta.env.VITE_DEMO_MODE !== false;
   const [demoAccounts, setDemoAccounts] = useState(DEFAULT_DEMO_ACCOUNTS);
   const [selectedRoleName, setSelectedRoleName] = useState('');
   const [showDemoPassword, setShowDemoPassword] = useState(false);
