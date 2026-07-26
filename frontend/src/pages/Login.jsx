@@ -94,8 +94,9 @@ const Login = () => {
   // Demo Accounts state and mode detection
   const isDemoMode = import.meta.env.VITE_DEMO_MODE === 'true' || import.meta.env.VITE_DEMO_MODE === true;
   const [demoAccounts, setDemoAccounts] = useState(DEFAULT_DEMO_ACCOUNTS);
-  const [isDemoExpanded, setIsDemoExpanded] = useState(false);
-  const [shownDemoPasswords, setShownDemoPasswords] = useState({});
+  const [selectedRoleName, setSelectedRoleName] = useState('');
+  const [showDemoPassword, setShowDemoPassword] = useState(false);
+  const [copiedField, setCopiedField] = useState('');
 
   useEffect(() => {
     if (isDemoMode) {
@@ -115,7 +116,7 @@ const Login = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Attempt login via API
+    // Attempt login via API (normal JWT authentication)
     const success = await login(email, password);
     
     if (success) {
@@ -128,17 +129,29 @@ const Login = () => {
     }
   };
 
-  const handleUseAccount = (account) => {
-    setEmail(account.email);
-    setPassword(account.password);
-    const formElement = document.getElementById('loginForm');
-    if (formElement) {
-      formElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const selectedAccount = demoAccounts.find((a) => a.role === selectedRoleName);
+
+  const handleRoleChange = (e) => {
+    setSelectedRoleName(e.target.value);
+    setShowDemoPassword(false);
+    setCopiedField('');
+  };
+
+  const handleCopy = (text, fieldName) => {
+    if (navigator?.clipboard) {
+      navigator.clipboard.writeText(text);
+      setCopiedField(fieldName);
+      setTimeout(() => setCopiedField(''), 2000);
     }
   };
 
-  const toggleDemoPassword = (role) => {
-    setShownDemoPasswords((prev) => ({ ...prev, [role]: !prev[role] }));
+  const handleUseCredentials = (account) => {
+    setEmail(account.email);
+    setPassword(account.password);
+    const emailInput = document.getElementById('email');
+    if (emailInput) {
+      emailInput.focus();
+    }
   };
 
   // Button styling logic
@@ -203,6 +216,120 @@ const Login = () => {
               <div className="mb-4 p-3 bg-error-container text-on-error-container text-sm rounded border border-error/20 flex items-center gap-2">
                 <span className="material-symbols-outlined">error</span>
                 {error}
+              </div>
+            )}
+
+            {/* Role-Based Demo Login Selector */}
+            {isDemoMode && (
+              <div className="mb-lg space-y-md">
+                <div className="space-y-xs">
+                  <label className="font-body-sm text-body-sm font-bold text-on-surface flex items-center gap-1.5" htmlFor="role-select">
+                    <span className="material-symbols-outlined text-[18px] text-primary">science</span>
+                    <span>Login As</span>
+                  </label>
+                  <div className="relative group">
+                    <select
+                      id="role-select"
+                      aria-label="Login As"
+                      value={selectedRoleName}
+                      onChange={handleRoleChange}
+                      className="w-full h-[48px] pl-md pr-[40px] bg-surface border border-outline-variant rounded focus:border-primary transition-all font-body-md text-body-md focus:ring-2 focus:ring-primary/20 outline-none appearance-none cursor-pointer text-on-surface font-medium"
+                    >
+                      <option value="">Select a demo role</option>
+                      {demoAccounts.map((acct) => (
+                        <option key={acct.role} value={acct.role}>
+                          {acct.role}
+                        </option>
+                      ))}
+                    </select>
+                    <span className="material-symbols-outlined absolute right-md top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[20px] group-focus-within:text-primary transition-colors">
+                      expand_more
+                    </span>
+                  </div>
+                </div>
+
+                {selectedAccount && (
+                  <div className="p-4 bg-primary-container/15 border border-primary/25 rounded-lg space-y-3 shadow-2xs transition-all animate-fadeIn">
+                    <div className="flex items-center justify-between border-b border-primary/15 pb-2">
+                      <div className="flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-primary text-[18px]">vpn_key</span>
+                        <h3 className="font-title-sm font-bold text-on-surface text-sm">
+                          {selectedAccount.role} Demo Access
+                        </h3>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 text-xs">
+                      {/* Login ID */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 bg-surface rounded border border-outline-variant/60">
+                        <div className="flex flex-col min-w-0 mr-2">
+                          <span className="text-on-surface-variant font-medium text-[10px] uppercase tracking-wider">Login ID</span>
+                          <span className="font-mono text-[12px] font-semibold text-on-surface truncate" title={selectedAccount.email}>
+                            {selectedAccount.email}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(selectedAccount.email, 'email')}
+                          className="shrink-0 px-2.5 py-1.5 bg-surface-variant/40 hover:bg-surface-variant border border-outline-variant/80 text-on-surface-variant hover:text-on-surface rounded text-[11px] font-semibold transition-all flex items-center gap-1 active:scale-[0.98] self-start sm:self-auto"
+                          aria-label={`Copy ${selectedAccount.role} login ID`}
+                        >
+                          <span className="material-symbols-outlined text-[14px]">
+                            {copiedField === 'email' ? 'check' : 'content_copy'}
+                          </span>
+                          <span>{copiedField === 'email' ? 'Copied' : 'Copy'}</span>
+                        </button>
+                      </div>
+
+                      {/* Password */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 bg-surface rounded border border-outline-variant/60">
+                        <div className="flex items-center justify-between sm:justify-start gap-3 min-w-0 flex-1">
+                          <div className="flex flex-col min-w-0">
+                            <span className="text-on-surface-variant font-medium text-[10px] uppercase tracking-wider">Password</span>
+                            <span className="font-mono text-[12px] font-semibold text-on-surface tracking-wider">
+                              {showDemoPassword ? selectedAccount.password : '••••••••'}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setShowDemoPassword((prev) => !prev)}
+                            className="text-outline hover:text-primary transition-colors p-1.5 rounded hover:bg-surface-variant/30 focus:outline-none focus:ring-1 focus:ring-primary/20 flex items-center justify-center shrink-0"
+                            aria-label={showDemoPassword ? "Hide password" : "Show password"}
+                          >
+                            <span className="material-symbols-outlined text-[18px]">
+                              {showDemoPassword ? "visibility_off" : "visibility"}
+                            </span>
+                          </button>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(selectedAccount.password, 'password')}
+                          className="shrink-0 px-2.5 py-1.5 bg-surface-variant/40 hover:bg-surface-variant border border-outline-variant/80 text-on-surface-variant hover:text-on-surface rounded text-[11px] font-semibold transition-all flex items-center gap-1 active:scale-[0.98] self-start sm:self-auto"
+                          aria-label={`Copy ${selectedAccount.role} demo password`}
+                        >
+                          <span className="material-symbols-outlined text-[14px]">
+                            {copiedField === 'password' ? 'check' : 'content_copy'}
+                          </span>
+                          <span>{copiedField === 'password' ? 'Copied' : 'Copy'}</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="pt-1 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                      <p className="font-body-xs text-[12px] text-on-surface-variant leading-snug pr-2">
+                        Use these credentials to access the {selectedAccount.role} workspace.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => handleUseCredentials(selectedAccount)}
+                        className="w-full sm:w-auto shrink-0 px-3 py-2 bg-primary/10 hover:bg-primary text-primary hover:text-on-primary border border-primary/25 rounded-lg text-[12px] font-bold transition-all flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98]"
+                      >
+                        <span className="material-symbols-outlined text-[16px]">login</span>
+                        <span>Use Credentials</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -283,92 +410,6 @@ const Login = () => {
                 )}
               </button>
             </form>
-
-            {/* Demo Accounts Section */}
-            {isDemoMode && (
-              <div className="mt-xl pt-lg border-t border-outline-variant">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-sm bg-primary-container/15 p-md rounded-lg border border-primary/20">
-                  <div>
-                    <div className="flex items-center gap-xs">
-                      <span className="material-symbols-outlined text-primary text-[20px]">science</span>
-                      <h3 className="font-title-sm text-title-sm font-bold text-on-surface">Demo Accounts</h3>
-                    </div>
-                    <p className="font-body-xs text-[12px] text-on-surface-variant mt-0.5">
-                      Choose a role to access TransitOps with the corresponding demo account.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setIsDemoExpanded((prev) => !prev)}
-                    className="shrink-0 px-3 py-1.5 bg-surface border border-outline-variant hover:border-primary text-on-surface font-title-xs text-xs font-bold rounded shadow-2xs transition-all flex items-center gap-xs active:scale-[0.98]"
-                    aria-expanded={isDemoExpanded}
-                    aria-controls="demo-accounts-panel"
-                  >
-                    <span>{isDemoExpanded ? "Hide Demo Accounts" : "View Demo Accounts"}</span>
-                    <span className={`material-symbols-outlined text-[18px] transition-transform ${isDemoExpanded ? "rotate-180" : ""}`}>
-                      expand_more
-                    </span>
-                  </button>
-                </div>
-
-                {isDemoExpanded && (
-                  <div 
-                    id="demo-accounts-panel" 
-                    className="mt-md space-y-3 max-h-[360px] overflow-y-auto pr-1"
-                  >
-                    {demoAccounts.map((account) => (
-                      <div 
-                        key={account.role} 
-                        className="p-3 bg-surface border border-outline-variant rounded-lg hover:border-primary/40 transition-all flex flex-col gap-2 shadow-2xs"
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <div>
-                            <span className="font-title-sm font-bold text-on-surface block text-sm">{account.role}</span>
-                            <p className="text-[12px] text-on-surface-variant leading-tight mt-0.5 line-clamp-2">
-                              {account.description}
-                            </p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => handleUseAccount(account)}
-                            className="shrink-0 px-2.5 py-1.5 bg-primary/10 hover:bg-primary text-primary hover:text-on-primary border border-primary/20 rounded text-[12px] font-bold transition-all flex items-center gap-1 shadow-2xs active:scale-[0.98]"
-                          >
-                            <span className="material-symbols-outlined text-[15px]">login</span>
-                            <span>Use Account</span>
-                          </button>
-                        </div>
-                        
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs pt-2 mt-1 border-t border-outline-variant/40 bg-surface-variant/20 p-2 rounded">
-                          <div className="flex flex-col break-all mr-2">
-                            <span className="text-on-surface-variant font-medium text-[10px] uppercase tracking-wider">Email</span>
-                            <span className="font-mono text-[12px] font-semibold text-on-surface">{account.email}</span>
-                          </div>
-                          
-                          <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
-                            <div className="flex flex-col">
-                              <span className="text-on-surface-variant font-medium text-[10px] uppercase tracking-wider">Password</span>
-                              <span className="font-mono text-[12px] text-on-surface">
-                                {shownDemoPasswords[account.role] ? account.password : '••••••••'}
-                              </span>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => toggleDemoPassword(account.role)}
-                              className="text-outline hover:text-primary transition-colors p-1 rounded hover:bg-surface focus:outline-none focus:ring-1 focus:ring-primary/20 flex items-center justify-center self-end sm:self-auto"
-                              aria-label={shownDemoPasswords[account.role] ? `Hide ${account.role} demo password` : `Show ${account.role} demo password`}
-                            >
-                              <span className="material-symbols-outlined text-[16px]">
-                                {shownDemoPasswords[account.role] ? "visibility_off" : "visibility"}
-                              </span>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
 
             <footer className="mt-xl pt-xl border-t border-outline-variant text-center">
               <p className="font-body-sm text-body-sm text-on-surface-variant mb-md">
