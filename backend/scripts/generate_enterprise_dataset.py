@@ -53,31 +53,43 @@ def run():
     
     db = SessionLocal()
     
-    # 1. Base Setup (Admin and Roles)
-    print("Setting up Roles & Admin User...")
-    driver_role = db.query(Role).filter(Role.name == "Driver").first()
-    fleet_manager_role = db.query(Role).filter(Role.name == "Fleet Manager").first()
-    
-    if not driver_role:
-        driver_role = Role(name="Driver", permissions={})
-        db.add(driver_role)
-    if not fleet_manager_role:
-        fleet_manager_role = Role(name="Fleet Manager", permissions={})
-        db.add(fleet_manager_role)
+    # 1. Base Setup (All 13 Roles & Demo Accounts)
+    print("Setting up All 13 Enterprise Roles & Demo Users...")
+    from app.api.v1.auth import DEMO_ACCOUNTS_CATALOG
+    driver_role = None
+    fleet_manager_role = None
+    for acct in DEMO_ACCOUNTS_CATALOG:
+        role_name = acct["role"]
+        email = acct["email"]
+        pwd = acct["password"]
+        r = db.query(Role).filter(Role.name == role_name).first()
+        if not r:
+            perms = {"all": ["read", "create", "update", "delete"]} if "Admin" in role_name or "Administrator" in role_name else {"dashboard": ["read"], "trips": ["read", "create"], "vehicles": ["read", "update"], "reports": ["read", "export"]}
+            r = Role(name=role_name, permissions=perms)
+            db.add(r)
+            db.flush()
+        if role_name == "Driver": driver_role = r
+        if role_name == "Fleet Manager": fleet_manager_role = r
+        
+        user = db.query(User).filter(User.email == email).first()
+        if not user:
+            fname = role_name.split()[0]
+            lname = "User" if "Driver" not in role_name else ""
+            user = User(
+                email=email,
+                password_hash=get_password_hash(pwd),
+                first_name=fname,
+                last_name=lname,
+                role_id=r.id,
+                is_active=True
+            )
+            db.add(user)
+        else:
+            user.role_id = r.id
     db.commit()
-
     admin_user = db.query(User).filter(User.email == "admin@transitops.com").first()
-    if not admin_user:
-        admin_user = User(
-            email="admin@transitops.com",
-            password_hash=get_password_hash("admin123"),
-            first_name="Admin",
-            last_name="User",
-            role_id=fleet_manager_role.id,
-            is_active=True
-        )
-        db.add(admin_user)
-        db.commit()
+    driver_role = driver_role or db.query(Role).filter(Role.name == "Driver").first()
+    fleet_manager_role = fleet_manager_role or db.query(Role).filter(Role.name == "Fleet Manager").first()
 
     # Targets
     NUM_VEHICLES = 500
