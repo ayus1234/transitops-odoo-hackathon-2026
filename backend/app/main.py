@@ -157,12 +157,46 @@ async def startup_event():
     if settings.ENVIRONMENT == "development":
         # Base.metadata.create_all(bind=engine)
         print("Database tables created")
+
+    # Ensure all 13 demo role accounts exist so hackathon evaluators never encounter invalid credentials
+    try:
+        from app.core.database import SessionLocal
+        from app.models.role import Role
+        from app.models.user import User
+        from app.core.security import get_password_hash
+        from app.api.v1.auth import DEMO_ACCOUNTS_CATALOG
+        db = SessionLocal()
+        for acct in DEMO_ACCOUNTS_CATALOG:
+            role_name = acct["role"]
+            email = acct["email"]
+            pwd = acct["password"]
+            role_obj = db.query(Role).filter(Role.name == role_name).first()
+            if not role_obj:
+                perms = {"all": ["read", "create", "update", "delete"]} if "Admin" in role_name or "Administrator" in role_name else {"dashboard": ["read"], "trips": ["read", "create"], "vehicles": ["read", "update"], "reports": ["read", "export"]}
+                role_obj = Role(name=role_name, permissions=perms)
+                db.add(role_obj)
+                db.flush()
+            user_obj = db.query(User).filter(User.email == email).first()
+            if not user_obj:
+                fname = role_name.split()[0]
+                lname = "User" if "Driver" not in role_name else ""
+                user_obj = User(
+                    email=email,
+                    password_hash=get_password_hash(pwd),
+                    first_name=fname,
+                    last_name=lname,
+                    role_id=role_obj.id,
+                    is_active=True
+                )
+                db.add(user_obj)
+            elif user_obj.role_id != role_obj.id:
+                user_obj.role_id = role_obj.id
+        db.commit()
+        db.close()
+        print("Verified all 13 role-based demo credentials on startup.")
+    except Exception as e:
+        print(f"Notice: Demo credential validation skipped: {e}")
         
-    # Start Live Simulation Engine (only if not on Vercel/Lambda)
-    # Disabled so local and Vercel stay perfectly identical
-    # if not os.environ.get("VERCEL"):
-    #     asyncio.create_task(start_demo_engine())
-    # else:
     print("Demo Engine completely disabled to ensure 100% identical data.")
 
 
