@@ -1,4 +1,4 @@
-from typing import List, Tuple, Dict, Any
+from typing import List, Tuple, Dict, Any, Optional, cast
 from uuid import UUID
 from sqlalchemy.orm import Session
 
@@ -73,39 +73,41 @@ class InventoryService:
         part_id: UUID, 
         quantity_change: int, 
         type: InventoryHistoryTypeEnum,
-        user_id: UUID,
-        reference_id: str = None,
-        vendor: str = None,
-        cost: float = None
+        user_id: Any,
+        reference_id: Optional[str] = None,
+        vendor: Optional[str] = None,
+        cost: Optional[float] = None
     ) -> InventoryItem:
         item = self.repository.get_by_id(part_id)
         if not item:
             raise NotFoundError("Part not found")
 
-        prev_qty = item.quantity_available
-        new_qty = prev_qty + quantity_change
+        prev_qty: int = cast(int, item.quantity_available)
+        new_qty: int = prev_qty + quantity_change
         
         if new_qty < 0:
             raise BusinessLogicError(f"Insufficient stock for {item.name}. Available: {prev_qty}")
 
         # Update item
-        item.quantity_available = new_qty
+        setattr(item, "quantity_available", new_qty)
         
         # Update status based on levels
+        crit_level: int = cast(int, item.critical_stock_level)
+        min_level: int = cast(int, item.minimum_stock_level)
         if new_qty == 0:
-            item.status = PartStatusEnum.OUT_OF_STOCK
-        elif new_qty <= item.critical_stock_level:
-            item.status = PartStatusEnum.CRITICAL_STOCK
-        elif new_qty <= item.minimum_stock_level:
-            item.status = PartStatusEnum.LOW_STOCK
+            setattr(item, "status", PartStatusEnum.OUT_OF_STOCK)
+        elif new_qty <= crit_level:
+            setattr(item, "status", PartStatusEnum.CRITICAL_STOCK)
+        elif new_qty <= min_level:
+            setattr(item, "status", PartStatusEnum.LOW_STOCK)
         else:
-            item.status = PartStatusEnum.IN_STOCK
+            setattr(item, "status", PartStatusEnum.IN_STOCK)
             
         self.db.commit()
 
         # Record history
         self.history_repo.create(InventoryHistoryCreate(
-            part_id=item.id,
+            part_id=cast(UUID, item.id),
             type=type,
             quantity_changed=quantity_change,
             previous_quantity=prev_qty,

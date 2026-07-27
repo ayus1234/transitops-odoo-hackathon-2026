@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
-from typing import Any
+from typing import Any, Optional
 from uuid import UUID
 
 from app.core.database import get_db
@@ -21,8 +21,8 @@ router = APIRouter()
 def get_purchase_orders(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
-    status: str = None,
-    search: str = None,
+    status: Optional[str] = None,
+    search: Optional[str] = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ) -> Any:
@@ -77,7 +77,7 @@ def update_po_status(
     po_id: UUID,
     status: ShipmentStatusEnum,
     db: Session = Depends(get_db),
-    current_user: User = Depends(RoleChecker(["Super Admin", "Administrator", "Fleet Manager", "Maintenance Manager"]))
+    current_user: User = Depends(RoleChecker(["Super Admin", "Administrator", "System Admin", "Fleet Manager", "Maintenance Manager", "Procurement Operations", "Financial Analyst"]))
 ) -> Any:
     service = PurchaseOrderService(db)
     order = service.update_shipment_status(po_id, status, current_user)
@@ -91,7 +91,7 @@ def update_po_status(
 def generate_po_from_request(
     req_id: UUID,
     db: Session = Depends(get_db),
-    current_user: User = Depends(RoleChecker(["Super Admin", "Administrator", "Fleet Manager"]))
+    current_user: User = Depends(RoleChecker(["Super Admin", "Administrator", "System Admin", "Fleet Manager", "Maintenance Manager", "Procurement Operations", "Financial Analyst"]))
 ) -> Any:
     service = PurchaseOrderService(db)
     order = service.generate_po_from_request(req_id, current_user)

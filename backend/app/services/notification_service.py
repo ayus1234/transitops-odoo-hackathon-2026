@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, Dict, Any
+from typing import List, Optional, Tuple, Dict, Any, cast
 from uuid import UUID
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
@@ -17,7 +17,7 @@ class NotificationService:
     def __init__(self, db: Session):
         self.repository = NotificationRepository(db)
 
-    def create_notification(self, user_id: UUID, notification_in: NotificationCreate) -> Notification:
+    def create_notification(self, user_id: Any, notification_in: NotificationCreate) -> Notification:
         notification = self.repository.create(notification_in)
         activity_service.log_activity(
             self.repository.db,
@@ -39,7 +39,7 @@ class NotificationService:
         count = 0
         for user in users:
             notif = NotificationCreate(
-                user_id=user.id,
+                user_id=cast(UUID, user.id),
                 title=title,
                 description=description,
                 type=type,
@@ -60,14 +60,14 @@ class NotificationService:
                     activity_type=ActivityTypeEnum.CREATED,
                     title="Notification Created",
                     description=f"Broadcast notification: {title}",
-                    user_id=user.id,
+                    user_id=cast(UUID, user.id),
                     severity=SeverityEnum.INFO
                 )
             )
             
         return count
 
-    def get_notification(self, notification_id: UUID, current_user_id: UUID) -> Notification:
+    def get_notification(self, notification_id: UUID, current_user_id: Any) -> Notification:
         notification = self.repository.get_by_id(notification_id)
         if not notification:
             raise HTTPException(status_code=404, detail="Notification not found")
@@ -77,7 +77,7 @@ class NotificationService:
 
     def get_user_notifications(
         self,
-        user_id: UUID,
+        user_id: Any,
         skip: int = 0,
         limit: int = 100,
         search: Optional[str] = None,
@@ -116,7 +116,7 @@ class NotificationService:
             is_archived=is_archived
         )
 
-    def mark_read(self, notification_id: UUID, current_user_id: UUID) -> Notification:
+    def mark_read(self, notification_id: UUID, current_user_id: Any) -> Notification:
         notification = self.get_notification(notification_id, current_user_id)
         if not notification.is_read:
             activity_service.log_activity(
@@ -130,13 +130,13 @@ class NotificationService:
                     severity=SeverityEnum.INFO
                 )
             )
-        return self.repository.mark_read(notification.id)
+        return cast(Notification, self.repository.mark_read(cast(UUID, notification.id)))
 
-    def mark_unread(self, notification_id: UUID, current_user_id: UUID) -> Notification:
+    def mark_unread(self, notification_id: UUID, current_user_id: Any) -> Notification:
         notification = self.get_notification(notification_id, current_user_id)
-        return self.repository.mark_unread(notification.id)
+        return cast(Notification, self.repository.mark_unread(cast(UUID, notification.id)))
 
-    def mark_all_read(self, current_user_id: UUID) -> int:
+    def mark_all_read(self, current_user_id: Any) -> int:
         count = self.repository.mark_all_read(current_user_id)
         if count > 0:
             activity_service.log_activity(
@@ -152,7 +152,7 @@ class NotificationService:
             )
         return count
 
-    def archive(self, notification_id: UUID, current_user_id: UUID) -> Notification:
+    def archive(self, notification_id: UUID, current_user_id: Any) -> Notification:
         notification = self.get_notification(notification_id, current_user_id)
         if not notification.is_archived:
             activity_service.log_activity(
@@ -166,13 +166,13 @@ class NotificationService:
                     severity=SeverityEnum.INFO
                 )
             )
-        return self.repository.archive(notification.id)
+        return cast(Notification, self.repository.archive(cast(UUID, notification.id)))
         
-    def unarchive(self, notification_id: UUID, current_user_id: UUID) -> Notification:
+    def unarchive(self, notification_id: UUID, current_user_id: Any) -> Notification:
         notification = self.get_notification(notification_id, current_user_id)
-        return self.repository.unarchive(notification.id)
+        return cast(Notification, self.repository.unarchive(cast(UUID, notification.id)))
         
-    def execute_notification(self, notification_id: UUID, current_user_id: UUID) -> Dict[str, str]:
+    def execute_notification(self, notification_id: UUID, current_user_id: Any) -> Dict[str, str]:
         notification = self.mark_read(notification_id, current_user_id)
         activity_service.log_activity(
             self.repository.db,
@@ -187,17 +187,17 @@ class NotificationService:
         )
         return {"route": notification.route or "/"}
 
-    def delete(self, notification_id: UUID, current_user_id: UUID) -> bool:
+    def delete(self, notification_id: UUID, current_user_id: Any) -> bool:
         notification = self.get_notification(notification_id, current_user_id)
-        return self.repository.delete(notification.id)
+        return self.repository.delete(cast(UUID, notification.id))
 
-    def get_statistics(self, user_id: UUID) -> Dict[str, Any]:
+    def get_statistics(self, user_id: Any) -> Dict[str, Any]:
         return self.repository.get_statistics(user_id)
 
     @staticmethod
     def notify_user(
         db: Session,
-        user_id: UUID,
+        user_id: Any,
         title: str,
         description: str,
         type: str,

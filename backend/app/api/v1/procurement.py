@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
-from typing import Any
+from typing import Any, Optional
 from uuid import UUID
 
 from app.core.database import get_db
@@ -21,8 +21,8 @@ router = APIRouter()
 def get_procurement_requests(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
-    status: str = None,
-    search: str = None,
+    status: Optional[str] = None,
+    search: Optional[str] = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ) -> Any:
@@ -90,7 +90,7 @@ def create_procurement_request(
 def approve_procurement_request(
     req_id: UUID,
     db: Session = Depends(get_db),
-    current_user: User = Depends(RoleChecker(["Super Admin", "Administrator", "Fleet Manager"]))
+    current_user: User = Depends(RoleChecker(["Super Admin", "Administrator", "System Admin", "Fleet Manager", "Maintenance Manager", "Procurement Operations", "Financial Analyst"]))
 ) -> Any:
     service = ProcurementService(db)
     req = service.approve_request(req_id, current_user)
@@ -104,7 +104,7 @@ def approve_procurement_request(
 def reject_procurement_request(
     req_id: UUID,
     db: Session = Depends(get_db),
-    current_user: User = Depends(RoleChecker(["Super Admin", "Administrator", "Fleet Manager"]))
+    current_user: User = Depends(RoleChecker(["Super Admin", "Administrator", "System Admin", "Fleet Manager", "Maintenance Manager", "Procurement Operations", "Financial Analyst"]))
 ) -> Any:
     service = ProcurementService(db)
     req = service.reject_request(req_id, current_user)

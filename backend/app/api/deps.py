@@ -130,7 +130,18 @@ class RoleChecker:
         Raises:
             HTTPException: If user doesn't have required role
         """
-        if current_user.role.name not in self.allowed_roles:
+        role_name = current_user.role.name if current_user.role is not None else ""
+        # Universal system admin roles always pass role authorization checks
+        if role_name in ["Super Admin", "Administrator", "System Admin", "SuperAdmin"]:
+            return current_user
+            
+        # Check if role holds universal "all" permissions
+        if hasattr(current_user, "get_all_permissions"):
+            perms = current_user.get_all_permissions()
+            if "all" in perms:
+                return current_user
+
+        if role_name not in self.allowed_roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=f"Access denied. Required roles: {', '.join(self.allowed_roles)}"

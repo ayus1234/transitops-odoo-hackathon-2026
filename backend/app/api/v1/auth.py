@@ -104,6 +104,60 @@ DEMO_ACCOUNTS_CATALOG: List[dict] = [
 ]
 
 
+def get_default_permissions_for_role(role_name: str) -> dict:
+    if "Admin" in role_name or "Administrator" in role_name:
+        return {"all": ["read", "create", "update", "delete", "export", "manage", "approve", "assign", "dispatch", "resolve"]}
+    
+    defaults = {
+        "Driver": {
+            "dashboard": ["read"], "trips": ["read", "update"], "vehicles": ["read"], 
+            "fuel": ["read", "create"], "maintenance": ["read", "create"], "expenses": ["read", "create"],
+            "reports": ["read"], "help_center": ["read", "create"]
+        },
+        "Fleet Manager": {
+            "dashboard": ["read"], "vehicles": ["read", "create", "update", "delete", "export"], 
+            "drivers": ["read", "create", "update", "delete", "assign"], "trips": ["read", "create", "update", "delete", "export"], 
+            "maintenance": ["read", "create", "update", "manage", "approve"], "fuel": ["read", "create", "update", "export"], 
+            "reports": ["read", "create", "export"], "inventory": ["read", "create", "update", "manage", "approve"],
+            "help_center": ["read", "create"], "users": ["read"]
+        },
+        "Dispatcher": {
+            "dashboard": ["read"], "trips": ["read", "create", "update", "assign", "dispatch", "export"], 
+            "vehicles": ["read", "update"], "drivers": ["read", "assign"], "reports": ["read"], "help_center": ["read"]
+        },
+        "Maintenance Manager": {
+            "dashboard": ["read"], "maintenance": ["read", "create", "update", "delete", "approve", "manage"], 
+            "vehicles": ["read", "update"], "inventory": ["read", "create", "update", "manage", "approve"], 
+            "reports": ["read", "export"], "help_center": ["read"]
+        },
+        "Technician": {
+            "dashboard": ["read"], "maintenance": ["read", "update", "create"], "vehicles": ["read"], 
+            "inventory": ["read", "update"], "help_center": ["read"]
+        },
+        "Safety Officer": {
+            "dashboard": ["read"], "reports": ["read", "create", "export"], "drivers": ["read", "update"], 
+            "vehicles": ["read", "update"], "help_center": ["read"]
+        },
+        "HR/Operations": {
+            "dashboard": ["read"], "drivers": ["read", "create", "update", "delete"], 
+            "users": ["read", "create", "update", "delete"], "reports": ["read", "export"], "help_center": ["read", "create"]
+        },
+        "Financial Analyst": {
+            "dashboard": ["read"], "expenses": ["read", "create", "update", "approve", "export"], 
+            "reports": ["read", "create", "export"], "fuel": ["read", "export"], "inventory": ["read", "export"], "help_center": ["read"]
+        },
+        "Support Agent": {
+            "dashboard": ["read"], "help_center": ["read", "create", "update", "resolve", "delete"], 
+            "users": ["read"], "reports": ["read"], "trips": ["read"], "vehicles": ["read"]
+        },
+        "Procurement Operations": {
+            "dashboard": ["read"], "inventory": ["read", "create", "update", "approve", "manage"], 
+            "expenses": ["read", "create", "update"], "reports": ["read", "export"], "help_center": ["read"]
+        }
+    }
+    return defaults.get(role_name, {"dashboard": ["read"], "trips": ["read"], "vehicles": ["read"], "reports": ["read"]})
+
+
 def _auto_sync_demo_account(email: str, password_attempt: str, db: Session):
     """
     On-demand synchronization for demo credentials during authentication.
@@ -113,10 +167,13 @@ def _auto_sync_demo_account(email: str, password_attempt: str, db: Session):
         for acct in DEMO_ACCOUNTS_CATALOG:
             if acct["email"].lower() == email.lower():
                 role_obj = db.query(Role).filter(Role.name == acct["role"]).first()
+                expected_perms = get_default_permissions_for_role(acct["role"])
                 if not role_obj:
-                    perms = {"all": ["read", "create", "update", "delete"]} if "Admin" in acct["role"] or "Administrator" in acct["role"] else {"dashboard": ["read"], "trips": ["read", "create"], "vehicles": ["read", "update"], "reports": ["read", "export"]}
-                    role_obj = Role(name=acct["role"], permissions=perms)
+                    role_obj = Role(name=acct["role"], permissions=expected_perms)
                     db.add(role_obj)
+                    db.flush()
+                elif role_obj.permissions != expected_perms:
+                    role_obj.permissions = expected_perms
                     db.flush()
                 
                 user_obj = db.query(User).filter(User.email.ilike(email)).first()

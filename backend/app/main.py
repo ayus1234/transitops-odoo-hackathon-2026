@@ -36,17 +36,20 @@ async def lifespan(app_instance: FastAPI):
         from app.models.role import Role
         from app.models.user import User
         from app.core.security import get_password_hash
-        from app.api.v1.auth import DEMO_ACCOUNTS_CATALOG
+        from app.api.v1.auth import DEMO_ACCOUNTS_CATALOG, get_default_permissions_for_role
         db = SessionLocal()
         for acct in DEMO_ACCOUNTS_CATALOG:
             role_name = acct["role"]
             email = acct["email"]
             pwd = acct["password"]
             role_obj = db.query(Role).filter(Role.name == role_name).first()
+            expected_perms = get_default_permissions_for_role(role_name)
             if not role_obj:
-                perms = {"all": ["read", "create", "update", "delete"]} if "Admin" in role_name or "Administrator" in role_name else {"dashboard": ["read"], "trips": ["read", "create"], "vehicles": ["read", "update"], "reports": ["read", "export"]}
-                role_obj = Role(name=role_name, permissions=perms)
+                role_obj = Role(name=role_name, permissions=expected_perms)
                 db.add(role_obj)
+                db.flush()
+            elif role_obj.permissions != expected_perms:
+                role_obj.permissions = expected_perms
                 db.flush()
             user_obj = db.query(User).filter(User.email == email).first()
             if not user_obj:

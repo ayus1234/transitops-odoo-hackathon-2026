@@ -1,7 +1,7 @@
 """
 User model for authentication and authorization.
 """
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Optional
 from uuid import uuid4
 from sqlalchemy import String, Boolean, DateTime, ForeignKey, func
@@ -81,13 +81,13 @@ class User(Base):
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=datetime.utcnow,
+        default=lambda: datetime.now(timezone.utc),
         nullable=False
     )
     
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=datetime.utcnow,
+        default=lambda: datetime.now(timezone.utc),
         onupdate=func.now(),
         nullable=False
     )
@@ -113,7 +113,7 @@ class User(Base):
     )
     
     def __repr__(self) -> str:
-        return f"<User(id={self.id}, email={self.email}, role={self.role.name if self.role else None})>"
+        return f"<User(id={self.id}, email={self.email}, role={self.role.name if self.role is not None else None})>"
     
     @property
     def full_name(self) -> str:
@@ -122,7 +122,7 @@ class User(Base):
 
     def get_all_permissions(self) -> dict:
         """Aggregate permissions from primary role, additional roles, and their parents."""
-        if not self.role:
+        if self.role is None:
             return {}
             
         all_perms = {}
@@ -137,7 +137,7 @@ class User(Base):
         def extract_role_tree(role: "Role"):
             if role.permissions:
                 merge_perms(all_perms, role.permissions)
-            if hasattr(role, "parent") and role.parent:
+            if hasattr(role, "parent") and role.parent is not None:
                 extract_role_tree(role.parent)
                 
         # Primary role tree
@@ -153,12 +153,15 @@ class User(Base):
 
     def has_permission(self, resource: str, action: str) -> bool:
         """Check if user has a specific permission."""
-        if resource in ["dashboard", "reports", "settings", "help_center"]:
-            return True
-            
-        if self.role and self.role.name in ["Super Admin", "Administrator", "System Admin"]:
+        if self.role is not None and self.role.name in ["Super Admin", "Administrator", "System Admin", "SuperAdmin"]:
             return True
             
         aggregated_perms = self.get_all_permissions()
+        if "all" in aggregated_perms:
+            return True
+
+        if resource in ["dashboard", "reports", "settings", "help_center"]:
+            return True
+            
         resource_permissions = aggregated_perms.get(resource, [])
         return action in resource_permissions
