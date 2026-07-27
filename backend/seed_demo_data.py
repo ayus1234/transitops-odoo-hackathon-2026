@@ -259,7 +259,7 @@ def run():
         if r is not None:
             existing_user = db.query(User).filter(User.email == email).first()
             if not existing_user:
-                lname = "User" if fname != "Demo Driver" else ""
+                lname = "User"
                 user = User(
                     email=email,
                     password_hash=get_password_hash(password),
@@ -277,6 +277,8 @@ def run():
                 target_user.role_id = r.id
                 target_user.password_hash = get_password_hash(password)
                 target_user.is_active = True
+                if not target_user.last_name or len(target_user.last_name.strip()) == 0:
+                    target_user.last_name = "User"
                 db.flush()
 
             if email == "driver@transitops.com" and target_user:
