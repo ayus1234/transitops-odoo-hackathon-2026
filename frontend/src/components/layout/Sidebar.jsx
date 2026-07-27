@@ -1,9 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import ConfirmLogoutDialog from '../ui/ConfirmLogoutDialog';
 
 const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
   const { user, logout } = useAuth();
+  const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleConfirmLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await logout();
+    } finally {
+      setIsLoggingOut(false);
+      setIsLogoutDialogOpen(false);
+    }
+  };
 
   // Helper to get initials
   const getInitials = (firstName, lastName) => {
@@ -98,7 +111,7 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
         </div>
       </nav>
       
-      <div className="p-md border-t border-outline-variant mt-auto bg-surface-container-low cursor-pointer hover:bg-surface-variant transition-colors" onClick={logout}>
+      <div className="p-md border-t border-outline-variant mt-auto bg-surface-container-low cursor-pointer hover:bg-surface-variant transition-colors group" onClick={() => setIsLogoutDialogOpen(true)}>
         <div className="flex flex-wrap md:flex-nowrap items-center gap-sm w-full md:w-auto">
           <div className="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold text-xs shrink-0">
             {getInitials(user?.first_name, user?.last_name)}
@@ -107,13 +120,21 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
             <p className="text-body-sm font-bold text-on-surface truncate">
               {user ? `${user.first_name} ${user.last_name}` : 'Arjun Dispatcher'}
             </p>
-            <p className="text-[10px] uppercase tracking-wider text-outline truncate group-hover:text-error transition-colors">
-              Sign Out
+            <p className="text-[10px] uppercase tracking-wider text-outline truncate group-hover:text-primary transition-colors font-semibold flex items-center gap-1">
+              <span className="material-symbols-outlined text-[12px]">logout</span>
+              <span>Sign Out</span>
             </p>
           </div>
         </div>
       </div>
     </aside>
+
+    <ConfirmLogoutDialog
+      isOpen={isLogoutDialogOpen}
+      onClose={() => setIsLogoutDialogOpen(false)}
+      onConfirm={handleConfirmLogout}
+      isLoggingOut={isLoggingOut}
+    />
     </>
   );
 };
