@@ -165,10 +165,10 @@ const Login = () => {
   }
 
   return (
-    <div className="text-on-surface bg-background min-h-screen flex items-center justify-center p-2 sm:p-4 md:p-6 lg:p-8">
-      <main className="w-full min-h-[580px] md:h-auto max-h-[96vh] max-w-[1150px] flex overflow-hidden rounded-xl shadow-xl bg-surface border border-outline-variant">
+    <div className="text-on-surface bg-background min-h-screen w-full flex justify-center py-6 px-3 sm:py-8 sm:px-6 md:px-8 overflow-y-auto">
+      <main className="w-full max-w-[1150px] my-auto flex flex-col lg:flex-row rounded-xl shadow-2xl bg-surface border border-outline-variant overflow-hidden">
         {/* Left Side: Logistics Branding & Visual */}
-        <section className="hidden lg:flex flex-col w-1/2 relative bg-primary-container text-on-primary-container p-8 xl:p-12 overflow-hidden justify-between">
+        <section className="hidden lg:flex flex-col w-1/2 relative bg-primary-container text-on-primary-container p-8 xl:p-12 overflow-hidden justify-between min-h-[560px]">
           {/* Subtle Overlay Pattern */}
           <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)", backgroundSize: "24px 24px" }}></div>
           <div className="relative z-10 flex flex-col h-full justify-between">
@@ -199,8 +199,8 @@ const Login = () => {
         </section>
         
         {/* Right Side: Login Form & Demo Accounts */}
-        <section className="w-full lg:w-1/2 flex flex-col items-center justify-center p-6 sm:p-8 xl:p-10 bg-surface relative overflow-y-auto max-h-[96vh]">
-          <div className="w-full max-w-[440px] my-auto py-1">
+        <section className="w-full lg:w-1/2 flex flex-col justify-center p-6 sm:p-8 md:p-10 bg-surface relative">
+          <div className="w-full max-w-[440px] mx-auto py-2">
             {/* Mobile Logo (Visible only on small screens) */}
             <div className="lg:hidden flex items-center gap-2 mb-6">
               <span className="material-symbols-outlined text-primary text-2xl">local_shipping</span>
