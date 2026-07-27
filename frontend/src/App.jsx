@@ -49,12 +49,12 @@ function App() {
         <AuthProvider>
           <RealTimeSyncProvider>
             <Routes>
-          <Route path="/login" element={<Login />} />
-          
-          <Route element={<ProtectedRoute />}>
-            <Route element={<MainLayout />}>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/" element={<Navigate to="/login" replace />} />
+              <Route path="/login" element={<Login />} />
+              
+              <Route element={<ProtectedRoute />}>
+                <Route element={<MainLayout />}>
+                  <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/vehicles" element={<Vehicles />} />
               <Route path="/drivers" element={<Drivers />} />
               <Route path="/drivers/license-compliance" element={<LicenseCompliance />} />
