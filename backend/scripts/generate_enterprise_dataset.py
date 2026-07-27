@@ -90,6 +90,7 @@ def run():
     admin_user = db.query(User).filter(User.email == "admin@transitops.com").first()
     driver_role = driver_role or db.query(Role).filter(Role.name == "Driver").first()
     fleet_manager_role = fleet_manager_role or db.query(Role).filter(Role.name == "Fleet Manager").first()
+    assert admin_user is not None and driver_role is not None and fleet_manager_role is not None, "Core user and roles must exist"
 
     # Targets
     NUM_VEHICLES = 500
