@@ -122,7 +122,7 @@ def _auto_sync_demo_account(email: str, password_attempt: str, db: Session):
                 user_obj = db.query(User).filter(User.email.ilike(email)).first()
                 if not user_obj:
                     fname = acct["role"].split()[0]
-                    lname = "User" if "Driver" not in acct["role"] else ""
+                    lname = "User"
                     user_obj = User(
                         email=acct["email"],
                         password_hash=get_password_hash(acct["password"]),
@@ -134,10 +134,12 @@ def _auto_sync_demo_account(email: str, password_attempt: str, db: Session):
                     db.add(user_obj)
                     db.flush()
                 else:
-                    if not verify_password(acct["password"], user_obj.password_hash) or user_obj.role_id != role_obj.id or not user_obj.is_active:
+                    if not verify_password(acct["password"], user_obj.password_hash) or user_obj.role_id != role_obj.id or not user_obj.is_active or not user_obj.last_name:
                         user_obj.password_hash = get_password_hash(acct["password"])
                         user_obj.role_id = role_obj.id
                         user_obj.is_active = True
+                        if not user_obj.last_name or len(user_obj.last_name.strip()) == 0:
+                            user_obj.last_name = "User"
                         db.flush()
 
                 if acct["email"] == "driver@transitops.com" and user_obj:

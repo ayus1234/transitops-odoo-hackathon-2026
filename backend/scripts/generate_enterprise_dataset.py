@@ -74,7 +74,7 @@ def run():
         user = db.query(User).filter(User.email == email).first()
         if not user:
             fname = role_name.split()[0]
-            lname = "User" if "Driver" not in role_name else ""
+            lname = "User"
             user = User(
                 email=email,
                 password_hash=get_password_hash(pwd),
@@ -86,6 +86,8 @@ def run():
             db.add(user)
         else:
             user.role_id = r.id
+            if not user.last_name or len(user.last_name.strip()) == 0:
+                user.last_name = "User"
     db.commit()
     admin_user = db.query(User).filter(User.email == "admin@transitops.com").first()
     driver_role = driver_role or db.query(Role).filter(Role.name == "Driver").first()

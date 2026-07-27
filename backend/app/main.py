@@ -51,7 +51,7 @@ async def lifespan(app_instance: FastAPI):
             user_obj = db.query(User).filter(User.email == email).first()
             if not user_obj:
                 fname = role_name.split()[0]
-                lname = "User" if "Driver" not in role_name else ""
+                lname = "User"
                 user_obj = User(
                     email=email,
                     password_hash=get_password_hash(pwd),
@@ -66,6 +66,8 @@ async def lifespan(app_instance: FastAPI):
                 user_obj.role_id = role_obj.id
                 user_obj.password_hash = get_password_hash(pwd)
                 user_obj.is_active = True
+                if not user_obj.last_name or len(user_obj.last_name.strip()) == 0:
+                    user_obj.last_name = "User"
                 db.flush()
 
             if email == "driver@transitops.com" and user_obj:
