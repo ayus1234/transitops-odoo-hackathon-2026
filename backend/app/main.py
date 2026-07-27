@@ -92,9 +92,25 @@ async def lifespan(app_instance: FastAPI):
                         longitude=72.8777
                     )
                     db.add(d_rec)
+        
+        from app.models.permission_audit import PermissionAuditLog
+        if db.query(PermissionAuditLog).count() == 0:
+            from datetime import datetime, timezone, timedelta
+            now = datetime.now(timezone.utc)
+            audit_entries = [
+                PermissionAuditLog(action="CREATE_ROLE", new_value={"name": "Super Admin"}, timestamp=now - timedelta(minutes=120)),
+                PermissionAuditLog(action="CREATE_ROLE", new_value={"name": "Fleet Manager"}, timestamp=now - timedelta(minutes=115)),
+                PermissionAuditLog(action="CREATE_ROLE", new_value={"name": "Driver"}, timestamp=now - timedelta(minutes=110)),
+                PermissionAuditLog(action="UPDATE_ROLE", new_value={"name": "Enterprise RBAC Matrix Synced"}, timestamp=now - timedelta(minutes=60)),
+                PermissionAuditLog(action="BULK_ASSIGN_ROLE", new_value={"users_affected": 13}, timestamp=now - timedelta(minutes=30)),
+                PermissionAuditLog(action="ASSIGN_ROLE", new_value={"role": "Fleet Manager", "users_affected": 4}, timestamp=now - timedelta(minutes=15)),
+            ]
+            for ae in audit_entries:
+                db.add(ae)
+
         db.commit()
         db.close()
-        print("Verified all 13 role-based demo credentials and Driver profiles on startup.")
+        print("Verified all 13 role-based demo credentials, Driver profiles, and RBAC audit logs on startup.")
     except Exception as e:
         print(f"Notice: Demo credential validation skipped: {e}")
         
