@@ -89,7 +89,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const { login, error } = useAuth();
+  const { login, setUser, error } = useAuth();
 
   // Demo Accounts state and mode detection (defaults to true for hackathon evaluation unless explicitly disabled)
   const isDemoMode = import.meta.env.VITE_DEMO_MODE !== 'false' && import.meta.env.VITE_DEMO_MODE !== false;
@@ -99,6 +99,11 @@ const Login = () => {
   const [copiedField, setCopiedField] = useState('');
 
   useEffect(() => {
+    // When visiting the login page (e.g., via the base deployed link), clear any residual session
+    if (localStorage.getItem('token')) {
+      localStorage.removeItem('token');
+      if (setUser) setUser(null);
+    }
     if (isDemoMode) {
       api.get('/auth/demo-accounts')
         .then((response) => {
