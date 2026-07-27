@@ -135,6 +135,8 @@ const Login = () => {
     setSelectedRoleName(e.target.value);
     setShowDemoPassword(false);
     setCopiedField('');
+    setEmail('');
+    setPassword('');
   };
 
   const handleCopy = (text, fieldName) => {
