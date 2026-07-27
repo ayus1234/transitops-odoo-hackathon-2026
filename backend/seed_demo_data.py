@@ -274,6 +274,10 @@ def run():
                 target_user = user
             else:
                 target_user = existing_user
+                target_user.role_id = r.id
+                target_user.password_hash = get_password_hash(password)
+                target_user.is_active = True
+                db.flush()
 
             if email == "driver@transitops.com" and target_user:
                 existing_driver_record = db.query(Driver).filter(Driver.user_id == target_user.id).first()

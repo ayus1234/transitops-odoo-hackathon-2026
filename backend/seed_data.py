@@ -119,7 +119,7 @@ def seed_sample_users(db: Session, roles: dict):
     sample_users = [
         {
             "email": "driver@transitops.com",
-            "password": "driver123",
+            "password": "demo_pass_driver",
             "first_name": "Rajesh",
             "last_name": "Kumar",
             "phone_number": "+919876543210",
@@ -127,7 +127,7 @@ def seed_sample_users(db: Session, roles: dict):
         },
         {
             "email": "safety@transitops.com",
-            "password": "safety123",
+            "password": "demo_pass_safety",
             "first_name": "Priya",
             "last_name": "Sharma",
             "phone_number": "+919876543211",
@@ -146,11 +146,14 @@ def seed_sample_users(db: Session, roles: dict):
     for user_data in sample_users:
         # Check if user already exists
         existing_user = db.query(User).filter(User.email == user_data["email"]).first()
+        role = roles[user_data["role"]]
         if existing_user:
-            print(f"  ✓ User '{user_data['email']}' already exists")
+            existing_user.password_hash = get_password_hash(user_data["password"])
+            existing_user.role_id = role.id
+            db.commit()
+            print(f"  ✓ User '{user_data['email']}' already exists (password & role synced)")
             continue
         
-        role = roles[user_data["role"]]
         user = User(
             email=user_data["email"],
             password_hash=get_password_hash(user_data["password"]),
@@ -195,10 +198,10 @@ def main():
         print("    Password: demo_pass_admin")
         print("\n  Driver:")
         print("    Email: driver@transitops.com")
-        print("    Password: driver123")
+        print("    Password: demo_pass_driver")
         print("\n  Safety Officer:")
         print("    Email: safety@transitops.com")
-        print("    Password: safety123")
+        print("    Password: demo_pass_safety")
         print("\n  Financial Analyst:")
         print("    Email: finance@transitops.com")
         print("    Password: demo_pass_finance")

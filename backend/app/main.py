@@ -61,11 +61,35 @@ async def lifespan(app_instance: FastAPI):
                     is_active=True
                 )
                 db.add(user_obj)
-            elif user_obj.role_id != role_obj.id:
+                db.flush()
+            else:
                 user_obj.role_id = role_obj.id
+                user_obj.password_hash = get_password_hash(pwd)
+                user_obj.is_active = True
+                db.flush()
+
+            if email == "driver@transitops.com" and user_obj:
+                from app.models.driver import Driver
+                from datetime import date
+                d_rec = db.query(Driver).filter(Driver.user_id == user_obj.id).first()
+                if not d_rec:
+                    d_rec = Driver(
+                        user_id=user_obj.id,
+                        license_number="DL-2026-DEMO",
+                        license_category="HGMV",
+                        license_issue_date=date(2021, 1, 1),
+                        license_expiry_date=date(2031, 1, 1),
+                        date_of_birth=date(1990, 5, 15),
+                        safety_score=98.5,
+                        total_trips=142,
+                        status="Available",
+                        latitude=19.0760,
+                        longitude=72.8777
+                    )
+                    db.add(d_rec)
         db.commit()
         db.close()
-        print("Verified all 13 role-based demo credentials on startup.")
+        print("Verified all 13 role-based demo credentials and Driver profiles on startup.")
     except Exception as e:
         print(f"Notice: Demo credential validation skipped: {e}")
         
