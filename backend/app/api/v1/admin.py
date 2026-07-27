@@ -41,9 +41,9 @@ from app.services.settings_service import (
 
 router = APIRouter()
 
-# Only Super Admin, Administrator, and Fleet Manager can access settings endpoints
-admin_only = RoleChecker(["Super Admin", "Administrator", "Fleet Manager"])
-strict_admin = RoleChecker(["Super Admin", "Administrator", "Fleet Manager"])
+# Only authorized administrators and operations managers can access settings endpoints
+admin_only = RoleChecker(["Super Admin", "Administrator", "System Admin", "Fleet Manager", "HR/Operations"])
+strict_admin = RoleChecker(["Super Admin", "Administrator", "System Admin", "Fleet Manager", "HR/Operations"])
 
 
 # ═══════════════════════════════════════════════════════════════

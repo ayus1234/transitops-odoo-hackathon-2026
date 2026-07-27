@@ -41,7 +41,7 @@ def get_categories(
     }
 
 
-@router.post("/categories", response_model=dict, status_code=status.HTTP_201_CREATED, dependencies=[Depends(RoleChecker(["System Admin"]))])
+@router.post("/categories", response_model=dict, status_code=status.HTTP_201_CREATED, dependencies=[Depends(RoleChecker(["System Admin", "Super Admin", "Administrator", "Support Agent", "Fleet Manager", "HR/Operations"]))])
 def create_category(
     category_in: CategoryCreate,
     db: Session = Depends(get_db)
@@ -52,7 +52,7 @@ def create_category(
     return {"success": True, "data": CategoryResponse.model_validate(category).model_dump(mode="json")}
 
 
-@router.put("/categories/{category_id}", response_model=dict, dependencies=[Depends(RoleChecker(["System Admin"]))])
+@router.put("/categories/{category_id}", response_model=dict, dependencies=[Depends(RoleChecker(["System Admin", "Super Admin", "Administrator", "Support Agent", "Fleet Manager", "HR/Operations"]))])
 def update_category(
     category_id: UUID,
     category_in: CategoryUpdate,
@@ -64,7 +64,7 @@ def update_category(
     return {"success": True, "data": CategoryResponse.model_validate(category).model_dump(mode="json")}
 
 
-@router.delete("/categories/{category_id}", dependencies=[Depends(RoleChecker(["System Admin"]))])
+@router.delete("/categories/{category_id}", dependencies=[Depends(RoleChecker(["System Admin", "Super Admin", "Administrator", "Support Agent", "Fleet Manager", "HR/Operations"]))])
 def delete_category(
     category_id: UUID,
     db: Session = Depends(get_db)
@@ -147,7 +147,7 @@ def get_article_by_slug(
     return {"success": True, "data": ArticleResponse.model_validate(article).model_dump(mode="json")}
 
 
-@router.post("/articles", response_model=dict, status_code=status.HTTP_201_CREATED, dependencies=[Depends(RoleChecker(["System Admin"]))])
+@router.post("/articles", response_model=dict, status_code=status.HTTP_201_CREATED, dependencies=[Depends(RoleChecker(["System Admin", "Super Admin", "Administrator", "Support Agent", "Fleet Manager", "HR/Operations"]))])
 def create_article(
     article_in: ArticleCreate,
     db: Session = Depends(get_db),
@@ -159,7 +159,7 @@ def create_article(
     return {"success": True, "data": ArticleResponse.model_validate(article).model_dump(mode="json")}
 
 
-@router.put("/articles/{article_id}", response_model=dict, dependencies=[Depends(RoleChecker(["System Admin"]))])
+@router.put("/articles/{article_id}", response_model=dict, dependencies=[Depends(RoleChecker(["System Admin", "Super Admin", "Administrator", "Support Agent", "Fleet Manager", "HR/Operations"]))])
 def update_article(
     article_id: UUID,
     article_in: ArticleUpdate,
@@ -172,7 +172,7 @@ def update_article(
     return {"success": True, "data": ArticleResponse.model_validate(article).model_dump(mode="json")}
 
 
-@router.delete("/articles/{article_id}", dependencies=[Depends(RoleChecker(["System Admin"]))])
+@router.delete("/articles/{article_id}", dependencies=[Depends(RoleChecker(["System Admin", "Super Admin", "Administrator", "Support Agent", "Fleet Manager", "HR/Operations"]))])
 def delete_article(
     article_id: UUID,
     db: Session = Depends(get_db)
@@ -327,7 +327,8 @@ def upload_attachment(
     # Validate file type or size if necessary (optional)
     
     # Create unique filename
-    ext = os.path.splitext(file.filename)[1]
+    filename = file.filename or "attachment"
+    ext = os.path.splitext(filename)[1]
     unique_filename = f"{uuid.uuid4()}{ext}"
     file_path = os.path.join("uploads", unique_filename)
     
@@ -344,7 +345,7 @@ def upload_attachment(
 
 # --- Feedback ---
 
-@router.get("/feedback", response_model=dict, dependencies=[Depends(RoleChecker(["System Admin", "Management"]))])
+@router.get("/feedback", response_model=dict, dependencies=[Depends(RoleChecker(["System Admin", "Super Admin", "Administrator", "Support Agent", "Fleet Manager", "HR/Operations"]))])
 def get_feedback(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
@@ -374,7 +375,7 @@ def submit_feedback(
     return {"success": True, "data": FeedbackResponse.model_validate(feedback).model_dump(mode="json")}
 
 
-@router.delete("/feedback/{feedback_id}", dependencies=[Depends(RoleChecker(["System Admin"]))])
+@router.delete("/feedback/{feedback_id}", dependencies=[Depends(RoleChecker(["System Admin", "Super Admin", "Administrator", "Support Agent", "Fleet Manager", "HR/Operations"]))])
 def delete_feedback(
     feedback_id: UUID,
     db: Session = Depends(get_db)
@@ -386,7 +387,7 @@ def delete_feedback(
 
 # --- Statistics ---
 
-@router.get("/statistics", response_model=dict, dependencies=[Depends(RoleChecker(["System Admin", "Administrator", "Management"]))])
+@router.get("/statistics", response_model=dict, dependencies=[Depends(RoleChecker(["System Admin", "Super Admin", "Administrator", "Support Agent", "Fleet Manager", "HR/Operations"]))])
 def get_statistics(
     db: Session = Depends(get_db)
 ):

@@ -163,7 +163,7 @@ def get_activity_by_id(
         
     return activity
 
-@router.post("", response_model=ActivityResponse, dependencies=[Depends(RoleChecker(["Administrator"]))])
+@router.post("", response_model=ActivityResponse, dependencies=[Depends(RoleChecker(["Super Admin", "Administrator", "System Admin", "Fleet Manager", "HR/Operations", "Support Agent"]))])
 def create_manual_activity(
     activity_in: ActivityCreate,
     db: Session = Depends(get_db),

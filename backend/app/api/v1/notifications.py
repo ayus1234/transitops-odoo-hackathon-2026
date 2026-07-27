@@ -15,7 +15,7 @@ from app.schemas.notification import (
 from app.services.notification_service import NotificationService
 
 router = APIRouter()
-admin_required = RoleChecker(["Super Admin", "Fleet Manager", "System Administrator"])
+admin_required = RoleChecker(["Super Admin", "Administrator", "System Admin", "Fleet Manager", "HR/Operations", "Support Agent"])
 
 
 @router.get("/", response_model=NotificationListResponse)

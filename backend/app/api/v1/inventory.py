@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from typing import List, Any
+from typing import List, Any, Optional, cast
 from uuid import UUID
 
 from app.core.database import get_db
@@ -43,8 +43,8 @@ def get_inventory_summary(
 def get_inventory_parts(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
-    status: str = None,
-    search: str = None,
+    status: Optional[str] = None,
+    search: Optional[str] = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ) -> Any:
@@ -89,8 +89,8 @@ def filter_inventory(
 def get_inventory_history(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
-    part_id: UUID = None,
-    search: str = None,
+    part_id: Optional[UUID] = None,
+    search: Optional[str] = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ) -> Any:
@@ -136,14 +136,14 @@ def adjust_inventory_stock(
     part_id: UUID,
     request: InventoryAdjustmentRequest,
     db: Session = Depends(get_db),
-    current_user: User = Depends(RoleChecker(["Super Admin", "Administrator", "Fleet Manager", "Maintenance Manager"]))
+    current_user: User = Depends(RoleChecker(["Super Admin", "Administrator", "System Admin", "Fleet Manager", "Maintenance Manager", "Procurement Operations", "Financial Analyst"]))
 ) -> Any:
     service = InventoryService(db)
     item = service.update_stock(
         part_id=part_id,
         quantity_change=request.quantity_change,
         type=request.type,
-        user_id=current_user.id,
+        user_id=cast(UUID, current_user.id),
         reference_id=request.reference_id,
         vendor=request.vendor,
         cost=request.cost
