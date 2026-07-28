@@ -166,11 +166,12 @@ Visit `http://localhost:5173` in your web browser. You will be greeted immediate
 
 ## 📖 Additional Documentation
 For deeper dives into operational modeling, access control governance, and production deployments, consult:
+- `42_PHASE_AUDIT_REPORT.md` - Complete 42-phase QA, authorization, and operational audit executed against frozen verified commit `2daf213`.
 - `RBAC_PERMISSION_MATRIX.md` - Complete master matrix of all 13 canonical system roles and operational capabilities.
 - `RBAC_TEST_REPORT.md` - Complete zero-trust security audit verification and regression test compliance report.
 - `API_SPECIFICATION.md` - Complete list of REST API endpoints and JSON request/response payloads.
 - `DATABASE_SCHEMA.md` - PostgreSQL Entity-Relationship diagrams and schema definitions.
 - `PROJECT_STRUCTURE.md` - Comprehensive layout of internal service boundaries and dependencies.
-- `PRODUCTION_READINESS.md` - System performance benchmarks and security architecture audits.
+- `PRODUCTION_READINESS.md` - System performance benchmarks, known limitations, and security architecture audits.
 - `DEPLOYMENT.md` - Production server staging guide for Cloud Engines, Nginx, Gunicorn, and Vercel.
 - `CHANGELOG.md` - Full release notes and improvement log for v1.1.0.
