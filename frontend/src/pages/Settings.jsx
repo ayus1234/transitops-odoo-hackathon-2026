@@ -28,8 +28,10 @@ const Settings = () => {
     { id: 'org', path: '/settings/org', label: 'Organization', icon: 'domain', component: OrganizationSettings, requireAdmin: true },
   ];
 
-  // The backend uses 'Fleet Manager' for admin tasks
-  const isAdmin = user?.role?.name === 'Fleet Manager' || user?.role?.name === 'Super Admin' || user?.role === 'Fleet Manager' || user?.role === 'Super Admin';
+  // Authorized administrative and operational governance roles
+  const adminRoles = ['Super Admin', 'Administrator', 'System Admin', 'Fleet Manager', 'HR/Operations'];
+  const userRoleName = user?.role?.name || user?.role;
+  const isAdmin = adminRoles.includes(userRoleName) || Boolean(user?.role?.permissions?.all);
 
   const availableTabs = TABS.filter(tab => !tab.requireAdmin || isAdmin);
   

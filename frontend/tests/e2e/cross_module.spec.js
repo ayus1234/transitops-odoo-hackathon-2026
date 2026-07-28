@@ -76,15 +76,7 @@ test.describe('Phase 1 - Cross-Module Workflows', () => {
 
     // 4. Activity Log Entry Verification
     await page.goto('/activity');
-    
-    // Filter by module 'Vehicle' to ensure demo_engine noise doesn't push it off page 1
-    const moduleFilter = page.locator('select[name="moduleFilter"]').first(); 
-    if (await moduleFilter.isVisible()) {
-       await moduleFilter.selectOption('Vehicle');
-    } else {
-       // fallback if the select doesn't have name="moduleFilter"
-       await page.locator('select').first().selectOption('Vehicle');
-    }
+    await page.fill('input[placeholder*="Search activities"]', testReg);
     
     await expect(page.getByText(testReg, { exact: false }).first()).toBeVisible({ timeout: 15000 });
 

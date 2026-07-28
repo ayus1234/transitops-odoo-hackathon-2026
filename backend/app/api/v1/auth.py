@@ -105,7 +105,7 @@ DEMO_ACCOUNTS_CATALOG: List[dict] = [
 
 
 def get_default_permissions_for_role(role_name: str) -> dict:
-    if "Admin" in role_name or "Administrator" in role_name:
+    if role_name in ["Super Admin", "Administrator", "System Admin", "SuperAdmin"]:
         return {"all": ["read", "create", "update", "delete", "export", "manage", "approve", "assign", "dispatch", "resolve"]}
     
     defaults = {
@@ -158,72 +158,6 @@ def get_default_permissions_for_role(role_name: str) -> dict:
     return defaults.get(role_name, {"dashboard": ["read"], "trips": ["read"], "vehicles": ["read"], "reports": ["read"]})
 
 
-def _auto_sync_demo_account(email: str, password_attempt: str, db: Session):
-    """
-    On-demand synchronization for demo credentials during authentication.
-    Guarantees seamless login across local testing, Docker, and Vercel cold boots.
-    """
-    try:
-        for acct in DEMO_ACCOUNTS_CATALOG:
-            if acct["email"].lower() == email.lower():
-                role_obj = db.query(Role).filter(Role.name == acct["role"]).first()
-                expected_perms = get_default_permissions_for_role(acct["role"])
-                if not role_obj:
-                    role_obj = Role(name=acct["role"], permissions=expected_perms)
-                    db.add(role_obj)
-                    db.flush()
-                elif role_obj.permissions != expected_perms:
-                    role_obj.permissions = expected_perms
-                    db.flush()
-                
-                user_obj = db.query(User).filter(User.email.ilike(email)).first()
-                if not user_obj:
-                    fname = acct["role"].split()[0]
-                    lname = "User"
-                    user_obj = User(
-                        email=acct["email"],
-                        password_hash=get_password_hash(acct["password"]),
-                        first_name=fname,
-                        last_name=lname,
-                        role_id=role_obj.id,
-                        is_active=True
-                    )
-                    db.add(user_obj)
-                    db.flush()
-                else:
-                    if not verify_password(acct["password"], user_obj.password_hash) or user_obj.role_id != role_obj.id or not user_obj.is_active or not user_obj.last_name:
-                        user_obj.password_hash = get_password_hash(acct["password"])
-                        user_obj.role_id = role_obj.id
-                        user_obj.is_active = True
-                        if not user_obj.last_name or len(user_obj.last_name.strip()) == 0:
-                            user_obj.last_name = "User"
-                        db.flush()
-
-                if acct["email"] == "driver@transitops.com" and user_obj:
-                    from app.models.driver import Driver
-                    d_rec = db.query(Driver).filter(Driver.user_id == user_obj.id).first()
-                    if not d_rec:
-                        d_rec = Driver(
-                            user_id=user_obj.id,
-                            license_number="DL-2026-DEMO",
-                            license_category="HGMV",
-                            license_issue_date=date(2021, 1, 1),
-                            license_expiry_date=date(2031, 1, 1),
-                            date_of_birth=date(1990, 5, 15),
-                            safety_score=98.5,
-                            total_trips=142,
-                            status="Available",
-                            latitude=19.0760,
-                            longitude=72.8777
-                        )
-                        db.add(d_rec)
-                db.commit()
-                break
-    except Exception as e:
-        db.rollback()
-        print(f"Notice: Auto-sync during authentication skipped: {e}")
-
-
 @router.post("/login", response_model=TokenResponse)
 def login(
     credentials: LoginRequest,
@@ -242,9 +176,6 @@ def login(
     Raises:
         HTTPException: If credentials are invalid
     """
-    # Ensure demo accounts exist and are synced on demand before querying
-    _auto_sync_demo_account(credentials.email, credentials.password, db)
-
     # Find user by email (case-insensitive for convenience)
     user = db.query(User).filter(User.email.ilike(credentials.email)).first()
     
@@ -370,14 +301,11 @@ def logout(
 
 
 @router.get("/demo-accounts", response_model=List[DemoAccountInfo], tags=["Authentication"])
-def list_demo_accounts(db: Session = Depends(get_db)) -> List[DemoAccountInfo]:
+def list_demo_accounts() -> List[DemoAccountInfo]:
     """
     Retrieve dedicated role-based demo account credentials for hackathon testers and judges.
-    Automatically verifies and synchronizes demo credentials in the background.
     
     Returns:
         List of demo account info containing role name, email, dedicated demo password, and role description.
     """
-    for account in DEMO_ACCOUNTS_CATALOG:
-        _auto_sync_demo_account(account["email"], account["password"], db)
     return [DemoAccountInfo.model_validate(account) for account in DEMO_ACCOUNTS_CATALOG]

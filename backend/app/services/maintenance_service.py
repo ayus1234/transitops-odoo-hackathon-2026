@@ -116,17 +116,24 @@ class MaintenanceService:
                 code="BIZ_020"
             )
 
-        # Generate maintenance number
-        maintenance_number = self.repository.get_next_maintenance_number()
-
         # Build data dict
         record_dict = data.model_dump()
-        record_dict["maintenance_number"] = maintenance_number
         record_dict["status"] = "Pending"
         if created_by:
             record_dict["created_by"] = created_by
 
-        record = self.repository.create(record_dict)
+        from sqlalchemy.exc import IntegrityError
+        import time
+        for attempt in range(5):
+            try:
+                record_dict["maintenance_number"] = self.repository.get_next_maintenance_number()
+                record = self.repository.create(record_dict.copy())
+                break
+            except IntegrityError as e:
+                self.db.rollback()
+                if attempt == 4 or "maintenance_number" not in str(e):
+                    raise
+                time.sleep(0.15 * (attempt + 1))
         
         if created_by:
             activity_service.log_activity(self.db, ActivityCreate(

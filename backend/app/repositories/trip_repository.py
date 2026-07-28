@@ -132,18 +132,21 @@ class TripRepository:
         year = date.today().year
         prefix = f"TRP-{year}-"
         
-        # Get the last trip number for this year
-        last_trip = self.db.query(Trip).filter(
+        # Get all trip numbers for this year and compute true numeric max
+        trips = self.db.query(Trip.trip_number).filter(
             Trip.trip_number.like(f"{prefix}%")
-        ).order_by(Trip.trip_number.desc()).first()
+        ).all()
         
-        if last_trip:
-            # Extract sequence number and increment
-            last_seq = int(last_trip.trip_number.replace(prefix, ""))
-            next_seq = last_seq + 1
-        else:
-            next_seq = 1
+        max_seq = 0
+        for (num,) in trips:
+            try:
+                seq = int(num.replace(prefix, ""))
+                if seq > max_seq:
+                    max_seq = seq
+            except (ValueError, TypeError):
+                continue
         
+        next_seq = max_seq + 1
         return f"{prefix}{next_seq:05d}"
     
     def get_trips_by_vehicle(

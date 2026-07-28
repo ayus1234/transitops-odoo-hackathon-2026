@@ -90,7 +90,7 @@ test.describe('Role-Based Demo Access & Login UI Flow', () => {
     await expect(copyPassBtn).toBeVisible();
 
     // Reveal password inside credential panel
-    const showDemoPassBtn = page.locator('h3:has-text("Fleet Manager Demo Access")').locator('..').locator('..').locator('button[aria-label="Show password"]');
+    const showDemoPassBtn = page.locator('h3:has-text("Fleet Manager Demo Access")').locator('..').locator('..').locator('..').locator('button[aria-label="Show password"]');
     await showDemoPassBtn.click();
     await expect(page.locator('span', { hasText: 'fleet2026' })).toBeVisible();
 

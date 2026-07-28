@@ -159,9 +159,6 @@ class User(Base):
         aggregated_perms = self.get_all_permissions()
         if "all" in aggregated_perms:
             return True
-
-        if resource in ["dashboard", "reports", "settings", "help_center"]:
-            return True
             
         resource_permissions = aggregated_perms.get(resource, [])
         return action in resource_permissions

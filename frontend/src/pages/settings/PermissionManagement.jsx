@@ -144,12 +144,12 @@ const PermissionManagement = () => {
                       <button
                         key={perm.id}
                         onClick={() => togglePermission(perm.resource, perm.action, hasPerm)}
-                        disabled={updating || selectedRole.name === 'Fleet Manager'} // Usually Fleet Manager is super admin, prevent removing
+                        disabled={updating || ['Super Admin', 'Administrator', 'System Admin'].includes(selectedRole.name)} // Prevent removing universal admin permissions
                         className={`flex items-center gap-2 px-3 py-1.5 rounded border transition-all ${
                           hasPerm 
                             ? 'bg-primary-container text-primary border-primary/30 hover:bg-error-container hover:text-error hover:border-error/30' 
                             : 'bg-surface-container-lowest text-outline border-outline-variant hover:bg-surface-container hover:text-on-surface'
-                        } ${selectedRole.name === 'Fleet Manager' ? 'opacity-70 cursor-not-allowed' : ''}`}
+                        } ${['Super Admin', 'Administrator', 'System Admin'].includes(selectedRole.name) ? 'opacity-70 cursor-not-allowed' : ''}`}
                         title={hasPerm ? "Click to remove" : "Click to assign"}
                       >
                         <span className="material-symbols-outlined text-[16px]">
@@ -164,9 +164,9 @@ const PermissionManagement = () => {
             ))}
           </div>
           
-          {selectedRole.name === 'Fleet Manager' && (
+          {['Super Admin', 'Administrator', 'System Admin'].includes(selectedRole.name) && (
             <div className="p-sm bg-primary-container/30 text-primary text-center text-body-sm font-bold border-t border-primary/20">
-              Fleet Manager is a System Super Admin. Permissions cannot be restricted.
+              This role has universal System Administrator privileges. Permissions cannot be restricted.
             </div>
           )}
         </div>

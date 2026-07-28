@@ -153,17 +153,24 @@ class TripService:
                 code="BIZ_007"
             )
         
-        # Generate trip number
-        trip_number = self.repository.get_next_trip_number()
-        
         # Build trip data dict
         trip_dict = trip_data.model_dump()
-        trip_dict["trip_number"] = trip_number
         trip_dict["status"] = "Draft"
         if created_by:
             trip_dict["created_by"] = created_by
         
-        trip = self.repository.create(trip_dict)
+        from sqlalchemy.exc import IntegrityError
+        import time
+        for attempt in range(5):
+            try:
+                trip_dict["trip_number"] = self.repository.get_next_trip_number()
+                trip = self.repository.create(trip_dict.copy())
+                break
+            except IntegrityError as e:
+                self.db.rollback()
+                if attempt == 4 or "trip_number" not in str(e):
+                    raise
+                time.sleep(0.15 * (attempt + 1))
         
         if created_by:
             activity_service.log_activity(self.db, ActivityCreate(
