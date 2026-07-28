@@ -121,17 +121,21 @@ class MaintenanceRepository:
         year = date.today().year
         prefix = f"MNT-{year}-"
 
-        # Get the last maintenance number for this year
-        last_record = self.db.query(Maintenance).filter(
+        # Get all maintenance numbers for this year and compute true numeric max
+        records = self.db.query(Maintenance.maintenance_number).filter(
             Maintenance.maintenance_number.like(f"{prefix}%")
-        ).order_by(Maintenance.maintenance_number.desc()).first()
+        ).all()
 
-        if last_record:
-            last_seq = int(last_record.maintenance_number.replace(prefix, ""))
-            next_seq = last_seq + 1
-        else:
-            next_seq = 1
+        max_seq = 0
+        for (num,) in records:
+            try:
+                seq = int(num.replace(prefix, ""))
+                if seq > max_seq:
+                    max_seq = seq
+            except (ValueError, TypeError):
+                continue
 
+        next_seq = max_seq + 1
         return f"{prefix}{next_seq:05d}"
 
     def get_maintenance_by_vehicle(

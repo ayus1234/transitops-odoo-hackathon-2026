@@ -32,7 +32,9 @@ export default function MaintenanceScheduler() {
     end_time: '',
   });
 
-  const canReschedule = user?.role === 'System Admin' || user?.role === 'Fleet Manager' || user?.role === 'Super Admin' || user?.role === 'Administrator' || user?.role?.name === 'Super Admin' || user?.role?.name === 'Administrator';
+  const authorizedRescheduleRoles = ['Super Admin', 'Administrator', 'System Admin', 'Fleet Manager', 'Maintenance Manager', 'Dispatcher'];
+  const userRoleName = user?.role?.name || user?.role;
+  const canReschedule = authorizedRescheduleRoles.includes(userRoleName) || Boolean(user?.role?.permissions?.all);
 
   // Format date helper (Uses local timezone to avoid UTC boundary shifts)
   const formatDate = (date) => {

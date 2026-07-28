@@ -10,14 +10,14 @@ Built from the ground up for scalability, responsiveness, strict type safety, an
 
 ## 🌟 Key Features & Modules
 
-### 1. 🔐 Enterprise 13-Role RBAC & Security Governance
-* **Comprehensive 13-Role Matrix:** Granular Role-Based Access Control enforcing specific read, create, update, delete, approve, and export privileges across all API routes and UI viewports for:
-  - **Executive & Administration:** *Super Admin*, *Administrator*, *System Admin*
-  - **Operations & Fleet:** *Fleet Manager*, *Dispatcher*, *Safety Officer*, *Driver*
-  - **Maintenance & Asset Engineering:** *Maintenance Manager*, *Technician*
-  - **Finance & Supply Chain:** *Financial Analyst*, *Inventory Manager*, *Procurement Specialist*, *Auditor/Compliance Officer*
-* **Dynamic RBAC Audit Engine:** Automated recording of every permission mutation, role assignment, custom role cloning, and system initialization event in dedicated audit logs with CSV export capability.
-* **Self-Healing Startup Synchronization:** Automatically verifies, syncs, and heals all 13 enterprise demo accounts, Driver profiles, and RBAC matrix defaults on server startup without requiring database wipes.
+### 1. 🔐 Enterprise 13-Role Zero-Trust RBAC & Security Governance
+* **Comprehensive 13-Role Matrix:** Granular Role-Based Access Control adhering strictly to the Principle of Least Privilege (PoLP) without arbitrary hardcoded resource bypasses across all API routes and UI viewports for:
+  - **Executive & Governance:** *Super Admin*, *Administrator*, *System Admin*
+  - **Operations & Logistics:** *Fleet Manager*, *Dispatcher*, *Driver*, *HR/Operations*
+  - **Maintenance & Asset Engineering:** *Maintenance Manager*, *Technician*, *Safety Officer*
+  - **Finance, Procurement & Support:** *Financial Analyst*, *Procurement Operations*, *Support Agent*
+* **Dynamic RBAC Audit Engine:** Automated recording of authentic permission mutations, role assignments, custom role creations, and administrative events in persistent database audit logs with export capability.
+* **Self-Healing Startup Synchronization:** Automatically verifies and synchronizes all 13 canonical enterprise roles and default capability matrices without overriding user-defined custom roles or altering credential hashes during runtime login.
 
 ### 2. 🚛 Fleet & Driver Operations
 * **Vehicle Registry:** Complete lifecycle management and CRUD operations for transport assets, including registration numbers, volumetric capacities, telemetry models, and real-time compliance tracking.
@@ -165,7 +165,9 @@ Visit `http://localhost:5173` in your web browser. You will be greeted immediate
 ---
 
 ## 📖 Additional Documentation
-For deeper dives into operational modeling and production deployments, consult:
+For deeper dives into operational modeling, access control governance, and production deployments, consult:
+- `RBAC_PERMISSION_MATRIX.md` - Complete master matrix of all 13 canonical system roles and operational capabilities.
+- `RBAC_TEST_REPORT.md` - Complete zero-trust security audit verification and regression test compliance report.
 - `API_SPECIFICATION.md` - Complete list of REST API endpoints and JSON request/response payloads.
 - `DATABASE_SCHEMA.md` - PostgreSQL Entity-Relationship diagrams and schema definitions.
 - `PROJECT_STRUCTURE.md` - Comprehensive layout of internal service boundaries and dependencies.

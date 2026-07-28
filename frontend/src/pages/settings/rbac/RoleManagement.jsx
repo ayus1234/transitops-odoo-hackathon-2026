@@ -182,7 +182,7 @@ const RoleManagement = () => {
                       >
                         <span className="material-symbols-outlined text-[18px]">content_copy</span>
                       </button>
-                      {role.is_custom && role.name !== 'Super Admin' && (
+                      {role.is_custom && !['Super Admin', 'Administrator', 'System Admin'].includes(role.name) && (
                         <button 
                           onClick={() => openDeleteDialog(role)}
                           className="p-1.5 rounded hover:bg-error-container text-outline hover:text-error transition-colors" title="Delete Role"

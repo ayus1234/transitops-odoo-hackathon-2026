@@ -120,6 +120,9 @@ const ProcurementRequests = () => {
     else if (type === 'pdf') downloadPDF(filteredRequests, 'procurement_requests.pdf', 'Procurement Requests Log', procurementColumns);
   };
 
+  const authorizedApprovers = ['Super Admin', 'Administrator', 'System Admin', 'Fleet Manager', 'Maintenance Manager', 'Procurement Operations', 'Financial Analyst'];
+  const canApprove = authorizedApprovers.includes(user?.role?.name || user?.role) || Boolean(user?.role?.permissions?.all);
+
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden bg-background">
       <div className="p-3 md:p-lg space-y-lg flex-1 overflow-y-auto custom-scrollbar min-w-0">
@@ -259,7 +262,7 @@ const ProcurementRequests = () => {
                         <button onClick={() => setSelectedRequest(req)} className="text-on-surface-variant hover:text-primary hover:bg-primary-container/30 p-1 rounded" title="View Details">
                           <span className="material-symbols-outlined text-[18px]">visibility</span>
                         </button>
-                        {req.status === 'Submitted' && (user?.role?.name === 'Super Admin' || user?.role?.name === 'Administrator' || user?.role?.name === 'Fleet Manager') && (
+                        {req.status === 'Submitted' && canApprove && (
                           <>
                             <button onClick={() => handleApprove(req.id)} className="text-primary hover:bg-primary-container/30 p-1 rounded" title="Approve">
                               <span className="material-symbols-outlined text-[18px]">check_circle</span>

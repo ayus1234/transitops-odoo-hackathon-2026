@@ -53,7 +53,7 @@ test.describe('Phase 7.2 - Integration Testing', () => {
   });
 
   test('Dashboard Quick Action integration', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/dashboard');
     
     // Wait for quick actions to load before clicking
     await page.waitForResponse(response => response.url().includes('quick-actions') && response.status() === 200, { timeout: 10000 }).catch(() => {});

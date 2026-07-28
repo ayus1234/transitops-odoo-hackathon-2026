@@ -39,8 +39,8 @@ from app.models.activity import ModuleEnum, ActivityTypeEnum, SeverityEnum
 
 
 # System roles that cannot be deleted
-SYSTEM_ROLES = ["Super Admin", "Administrator", "Fleet Manager", "Driver", "Safety Officer", "Financial Analyst", "Dispatcher", "Maintenance Manager", "Technician", "HR/Operations"]
-ADMIN_ROLES = ["Super Admin", "Administrator", "Fleet Manager"]
+SYSTEM_ROLES = ["Super Admin", "Administrator", "System Admin", "Fleet Manager", "Driver", "Safety Officer", "Financial Analyst", "Dispatcher", "Maintenance Manager", "Technician", "HR/Operations", "Support Agent", "Procurement Operations"]
+ADMIN_ROLES = ["Super Admin", "Administrator", "System Admin", "Fleet Manager"]
 
 
 class SettingsService:

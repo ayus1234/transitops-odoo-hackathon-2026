@@ -100,7 +100,7 @@ const RoleManagement = ({ modalAction, onModalHandled }) => {
           ))
         ) : (
           roles.map((role) => {
-            const isSystem = ['Fleet Manager', 'Driver', 'Safety Officer', 'Financial Analyst'].includes(role.name);
+            const isSystem = ['Super Admin', 'Administrator', 'System Admin', 'Fleet Manager', 'Driver', 'Safety Officer', 'Financial Analyst', 'Dispatcher', 'Maintenance Manager', 'Technician', 'HR/Operations', 'Support Agent', 'Procurement Operations'].includes(role.name);
             const permCount = getPermissionCount(role.permissions);
             
             return (

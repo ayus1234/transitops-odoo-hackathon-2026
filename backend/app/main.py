@@ -48,9 +48,6 @@ async def lifespan(app_instance: FastAPI):
                 role_obj = Role(name=role_name, permissions=expected_perms)
                 db.add(role_obj)
                 db.flush()
-            elif role_obj.permissions != expected_perms:
-                role_obj.permissions = expected_perms
-                db.flush()
             user_obj = db.query(User).filter(User.email == email).first()
             if not user_obj:
                 fname = role_name.split()[0]
@@ -64,13 +61,6 @@ async def lifespan(app_instance: FastAPI):
                     is_active=True
                 )
                 db.add(user_obj)
-                db.flush()
-            else:
-                user_obj.role_id = role_obj.id
-                user_obj.password_hash = get_password_hash(pwd)
-                user_obj.is_active = True
-                if not user_obj.last_name or len(user_obj.last_name.strip()) == 0:
-                    user_obj.last_name = "User"
                 db.flush()
 
             if email == "driver@transitops.com" and user_obj:
@@ -92,25 +82,10 @@ async def lifespan(app_instance: FastAPI):
                         longitude=72.8777
                     )
                     db.add(d_rec)
-        
-        from app.models.permission_audit import PermissionAuditLog
-        if db.query(PermissionAuditLog).count() == 0:
-            from datetime import datetime, timezone, timedelta
-            now = datetime.now(timezone.utc)
-            audit_entries = [
-                PermissionAuditLog(action="CREATE_ROLE", new_value={"name": "Super Admin"}, timestamp=now - timedelta(minutes=120)),
-                PermissionAuditLog(action="CREATE_ROLE", new_value={"name": "Fleet Manager"}, timestamp=now - timedelta(minutes=115)),
-                PermissionAuditLog(action="CREATE_ROLE", new_value={"name": "Driver"}, timestamp=now - timedelta(minutes=110)),
-                PermissionAuditLog(action="UPDATE_ROLE", new_value={"name": "Enterprise RBAC Matrix Synced"}, timestamp=now - timedelta(minutes=60)),
-                PermissionAuditLog(action="BULK_ASSIGN_ROLE", new_value={"users_affected": 13}, timestamp=now - timedelta(minutes=30)),
-                PermissionAuditLog(action="ASSIGN_ROLE", new_value={"role": "Fleet Manager", "users_affected": 4}, timestamp=now - timedelta(minutes=15)),
-            ]
-            for ae in audit_entries:
-                db.add(ae)
 
         db.commit()
         db.close()
-        print("Verified all 13 role-based demo credentials, Driver profiles, and RBAC audit logs on startup.")
+        print("Verified all 13 role-based demo credentials and Driver profiles on startup.")
     except Exception as e:
         print(f"Notice: Demo credential validation skipped: {e}")
         
@@ -180,6 +155,9 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 @app.exception_handler(SQLAlchemyError)
 async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
     """Handle SQLAlchemy database errors."""
+    import traceback
+    print(f"[ERROR] SQLAlchemyError processing request {request.method} {request.url}: {exc}", flush=True)
+    traceback.print_exc()
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={
@@ -195,6 +173,9 @@ async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
 @app.exception_handler(Exception)
 async def general_exception_handler(request: Request, exc: Exception):
     """Handle all other exceptions."""
+    import traceback
+    print(f"[ERROR] Unhandled Exception processing request {request.method} {request.url}: {exc}", flush=True)
+    traceback.print_exc()
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={
