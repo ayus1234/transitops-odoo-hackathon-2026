@@ -25,6 +25,7 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
+    { name: 'Dispatch Board', path: '/dispatch', icon: 'settings_remote' },
     { name: 'Jobs & Orders', path: '/jobs', icon: 'package_2' },
     { name: 'Vehicle Registry', path: '/vehicles', icon: 'local_shipping' },
     { name: 'Driver Management', path: '/drivers', icon: 'person_pin' },
