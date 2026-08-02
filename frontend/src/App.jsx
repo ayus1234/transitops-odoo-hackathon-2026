@@ -34,6 +34,8 @@ import InventoryDashboard from './pages/inventory/InventoryDashboard';
 import ProcurementRequests from './pages/inventory/ProcurementRequests';
 import PurchaseOrders from './pages/inventory/PurchaseOrders';
 import InventoryHistory from './pages/inventory/InventoryHistory';
+import VendorsPage from './pages/vendors/VendorsPage';
+import JobsPage from './pages/jobs/JobsPage';
 
 // Help Center Pages
 import HelpCenter from './pages/help/HelpCenter';
@@ -55,7 +57,8 @@ function App() {
               <Route element={<ProtectedRoute />}>
                 <Route element={<MainLayout />}>
                   <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/vehicles" element={<Vehicles />} />
+                  <Route path="/jobs" element={<JobsPage />} />
+                  <Route path="/vehicles" element={<Vehicles />} />
               <Route path="/drivers" element={<Drivers />} />
               <Route path="/drivers/license-compliance" element={<LicenseCompliance />} />
               <Route path="/drivers/safety-insights" element={<SafetyInsights />} />
@@ -85,6 +88,7 @@ function App() {
               <Route path="/inventory/procurement" element={<ProcurementRequests />} />
               <Route path="/inventory/purchase-orders" element={<PurchaseOrders />} />
               <Route path="/inventory/history" element={<InventoryHistory />} />
+              <Route path="/vendors" element={<VendorsPage />} />
               
               {/* Help Center Routes */}
               <Route path="/help" element={<HelpCenter />} />

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, UUID4, Field
+from pydantic import BaseModel, UUID4, Field, ConfigDict
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 from app.models.activity import ModuleEnum, ActivityTypeEnum, SeverityEnum
@@ -30,9 +30,7 @@ class ActivityResponse(ActivityBase):
     id: UUID4
     created_at: datetime
     
-    class Config:
-        from_attributes = True
-        populate_by_name = True
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 class ActivityListResponse(BaseModel):
     items: List[ActivityResponse]
