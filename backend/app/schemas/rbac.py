@@ -1,5 +1,5 @@
 from typing import List, Dict, Optional, Any
-from pydantic import BaseModel, Field, UUID4
+from pydantic import BaseModel, Field, UUID4, ConfigDict
 from datetime import datetime
 
 class PermissionMatrix(BaseModel):
@@ -27,8 +27,7 @@ class RoleResponse(RoleBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class RoleCloneRequest(BaseModel):
     new_name: str = Field(..., max_length=50)
@@ -50,8 +49,7 @@ class PermissionAuditLogResponse(BaseModel):
     new_value: Optional[Dict[str, Any]] = None
     timestamp: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 # Static Permission Templates
 TEMPLATES = {

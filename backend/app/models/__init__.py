@@ -19,6 +19,11 @@ from app.models.custom_report import CustomReport, ReportExecution, ScheduledRep
 from app.models.activity import ActivityLog
 from app.models.permission_audit import PermissionAuditLog
 from app.models.inventory import InventoryItem, ProcurementRequest, PurchaseOrder, InventoryHistory
+from app.models.odometer_reading import OdometerReading
+from app.models.document import Document
+from app.models.vendor import Vendor
+from app.models.job import Job
+from app.models.trip_stop import TripStop
 
 __all__ = [
     "Base", "Role", "user_additional_roles", "User", "Vehicle", "Driver", "Trip",
@@ -28,5 +33,7 @@ __all__ = [
     "QuickAction", "UserFavoriteAction", "UserRecentAction",
     "CustomReport", "ReportExecution", "ScheduledReport",
     "ActivityLog", "PermissionAuditLog",
-    "InventoryItem", "ProcurementRequest", "PurchaseOrder", "InventoryHistory"
+    "InventoryItem", "ProcurementRequest", "PurchaseOrder", "InventoryHistory",
+    "OdometerReading", "Document", "Vendor", "Job", "TripStop"
 ]
+

@@ -25,7 +25,9 @@ def db_engine():
     """Create test database engine."""
     Base.metadata.create_all(bind=test_engine)
     yield test_engine
+    test_engine.dispose()
     Base.metadata.drop_all(bind=test_engine)
+    test_engine.dispose()
 
 
 @pytest.fixture(scope="function")
