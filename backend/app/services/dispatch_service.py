@@ -105,8 +105,8 @@ class DispatchService:
             errors.append(f"Driver {driver.license_number} is in '{driver.status}' state (must be Available).")
 
         # Check capacity
-        cargo_weight = float(job.cargo_weight_kg) if job.cargo_weight_kg is not None else 0.0
-        vehicle_capacity = float(vehicle.capacity_kg) if vehicle.capacity_kg is not None else 0.0
+        cargo_weight = float(str(job.cargo_weight_kg)) if job.cargo_weight_kg is not None else 0.0
+        vehicle_capacity = float(str(vehicle.capacity_kg)) if vehicle.capacity_kg is not None else 0.0
 
         if cargo_weight > 0 and vehicle_capacity > 0:
             if cargo_weight > vehicle_capacity:
@@ -164,8 +164,8 @@ class DispatchService:
         trip_data = TripCreate(
             vehicle_id=UUID(str(vehicle.id)),
             driver_id=UUID(str(driver.id)),
-            source=job.pickup_address,
-            destination=job.delivery_address,
+            source=str(job.pickup_address),
+            destination=str(job.delivery_address),
             cargo_weight_kg=cargo_weight,
             planned_distance_km=Decimal("150.0"),
             planned_departure=now,
@@ -176,13 +176,13 @@ class DispatchService:
         trip = self.trip_service.create_trip(trip_data)
 
         # 3. Update Job
-        job.trip_id = trip.id  # type: ignore
-        job.status = "Assigned"
+        setattr(job, 'trip_id', trip.id)
+        setattr(job, 'status', 'Assigned')
 
         # 4. Immediately dispatch trip
-        start_odo = float(vehicle.current_odometer_km) if vehicle.current_odometer_km is not None else 0.0
+        start_odo = float(str(vehicle.current_odometer_km)) if vehicle.current_odometer_km is not None else 0.0
         dispatched_trip = self.trip_service.dispatch_trip(UUID(str(trip.id)), TripDispatch(start_odometer_km=Decimal(str(start_odo))))
-        job.status = "In Transit"
+        setattr(job, 'status', 'In Transit')
 
         self.db.commit()
         self.db.refresh(job)
