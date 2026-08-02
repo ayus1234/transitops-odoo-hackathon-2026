@@ -3,6 +3,7 @@ Unit tests for Feature 2.2 — Operational Dispatch Board.
 """
 import pytest
 from datetime import datetime, date, timedelta
+from uuid import UUID
 
 from app.models.vehicle import Vehicle
 from app.models.driver import Driver
@@ -89,11 +90,13 @@ def test_validate_dispatch_success_and_overweight_warning(db_session):
     db_session.commit()
     db_session.refresh(driver)
 
+    from uuid import UUID
+
     # Validate dry-run
     val = dispatch_service.validate_dispatch(
-        job_id=job.id,
-        vehicle_id=vehicle.id,
-        driver_id=driver.id
+        job_id=UUID(str(job.id)),
+        vehicle_id=UUID(str(vehicle.id)),
+        driver_id=UUID(str(driver.id))
     )
 
     assert val["valid"] is False
@@ -160,9 +163,9 @@ def test_assign_and_dispatch_operational_flow(db_session):
 
     # Assign & Dispatch
     dispatched_trip = dispatch_service.assign_and_dispatch(
-        job_id=job.id,
-        vehicle_id=vehicle.id,
-        driver_id=driver.id,
+        job_id=UUID(str(job.id)),
+        vehicle_id=UUID(str(vehicle.id)),
+        driver_id=UUID(str(driver.id)),
         notes="Urgent dispatch by control tower"
     )
 
