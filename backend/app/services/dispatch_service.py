@@ -4,6 +4,7 @@ Dispatch Service — Pre-validation and Operational Dispatch Control Center.
 from typing import Dict, Any, List, Optional
 from uuid import UUID
 from datetime import datetime, timedelta
+from decimal import Decimal
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
@@ -17,7 +18,7 @@ from app.repositories.vehicle_repository import VehicleRepository
 from app.repositories.driver_repository import DriverRepository
 from app.repositories.trip_repository import TripRepository
 from app.services.trip_service import TripService
-from app.schemas.trip import TripCreate
+from app.schemas.trip import TripCreate, TripDispatch
 from app.utils.exceptions import BusinessLogicError, NotFoundError
 
 
@@ -56,12 +57,13 @@ class DispatchService:
         ).order_by(Trip.created_at.desc()).all()
 
         # 5. Calculate KPIs
+        now = datetime.now()
         kpis = {
           "unassigned_jobs_count": len(unassigned_jobs),
           "available_vehicles_count": len(available_vehicles),
           "available_drivers_count": len(available_drivers),
           "active_trips_count": len(active_trips),
-          "delayed_trips_count": sum(1 for t in active_trips if t.estimated_arrival and t.estimated_arrival < datetime.now())
+          "delayed_trips_count": sum(1 for t in active_trips if getattr(t, 'planned_arrival', None) is not None and getattr(t, 'planned_arrival') < now)
         }
 
         return {
@@ -91,8 +93,8 @@ class DispatchService:
         if not driver:
             raise NotFoundError(f"Driver {driver_id} not found")
 
-        warnings = []
-        errors = []
+        warnings: List[str] = []
+        errors: List[str] = []
 
         # Check vehicle status
         if vehicle.status not in ["Available", "Acquired"]:
@@ -103,10 +105,13 @@ class DispatchService:
             errors.append(f"Driver {driver.license_number} is in '{driver.status}' state (must be Available).")
 
         # Check capacity
-        if job.cargo_weight_kg and vehicle.capacity_kg:
-            if float(job.cargo_weight_kg) > float(vehicle.capacity_kg):
+        cargo_weight = float(job.cargo_weight_kg) if job.cargo_weight_kg is not None else 0.0
+        vehicle_capacity = float(vehicle.capacity_kg) if vehicle.capacity_kg is not None else 0.0
+
+        if cargo_weight > 0 and vehicle_capacity > 0:
+            if cargo_weight > vehicle_capacity:
                 errors.append(
-                    f"Cargo weight ({job.cargo_weight_kg} kg) exceeds vehicle capacity ({vehicle.capacity_kg} kg)."
+                    f"Cargo weight ({cargo_weight} kg) exceeds vehicle capacity ({vehicle_capacity} kg)."
                 )
 
         # Check license validity
@@ -114,17 +119,19 @@ class DispatchService:
             errors.append(f"Driver license {driver.license_number} expired on {driver.license_expiry_date}.")
 
         # Check medical fitness validity if present
-        if hasattr(driver, 'medical_fitness_expiry') and driver.medical_fitness_expiry:
-            if driver.medical_fitness_expiry < datetime.now().date():
+        if getattr(driver, 'medical_fitness_expiry', None) is not None:
+            if getattr(driver, 'medical_fitness_expiry') < datetime.now().date():
                 warnings.append(f"Driver medical fitness expired on {driver.medical_fitness_expiry}.")
+
+        utilization_pct = round((cargo_weight / vehicle_capacity) * 100, 1) if vehicle_capacity > 0 else 0.0
 
         return {
           "valid": len(errors) == 0,
           "errors": errors,
           "warnings": warnings,
-          "cargo_weight_kg": float(job.cargo_weight_kg) if job.cargo_weight_kg else 0,
-          "vehicle_capacity_kg": float(vehicle.capacity_kg) if vehicle.capacity_kg else 0,
-          "utilization_pct": round((float(job.cargo_weight_kg) / float(vehicle.capacity_kg)) * 100, 1) if job.cargo_weight_kg and vehicle.capacity_kg else 0
+          "cargo_weight_kg": cargo_weight,
+          "vehicle_capacity_kg": vehicle_capacity,
+          "utilization_pct": utilization_pct
         }
 
     def assign_and_dispatch(
@@ -147,15 +154,20 @@ class DispatchService:
         vehicle = self.vehicle_repo.get_by_id(vehicle_id)
         driver = self.driver_repo.get_by_id(driver_id)
 
+        if job is None or vehicle is None or driver is None:
+            raise NotFoundError("Job, vehicle, or driver not found")
+
         # 2. Create Trip
         now = datetime.now()
+        cargo_weight = Decimal(str(job.cargo_weight_kg)) if job.cargo_weight_kg is not None else Decimal("100.0")
+
         trip_data = TripCreate(
-            vehicle_id=vehicle.id,
-            driver_id=driver.id,
+            vehicle_id=UUID(str(vehicle.id)),
+            driver_id=UUID(str(driver.id)),
             source=job.pickup_address,
             destination=job.delivery_address,
-            cargo_weight_kg=job.cargo_weight_kg or 100.0,
-            planned_distance_km=150.0,
+            cargo_weight_kg=cargo_weight,
+            planned_distance_km=Decimal("150.0"),
             planned_departure=now,
             planned_arrival=now + timedelta(hours=4),
             notes=notes or f"Dispatched for Customer Job {job.job_number} ({job.customer_name})"
@@ -164,14 +176,12 @@ class DispatchService:
         trip = self.trip_service.create_trip(trip_data)
 
         # 3. Update Job
-        job.trip_id = trip.id
+        job.trip_id = trip.id  # type: ignore
         job.status = "Assigned"
 
-        from app.schemas.trip import TripDispatch
-
         # 4. Immediately dispatch trip
-        start_odo = vehicle.current_odometer_km if vehicle.current_odometer_km is not None else 0
-        dispatched_trip = self.trip_service.dispatch_trip(trip.id, TripDispatch(start_odometer_km=start_odo))
+        start_odo = float(vehicle.current_odometer_km) if vehicle.current_odometer_km is not None else 0.0
+        dispatched_trip = self.trip_service.dispatch_trip(UUID(str(trip.id)), TripDispatch(start_odometer_km=Decimal(str(start_odo))))
         job.status = "In Transit"
 
         self.db.commit()
@@ -179,3 +189,4 @@ class DispatchService:
         self.db.refresh(dispatched_trip)
 
         return dispatched_trip
+
