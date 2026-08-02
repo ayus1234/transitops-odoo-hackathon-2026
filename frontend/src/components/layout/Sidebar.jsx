@@ -25,6 +25,7 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
+    { name: 'Jobs & Orders', path: '/jobs', icon: 'package_2' },
     { name: 'Vehicle Registry', path: '/vehicles', icon: 'local_shipping' },
     { name: 'Driver Management', path: '/drivers', icon: 'person_pin' },
     { name: 'Trip Management', path: '/trips', icon: 'route' },
@@ -39,6 +40,7 @@ const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
     { name: 'Inventory', path: '/inventory/restock', icon: 'inventory_2' },
     { name: 'Procurement', path: '/inventory/procurement', icon: 'shopping_cart' },
     { name: 'Purchase Orders', path: '/inventory/purchase-orders', icon: 'receipt_long' },
+    { name: 'Vendors & Services', path: '/vendors', icon: 'store' },
     { name: 'Inventory History', path: '/inventory/history', icon: 'history' },
   ];
 

@@ -15,11 +15,13 @@ from app.core.security import get_password_hash
 from app.utils.exceptions import (
     NotFoundError,
     DuplicateEntryError,
-    ValidationError
+    ValidationError,
+    BusinessLogicError
 )
 from app.services.activity_service import activity_service
 from app.schemas.activity import ActivityCreate
 from app.models.activity import ModuleEnum, ActivityTypeEnum, SeverityEnum
+from typing import Optional
 
 
 class DriverService:
@@ -64,7 +66,7 @@ class DriverService:
             license_expiring_soon=license_expiring_soon
         )
     
-    def create_driver(self, driver_data: DriverCreate, current_user: User = None) -> Driver:
+    def create_driver(self, driver_data: DriverCreate, current_user: Optional[User] = None) -> Driver:
         """
         Create a new driver with user account.
         
@@ -128,7 +130,7 @@ class DriverService:
         
         driver = self.repository.create(driver_dict)
         
-        if current_user:
+        if current_user is not None:
             activity_service.log_activity(self.db, ActivityCreate(
                 module=ModuleEnum.DRIVER,
                 activity_type=ActivityTypeEnum.CREATED,
@@ -136,13 +138,13 @@ class DriverService:
                 description=f"Onboarded new driver: {user.full_name} ({driver.license_number}).",
                 severity=SeverityEnum.SUCCESS,
                 status="Success",
-                user_id=current_user.id,
-                driver_id=driver.id
+                user_id=str(current_user.id),
+                driver_id=str(driver.id)
             ))
             
         return driver
     
-    def update_driver(self, driver_id: UUID, driver_data: DriverUpdate, current_user: User = None) -> Driver:
+    def update_driver(self, driver_id: UUID, driver_data: DriverUpdate, current_user: Optional[User] = None) -> Driver:
         """
         Update an existing driver.
         
@@ -184,7 +186,7 @@ class DriverService:
         
         updated_driver = self.repository.update(driver, driver_data)
         
-        if current_user:
+        if current_user is not None:
             if driver_data.status and driver_data.status != current_status:
                 title = f"Driver {updated_driver.user.full_name} status changed"
                 desc = f"Status updated to {driver_data.status}."
@@ -201,13 +203,13 @@ class DriverService:
                 description=desc,
                 severity=SeverityEnum.INFO,
                 status="Success",
-                user_id=current_user.id,
-                driver_id=updated_driver.id
+                user_id=str(current_user.id),
+                driver_id=str(updated_driver.id)
             ))
             
         return updated_driver
     
-    def delete_driver(self, driver_id: UUID, current_user: User = None) -> None:
+    def delete_driver(self, driver_id: UUID, current_user: Optional[User] = None) -> None:
         """
         Delete a driver.
         
@@ -231,9 +233,9 @@ class DriverService:
         
         # Delete associated user account AFTER driver to avoid foreign key violations
         user = driver.user
-        driver_name = user.full_name if user else "Unknown Driver"
+        driver_name = user.full_name if user is not None else "Unknown Driver"
         
-        if current_user:
+        if current_user is not None:
             activity_service.log_activity(self.db, ActivityCreate(
                 module=ModuleEnum.DRIVER,
                 activity_type=ActivityTypeEnum.DELETED,
@@ -241,12 +243,12 @@ class DriverService:
                 description=f"Removed driver: {driver_name}",
                 severity=SeverityEnum.WARNING,
                 status="Success",
-                user_id=current_user.id
+                user_id=str(current_user.id)
             ))
             
         self.repository.delete(driver)
         
-        if user:
+        if user is not None:
             self.db.delete(user)
             self.db.commit()
     
@@ -261,6 +263,28 @@ class DriverService:
     def get_driver_statistics(self) -> dict:
         """Get driver statistics by status."""
         return self.repository.count_by_status()
+
+    def get_driver_360(self, driver_id: UUID) -> dict:
+        """
+        Get comprehensive Driver 360 profile.
+
+        Aggregates driver record, license status, medical fitness, performance scores,
+        current vehicle assignment, and document links.
+
+        Raises:
+            NotFoundError: If driver not found
+        """
+        driver = self.get_driver(driver_id)
+
+        # Count linked documents
+        from app.models.document import Document
+        docs_count = self.db.query(Document).filter(Document.driver_id == driver_id).count()
+
+        return {
+            "driver": driver,
+            "documents_count": docs_count,
+            "recent_trips_count": driver.total_trips or 0
+        }
     
     def _calculate_age(self, birth_date: date) -> int:
         """Calculate age from birth date."""
