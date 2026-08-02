@@ -34,14 +34,14 @@ class DispatchService:
         self.trip_service = TripService(db)
 
     def get_dispatch_board_data(self) -> Dict[str, Any]:
-        """Fetch all operational control center queues and KPIs."""
+        """Fetch all operational control center queues, expanded metrics, and live KPIs."""
         # 1. Unassigned jobs (Pending & no trip)
         unassigned_jobs = self.db.query(Job).filter(
             Job.status == "Pending",
             Job.trip_id.is_(None)
         ).order_by(Job.priority.desc(), Job.created_at.asc()).all()
 
-        # 2. Available vehicles (Available status & not in maintenance)
+        # 2. Available vehicles (Available status)
         available_vehicles = self.db.query(Vehicle).filter(
             Vehicle.status == "Available"
         ).order_by(Vehicle.capacity_kg.desc()).all()
@@ -56,14 +56,36 @@ class DispatchService:
             Trip.status.in_(["Dispatched", "In Transit", "Scheduled"])
         ).order_by(Trip.created_at.desc()).all()
 
-        # 5. Calculate KPIs
+        # 5. Total fleet & driver counts
+        total_vehicles = self.db.query(Vehicle).count()
+        total_drivers = self.db.query(Driver).count()
+        total_jobs = self.db.query(Job).count()
+
+        # 6. Today's metrics
+        today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        jobs_assigned_today = self.db.query(Job).filter(
+            Job.status.in_(["Assigned", "In Transit", "Delivered"]),
+            Job.updated_at >= today_start
+        ).count()
+
+        vehicle_utilization_pct = round(((total_vehicles - len(available_vehicles)) / total_vehicles) * 100, 1) if total_vehicles > 0 else 0.0
+        driver_utilization_pct = round(((total_drivers - len(available_drivers)) / total_drivers) * 100, 1) if total_drivers > 0 else 0.0
+        dispatch_success_pct = round((jobs_assigned_today / total_jobs) * 100, 1) if total_jobs > 0 else 100.0
+
+        # 7. Calculate KPIs
         now = datetime.now()
         kpis = {
           "unassigned_jobs_count": len(unassigned_jobs),
           "available_vehicles_count": len(available_vehicles),
           "available_drivers_count": len(available_drivers),
           "active_trips_count": len(active_trips),
-          "delayed_trips_count": sum(1 for t in active_trips if getattr(t, 'planned_arrival', None) is not None and getattr(t, 'planned_arrival') < now)
+          "delayed_trips_count": sum(1 for t in active_trips if getattr(t, 'planned_arrival', None) is not None and getattr(t, 'planned_arrival') < now),
+          "total_vehicles_count": total_vehicles,
+          "total_drivers_count": total_drivers,
+          "jobs_assigned_today": jobs_assigned_today,
+          "vehicle_utilization_pct": vehicle_utilization_pct,
+          "driver_utilization_pct": driver_utilization_pct,
+          "dispatch_success_pct": dispatch_success_pct
         }
 
         return {
