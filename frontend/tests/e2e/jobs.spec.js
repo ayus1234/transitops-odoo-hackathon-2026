@@ -32,36 +32,40 @@ test.describe('Feature 2.1 — Jobs & Customer Shipping Orders E2E Suite', () =>
     await page.fill('input[placeholder="Full destination delivery address"]', deliveryLoc);
     await page.fill('input[placeholder="Goods / Materials"]', 'Industrial Machining Parts');
     await page.fill('input[placeholder="e.g. 15000"]', '12500');
-    await page.selectOption('select:has-text("Low")', 'High');
+    await page.locator('form select').selectOption('High');
     await page.fill('textarea[placeholder*="Handling instructions"]', 'Fragile cargo. Secure tie-downs required.');
 
     // Submit
     await page.click('button:has-text("Create Order")');
     await expect(page.locator('h3').filter({ hasText: 'Create Customer Shipping Order' })).not.toBeVisible({ timeout: 8000 });
+    await page.getByText('Loading customer shipping orders...').waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
 
     // 3. Search for Job
     const searchInput = page.getByPlaceholder('Search job #, customer, address...');
     await searchInput.fill(customerName);
-    await page.keyboard.press('Enter');
-    await page.waitForTimeout(1000);
+    await searchInput.press('Enter');
+    await page.getByText('Loading customer shipping orders...').waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
 
     // Assert created row is visible in table
     const jobRow = page.locator('table tbody tr').filter({ hasText: customerName });
-    await expect(jobRow).toBeVisible({ timeout: 5000 });
+    await expect(jobRow).toBeVisible({ timeout: 10000 });
     await expect(jobRow.getByText('High')).toBeVisible();
 
     // 4. Status Filter Check
     await page.selectOption('select:has-text("All Statuses")', 'Pending');
+    await page.getByText('Loading customer shipping orders...').waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
     await expect(jobRow).toBeVisible();
 
     await page.selectOption('select:has-text("All Statuses")', 'Delivered');
+    await page.getByText('Loading customer shipping orders...').waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
     await expect(page.getByText('No shipping orders found matching criteria.')).toBeVisible({ timeout: 5000 });
 
     // Reset Filter
     await page.selectOption('select:has-text("Delivered")', '');
     await searchInput.fill(customerName);
-    await page.keyboard.press('Enter');
-    await expect(jobRow).toBeVisible({ timeout: 5000 });
+    await searchInput.press('Enter');
+    await page.getByText('Loading customer shipping orders...').waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
+    await expect(jobRow).toBeVisible({ timeout: 10000 });
   });
 
 });

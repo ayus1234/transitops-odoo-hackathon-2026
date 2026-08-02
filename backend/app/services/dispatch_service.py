@@ -141,52 +141,79 @@ class DispatchService:
         driver_id: UUID,
         notes: Optional[str] = None
     ) -> Trip:
-        """Atomically create trip, link job, update statuses, and dispatch."""
-        # 1. Pre-validation
-        val = self.validate_dispatch(job_id, vehicle_id, driver_id)
-        if not val["valid"]:
-            raise BusinessLogicError(
-                f"Dispatch validation failed: {'; '.join(val['errors'])}",
-                code="BIZ_DISPATCH_001"
+        """Atomically create trip, link job, update statuses, and dispatch with pessimistic locking."""
+        try:
+            # 1. Row-level locking to prevent concurrent double-dispatch
+            job = self.db.query(Job).filter(Job.id == job_id).with_for_update(of=Job).first()
+            vehicle = self.db.query(Vehicle).filter(Vehicle.id == vehicle_id).with_for_update(of=Vehicle).first()
+            driver = self.db.query(Driver).filter(Driver.id == driver_id).with_for_update(of=Driver).first()
+
+            if job is None or vehicle is None or driver is None:
+                raise NotFoundError("Job, vehicle, or driver not found")
+
+            # 2. Strict concurrency state double-check (HTTP 409 Conflict trigger)
+            if job.status != "Pending":
+                raise BusinessLogicError(
+                    f"Job {job.job_number} is no longer pending (current status: '{job.status}').",
+                    code="BIZ_DISPATCH_CONFLICT"
+                )
+
+            if vehicle.status not in ["Available", "Acquired"]:
+                raise BusinessLogicError(
+                    f"Vehicle {vehicle.registration_number} is no longer available (current status: '{vehicle.status}').",
+                    code="BIZ_DISPATCH_CONFLICT"
+                )
+
+            if driver.status != "Available":
+                raise BusinessLogicError(
+                    f"Driver {driver.license_number} is no longer available (current status: '{driver.status}').",
+                    code="BIZ_DISPATCH_CONFLICT"
+                )
+
+            # 3. Pre-validation checks
+            val = self.validate_dispatch(job_id, vehicle_id, driver_id)
+            if not val["valid"]:
+                raise BusinessLogicError(
+                    f"Dispatch validation failed: {'; '.join(val['errors'])}",
+                    code="BIZ_DISPATCH_001"
+                )
+
+            # 4. Create Trip
+            now = datetime.now()
+            cargo_weight = Decimal(str(job.cargo_weight_kg)) if job.cargo_weight_kg is not None else Decimal("100.0")
+
+            trip_data = TripCreate(
+                vehicle_id=UUID(str(vehicle.id)),
+                driver_id=UUID(str(driver.id)),
+                source=str(job.pickup_address),
+                destination=str(job.delivery_address),
+                cargo_weight_kg=cargo_weight,
+                planned_distance_km=Decimal("150.0"),
+                planned_departure=now,
+                planned_arrival=now + timedelta(hours=4),
+                notes=notes or f"Dispatched for Customer Job {job.job_number} ({job.customer_name})"
             )
 
-        job = self.job_repo.get_by_id(job_id)
-        vehicle = self.vehicle_repo.get_by_id(vehicle_id)
-        driver = self.driver_repo.get_by_id(driver_id)
+            trip = self.trip_service.create_trip(trip_data)
 
-        if job is None or vehicle is None or driver is None:
-            raise NotFoundError("Job, vehicle, or driver not found")
+            # 5. Link Job
+            setattr(job, 'trip_id', trip.id)
+            setattr(job, 'status', 'Assigned')
 
-        # 2. Create Trip
-        now = datetime.now()
-        cargo_weight = Decimal(str(job.cargo_weight_kg)) if job.cargo_weight_kg is not None else Decimal("100.0")
+            # 6. Immediately dispatch trip
+            start_odo = float(str(vehicle.current_odometer_km)) if vehicle.current_odometer_km is not None else 0.0
+            dispatched_trip = self.trip_service.dispatch_trip(UUID(str(trip.id)), TripDispatch(start_odometer_km=Decimal(str(start_odo))))
+            setattr(job, 'status', 'In Transit')
 
-        trip_data = TripCreate(
-            vehicle_id=UUID(str(vehicle.id)),
-            driver_id=UUID(str(driver.id)),
-            source=str(job.pickup_address),
-            destination=str(job.delivery_address),
-            cargo_weight_kg=cargo_weight,
-            planned_distance_km=Decimal("150.0"),
-            planned_departure=now,
-            planned_arrival=now + timedelta(hours=4),
-            notes=notes or f"Dispatched for Customer Job {job.job_number} ({job.customer_name})"
-        )
+            self.db.commit()
+            self.db.refresh(job)
+            self.db.refresh(dispatched_trip)
 
-        trip = self.trip_service.create_trip(trip_data)
+            return dispatched_trip
 
-        # 3. Update Job
-        setattr(job, 'trip_id', trip.id)
-        setattr(job, 'status', 'Assigned')
-
-        # 4. Immediately dispatch trip
-        start_odo = float(str(vehicle.current_odometer_km)) if vehicle.current_odometer_km is not None else 0.0
-        dispatched_trip = self.trip_service.dispatch_trip(UUID(str(trip.id)), TripDispatch(start_odometer_km=Decimal(str(start_odo))))
-        setattr(job, 'status', 'In Transit')
-
-        self.db.commit()
-        self.db.refresh(job)
-        self.db.refresh(dispatched_trip)
-
-        return dispatched_trip
+        except Exception as e:
+            self.db.rollback()
+            if isinstance(e, (BusinessLogicError, NotFoundError)):
+                raise
+            raise BusinessLogicError(f"Operational dispatch failed and rolled back safely: {str(e)}", code="BIZ_DISPATCH_FAIL")
 
