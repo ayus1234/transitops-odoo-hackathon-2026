@@ -112,47 +112,53 @@ def get_default_permissions_for_role(role_name: str) -> dict:
         "Driver": {
             "dashboard": ["read"], "trips": ["read", "update"], "vehicles": ["read"], 
             "fuel": ["read", "create"], "maintenance": ["read", "create"], "expenses": ["read", "create"],
-            "reports": ["read"], "help_center": ["read", "create"]
+            "reports": ["read"], "help_center": ["read", "create"], "documents": ["read", "create"]
         },
         "Fleet Manager": {
             "dashboard": ["read"], "vehicles": ["read", "create", "update", "delete", "export"], 
             "drivers": ["read", "create", "update", "delete", "assign"], "trips": ["read", "create", "update", "delete", "export"], 
             "maintenance": ["read", "create", "update", "manage", "approve"], "fuel": ["read", "create", "update", "export"], 
             "reports": ["read", "create", "export"], "inventory": ["read", "create", "update", "manage", "approve"],
-            "help_center": ["read", "create"], "users": ["read"]
+            "help_center": ["read", "create"], "users": ["read"], "documents": ["read", "create", "update", "delete", "export"],
+            "vendors": ["read", "create", "update", "delete", "export"]
         },
         "Dispatcher": {
             "dashboard": ["read"], "trips": ["read", "create", "update", "assign", "dispatch", "export"], 
-            "vehicles": ["read", "update"], "drivers": ["read", "assign"], "reports": ["read"], "help_center": ["read"]
+            "vehicles": ["read", "update"], "drivers": ["read", "assign"], "reports": ["read"], "help_center": ["read"],
+            "documents": ["read"], "vendors": ["read"]
         },
         "Maintenance Manager": {
             "dashboard": ["read"], "maintenance": ["read", "create", "update", "delete", "approve", "manage"], 
             "vehicles": ["read", "update"], "inventory": ["read", "create", "update", "manage", "approve"], 
-            "reports": ["read", "export"], "help_center": ["read"]
+            "reports": ["read", "export"], "help_center": ["read"], "documents": ["read", "create", "update"],
+            "vendors": ["read", "create", "update"]
         },
         "Technician": {
             "dashboard": ["read"], "maintenance": ["read", "update", "create"], "vehicles": ["read"], 
-            "inventory": ["read", "update"], "help_center": ["read"]
+            "inventory": ["read", "update"], "help_center": ["read"], "documents": ["read", "create"], "vendors": ["read"]
         },
         "Safety Officer": {
             "dashboard": ["read"], "reports": ["read", "create", "export"], "drivers": ["read", "update"], 
-            "vehicles": ["read", "update"], "help_center": ["read"]
+            "vehicles": ["read", "update"], "help_center": ["read"], "documents": ["read", "create", "update"], "vendors": ["read"]
         },
         "HR/Operations": {
             "dashboard": ["read"], "drivers": ["read", "create", "update", "delete"], 
-            "users": ["read", "create", "update", "delete"], "reports": ["read", "export"], "help_center": ["read", "create"]
+            "users": ["read", "create", "update", "delete"], "reports": ["read", "export"], "help_center": ["read", "create"],
+            "documents": ["read", "create", "update", "delete"], "vendors": ["read"]
         },
         "Financial Analyst": {
             "dashboard": ["read"], "expenses": ["read", "create", "update", "approve", "export"], 
-            "reports": ["read", "create", "export"], "fuel": ["read", "export"], "inventory": ["read", "export"], "help_center": ["read"]
+            "reports": ["read", "create", "export"], "fuel": ["read", "export"], "inventory": ["read", "export"], "help_center": ["read"],
+            "documents": ["read"], "vendors": ["read", "export"]
         },
         "Support Agent": {
             "dashboard": ["read"], "help_center": ["read", "create", "update", "resolve", "delete"], 
-            "users": ["read"], "reports": ["read"], "trips": ["read"], "vehicles": ["read"]
+            "users": ["read"], "reports": ["read"], "trips": ["read"], "vehicles": ["read"], "documents": ["read"], "vendors": ["read"]
         },
         "Procurement Operations": {
             "dashboard": ["read"], "inventory": ["read", "create", "update", "approve", "manage"], 
-            "expenses": ["read", "create", "update"], "reports": ["read", "export"], "help_center": ["read"]
+            "expenses": ["read", "create", "update"], "reports": ["read", "export"], "help_center": ["read"],
+            "documents": ["read", "create"], "vendors": ["read", "create", "update", "delete", "export"]
         }
     }
     return defaults.get(role_name, {"dashboard": ["read"], "trips": ["read"], "vehicles": ["read"], "reports": ["read"]})

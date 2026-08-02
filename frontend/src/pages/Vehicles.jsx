@@ -4,6 +4,7 @@ import { downloadCSV } from '../utils/exportUtils';
 import api from '../services/api';
 import { useDataSync } from '../contexts/RealTimeSyncContext';
 import VehicleModal from './vehicles/VehicleModal';
+import Vehicle360Modal from './vehicles/Vehicle360Modal';
 import ConfirmDeleteDialog from '../components/ui/ConfirmDeleteDialog';
 import { useToast } from '../contexts/ToastContext';
 
@@ -18,6 +19,10 @@ const Vehicles = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  
+  // Vehicle 360 modal state
+  const [selected360Id, setSelected360Id] = useState(null);
+  const [is360Open, setIs360Open] = useState(false);
   
   // Delete Dialog states
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -101,6 +106,11 @@ const Vehicles = () => {
     } finally {
       setIsFetchingDetails(false);
     }
+  };
+
+  const open360Modal = (vehicleId) => {
+    setSelected360Id(vehicleId);
+    setIs360Open(true);
   };
 
   const handleSaveVehicle = async (payload) => {
@@ -329,6 +339,13 @@ const Vehicles = () => {
                   <td className="px-md py-3.5 text-right relative">
                     <div className="flex justify-end gap-1">
                       <button 
+                        onClick={() => open360Modal(vehicle.id)}
+                        className="p-1.5 rounded hover:bg-primary-container text-primary transition-all"
+                        title="Vehicle 360 Profile"
+                      >
+                        <span className="material-symbols-outlined text-[18px]">visibility</span>
+                      </button>
+                      <button 
                         onClick={() => openEditModal(vehicle.id)}
                         className="p-1.5 rounded hover:bg-primary-container text-outline hover:text-primary transition-all"
                         title="Edit Vehicle"
@@ -403,6 +420,13 @@ const Vehicles = () => {
         onSave={handleSaveVehicle}
         vehicle={editingVehicle}
         isSaving={isSaving}
+      />
+
+      <Vehicle360Modal
+        isOpen={is360Open}
+        onClose={() => setIs360Open(false)}
+        vehicleId={selected360Id}
+        onStatusChange={silentRefresh}
       />
 
       <ConfirmDeleteDialog 

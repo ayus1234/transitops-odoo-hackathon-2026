@@ -1,5 +1,6 @@
 """
 Driver API endpoints.
+Extended with Driver 360 profile endpoint.
 """
 from typing import List
 from uuid import UUID
@@ -12,7 +13,8 @@ from app.schemas.driver import (
     DriverCreate,
     DriverUpdate,
     DriverResponse,
-    DriverListResponse
+    DriverListResponse,
+    Driver360Response
 )
 from app.schemas.common import PaginatedResponse, PaginationMeta, SuccessResponse
 from app.services.driver_service import DriverService
@@ -33,7 +35,7 @@ def list_drivers(
 ):
     """
     Get list of drivers with pagination and filters.
-    
+
     Permissions: drivers:read
     """
     service = DriverService(db)
@@ -44,7 +46,7 @@ def list_drivers(
         search=search,
         license_expiring_soon=license_expiring_soon
     )
-    
+
     return PaginatedResponse(
         success=True,
         data=[DriverListResponse.model_validate(d) for d in drivers],
@@ -65,80 +67,12 @@ def create_driver(
 ):
     """
     Create a new driver with user account.
-    
+
     Permissions: drivers:create
-    
-    Business Rules:
-    - License number must be unique
-    - User email must be unique
-    - Driver must be at least 18 years old
-    - License must not be expired
-    - License expiry date must be after issue date
     """
     service = DriverService(db)
     driver = service.create_driver(driver_data, current_user)
     return DriverResponse.model_validate(driver)
-
-
-@router.get("/{driver_id}", response_model=DriverResponse)
-def get_driver(
-    driver_id: UUID,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(PermissionChecker("drivers", "read"))
-):
-    """
-    Get driver by ID.
-    
-    Permissions: drivers:read
-    """
-    service = DriverService(db)
-    driver = service.get_driver(driver_id)
-    return DriverResponse.model_validate(driver)
-
-
-@router.put("/{driver_id}", response_model=DriverResponse)
-def update_driver(
-    driver_id: UUID,
-    driver_data: DriverUpdate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(PermissionChecker("drivers", "update"))
-):
-    """
-    Update an existing driver.
-    
-    Permissions: drivers:update
-    
-    Business Rules:
-    - Cannot change license to existing one
-    - Cannot manually change status to 'On Trip'
-    - Cannot change status while 'On Trip'
-    - License dates must be valid
-    """
-    service = DriverService(db)
-    driver = service.update_driver(driver_id, driver_data, current_user)
-    return DriverResponse.model_validate(driver)
-
-
-@router.delete("/{driver_id}", response_model=SuccessResponse)
-def delete_driver(
-    driver_id: UUID,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(PermissionChecker("drivers", "delete"))
-):
-    """
-    Delete a driver and associated user account.
-    
-    Permissions: drivers:delete
-    
-    Business Rules:
-    - Cannot delete driver that is 'On Trip'
-    """
-    service = DriverService(db)
-    service.delete_driver(driver_id, current_user)
-    return SuccessResponse(
-        success=True,
-        message="Driver deleted successfully"
-    )
 
 
 @router.get("/available/list", response_model=List[DriverListResponse])
@@ -148,7 +82,7 @@ def get_available_drivers(
 ):
     """
     Get all available drivers with valid licenses for trip assignment.
-    
+
     Permissions: drivers:read
     """
     service = DriverService(db)
@@ -164,7 +98,7 @@ def get_drivers_with_expiring_licenses(
 ):
     """
     Get drivers whose licenses are expiring within specified days.
-    
+
     Permissions: drivers:read
     """
     service = DriverService(db)
@@ -179,7 +113,7 @@ def get_driver_statistics(
 ):
     """
     Get driver statistics by status.
-    
+
     Permissions: drivers:read
     """
     service = DriverService(db)
@@ -187,6 +121,42 @@ def get_driver_statistics(
         "success": True,
         "data": service.get_driver_statistics()
     }
+
+
+@router.get("/{driver_id}", response_model=DriverResponse)
+def get_driver(
+    driver_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(PermissionChecker("drivers", "read"))
+):
+    """
+    Get driver by ID.
+
+    Permissions: drivers:read
+    """
+    service = DriverService(db)
+    driver = service.get_driver(driver_id)
+    return DriverResponse.model_validate(driver)
+
+
+@router.get("/{driver_id}/360", response_model=Driver360Response)
+def get_driver_360(
+    driver_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(PermissionChecker("drivers", "read"))
+):
+    """
+    Get comprehensive Driver 360 profile.
+
+    Permissions: drivers:read
+    """
+    service = DriverService(db)
+    profile = service.get_driver_360(driver_id)
+    return Driver360Response(
+        driver=DriverResponse.model_validate(profile["driver"]),
+        documents_count=profile["documents_count"],
+        recent_trips_count=profile["recent_trips_count"]
+    )
 
 
 @router.get("/{driver_id}/performance", response_model=dict)
@@ -197,13 +167,12 @@ def get_driver_performance(
 ):
     """
     Get driver performance metrics.
-    
+
     Permissions: drivers:read
     """
     service = DriverService(db)
     driver = service.get_driver(driver_id)
-    
-    # Basic performance data (can be enhanced with trip data later)
+
     return {
         "success": True,
         "data": {
@@ -211,7 +180,47 @@ def get_driver_performance(
             "driver_name": driver.user.full_name,
             "total_trips": driver.total_trips,
             "safety_score": float(driver.safety_score),
+            "efficiency_score": float(driver.efficiency_score or 100.0),
+            "compliance_score": float(driver.compliance_score or 100.0),
+            "overall_score": float(driver.overall_score or 100.0),
             "license_valid": driver.is_license_valid,
+            "medical_valid": driver.is_medical_valid,
             "status": driver.status
         }
     }
+
+
+@router.put("/{driver_id}", response_model=DriverResponse)
+def update_driver(
+    driver_id: UUID,
+    driver_data: DriverUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(PermissionChecker("drivers", "update"))
+):
+    """
+    Update an existing driver.
+
+    Permissions: drivers:update
+    """
+    service = DriverService(db)
+    driver = service.update_driver(driver_id, driver_data, current_user)
+    return DriverResponse.model_validate(driver)
+
+
+@router.delete("/{driver_id}", response_model=SuccessResponse)
+def delete_driver(
+    driver_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(PermissionChecker("drivers", "delete"))
+):
+    """
+    Delete a driver and associated user account.
+
+    Permissions: drivers:delete
+    """
+    service = DriverService(db)
+    service.delete_driver(driver_id, current_user)
+    return SuccessResponse(
+        success=True,
+        message="Driver deleted successfully"
+    )

@@ -1,5 +1,6 @@
 """
 Vehicle API endpoints.
+Extended with Vehicle 360 profile and lifecycle status transition endpoints.
 """
 from typing import List
 from uuid import UUID
@@ -12,7 +13,9 @@ from app.schemas.vehicle import (
     VehicleCreate,
     VehicleUpdate,
     VehicleResponse,
-    VehicleListResponse
+    VehicleListResponse,
+    VehicleStatusUpdate,
+    Vehicle360Response
 )
 from app.schemas.common import PaginatedResponse, PaginationMeta, SuccessResponse
 from app.services.vehicle_service import VehicleService
@@ -27,13 +30,13 @@ def list_vehicles(
     page_size: int = Query(20, ge=1, le=100, description="Items per page"),
     status: str | None = Query(None, description="Filter by status"),
     vehicle_type: str | None = Query(None, description="Filter by vehicle type"),
-    search: str | None = Query(None, description="Search by registration or name"),
+    search: str | None = Query(None, description="Search by registration, name, or VIN"),
     db: Session = Depends(get_db),
     current_user: User = Depends(PermissionChecker("vehicles", "read"))
 ):
     """
     Get list of vehicles with pagination and filters.
-    
+
     Permissions: vehicles:read
     """
     service = VehicleService(db)
@@ -44,7 +47,7 @@ def list_vehicles(
         vehicle_type=vehicle_type,
         search=search
     )
-    
+
     return PaginatedResponse(
         success=True,
         data=[VehicleListResponse.model_validate(v) for v in vehicles],
@@ -65,76 +68,17 @@ def create_vehicle(
 ):
     """
     Create a new vehicle.
-    
+
     Permissions: vehicles:create
-    
+
     Business Rules:
     - Registration number must be unique
+    - VIN must be unique (if provided)
     - Capacity must be positive
     """
     service = VehicleService(db)
     vehicle = service.create_vehicle(vehicle_data, current_user)
     return VehicleResponse.model_validate(vehicle)
-
-
-@router.get("/{vehicle_id}", response_model=VehicleResponse)
-def get_vehicle(
-    vehicle_id: UUID,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(PermissionChecker("vehicles", "read"))
-):
-    """
-    Get vehicle by ID.
-    
-    Permissions: vehicles:read
-    """
-    service = VehicleService(db)
-    vehicle = service.get_vehicle(vehicle_id)
-    return VehicleResponse.model_validate(vehicle)
-
-
-@router.put("/{vehicle_id}", response_model=VehicleResponse)
-def update_vehicle(
-    vehicle_id: UUID,
-    vehicle_data: VehicleUpdate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(PermissionChecker("vehicles", "update"))
-):
-    """
-    Update an existing vehicle.
-    
-    Permissions: vehicles:update
-    
-    Business Rules:
-    - Cannot change registration to existing one
-    - Cannot manually change status to 'On Trip'
-    - Cannot change status while 'On Trip'
-    """
-    service = VehicleService(db)
-    vehicle = service.update_vehicle(vehicle_id, vehicle_data, current_user)
-    return VehicleResponse.model_validate(vehicle)
-
-
-@router.delete("/{vehicle_id}", response_model=SuccessResponse)
-def delete_vehicle(
-    vehicle_id: UUID,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(PermissionChecker("vehicles", "delete"))
-):
-    """
-    Delete a vehicle.
-    
-    Permissions: vehicles:delete
-    
-    Business Rules:
-    - Cannot delete vehicle that is 'On Trip' or 'In Shop'
-    """
-    service = VehicleService(db)
-    service.delete_vehicle(vehicle_id, current_user)
-    return SuccessResponse(
-        success=True,
-        message="Vehicle deleted successfully"
-    )
 
 
 @router.get("/available/list", response_model=List[VehicleListResponse])
@@ -144,7 +88,7 @@ def get_available_vehicles(
 ):
     """
     Get all available vehicles for trip assignment.
-    
+
     Permissions: vehicles:read
     """
     service = VehicleService(db)
@@ -159,7 +103,7 @@ def get_vehicle_statistics(
 ):
     """
     Get vehicle statistics by status.
-    
+
     Permissions: vehicles:read
     """
     service = VehicleService(db)
@@ -167,3 +111,124 @@ def get_vehicle_statistics(
         "success": True,
         "data": service.get_vehicle_statistics()
     }
+
+
+@router.get("/{vehicle_id}", response_model=VehicleResponse)
+def get_vehicle(
+    vehicle_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(PermissionChecker("vehicles", "read"))
+):
+    """
+    Get vehicle by ID.
+
+    Permissions: vehicles:read
+    """
+    service = VehicleService(db)
+    vehicle = service.get_vehicle(vehicle_id)
+    return VehicleResponse.model_validate(vehicle)
+
+
+@router.get("/{vehicle_id}/360", response_model=Vehicle360Response)
+def get_vehicle_360(
+    vehicle_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(PermissionChecker("vehicles", "read"))
+):
+    """
+    Get comprehensive Vehicle 360 profile.
+
+    Aggregates vehicle record with lifecycle transitions.
+    Future: odometer history, documents, maintenance, trips, expenses, TCO.
+
+    Permissions: vehicles:read
+    """
+    service = VehicleService(db)
+    profile = service.get_vehicle_360(vehicle_id)
+    return Vehicle360Response(
+        vehicle=VehicleResponse.model_validate(profile["vehicle"]),
+        allowed_transitions=profile["allowed_transitions"]
+    )
+
+
+@router.get("/{vehicle_id}/tco", response_model=dict)
+def get_vehicle_tco(
+    vehicle_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(PermissionChecker("vehicles", "read"))
+):
+    """
+    Get Total Cost of Ownership (TCO) breakdown and unit metrics for a vehicle.
+
+    Permissions: vehicles:read
+    """
+    from app.services.tco_service import TCOService
+    tco_service = TCOService(db)
+    return {
+        "success": True,
+        "data": tco_service.calculate_vehicle_tco(vehicle_id)
+    }
+
+
+@router.put("/{vehicle_id}", response_model=VehicleResponse)
+def update_vehicle(
+    vehicle_id: UUID,
+    vehicle_data: VehicleUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(PermissionChecker("vehicles", "update"))
+):
+    """
+    Update an existing vehicle.
+
+    Permissions: vehicles:update
+
+    Business Rules:
+    - Cannot change registration to existing one
+    - Cannot change VIN to existing one
+    - Cannot manually change status to 'On Trip'
+    """
+    service = VehicleService(db)
+    vehicle = service.update_vehicle(vehicle_id, vehicle_data, current_user)
+    return VehicleResponse.model_validate(vehicle)
+
+
+@router.patch("/{vehicle_id}/status", response_model=VehicleResponse)
+def update_vehicle_status(
+    vehicle_id: UUID,
+    status_data: VehicleStatusUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(PermissionChecker("vehicles", "update"))
+):
+    """
+    Explicit vehicle lifecycle status transition.
+
+    Validates the transition is allowed by the lifecycle state machine
+    before applying the change.
+
+    Permissions: vehicles:update
+    """
+    service = VehicleService(db)
+    vehicle = service.update_vehicle_status(vehicle_id, status_data, current_user)
+    return VehicleResponse.model_validate(vehicle)
+
+
+@router.delete("/{vehicle_id}", response_model=SuccessResponse)
+def delete_vehicle(
+    vehicle_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(PermissionChecker("vehicles", "delete"))
+):
+    """
+    Delete a vehicle.
+
+    Permissions: vehicles:delete
+
+    Business Rules:
+    - Cannot delete vehicle that is 'On Trip', 'In Shop', 'Maintenance', 'Active', or 'Assigned'
+    """
+    service = VehicleService(db)
+    service.delete_vehicle(vehicle_id, current_user)
+    return SuccessResponse(
+        success=True,
+        message="Vehicle deleted successfully"
+    )

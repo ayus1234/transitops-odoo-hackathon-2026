@@ -82,6 +82,7 @@ class ProcurementRequest(Base):
     suggested_quantity = Column(Integer, nullable=True)
     
     vendor = Column(String, nullable=True)
+    vendor_id = Column(UUID(as_uuid=True), ForeignKey("vendors.id", ondelete="SET NULL"), nullable=True)
     estimated_cost = Column(Float, nullable=True)
     
     priority = Column(Enum(PriorityEnum), default=PriorityEnum.MEDIUM, nullable=False)
@@ -103,6 +104,7 @@ class PurchaseOrder(Base):
     procurement_request_id = Column(UUID(as_uuid=True), ForeignKey("procurement_requests.id", ondelete="CASCADE"), nullable=False)
     
     vendor_name = Column(String, nullable=False)
+    vendor_id = Column(UUID(as_uuid=True), ForeignKey("vendors.id", ondelete="SET NULL"), nullable=True)
     quantity = Column(Integer, nullable=False)
     cost = Column(Float, nullable=False)
     

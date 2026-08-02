@@ -4,6 +4,7 @@ import { downloadCSV } from '../utils/exportUtils';
 import api from '../services/api';
 import { useDataSync } from '../contexts/RealTimeSyncContext';
 import DriverModal from './drivers/DriverModal';
+import Driver360Modal from './drivers/Driver360Modal';
 import ConfirmDeleteDialog from '../components/ui/ConfirmDeleteDialog';
 
 const Drivers = () => {
@@ -18,6 +19,10 @@ const Drivers = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingDriver, setEditingDriver] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  
+  // Driver 360 state
+  const [selected360Id, setSelected360Id] = useState(null);
+  const [is360Open, setIs360Open] = useState(false);
   
   // Delete Dialog states
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -119,6 +124,11 @@ const Drivers = () => {
     } finally {
       setIsFetchingDetails(false);
     }
+  };
+
+  const open360Modal = (driverId) => {
+    setSelected360Id(driverId);
+    setIs360Open(true);
   };
 
   const handleSaveDriver = async (payload) => {
@@ -401,6 +411,13 @@ const Drivers = () => {
                       <td className="px-md py-4 text-right">
                         <div className="flex items-center justify-end gap-2">
                           <button 
+                            onClick={() => open360Modal(driver.id)}
+                            className="p-1 hover:bg-primary-container/50 rounded text-primary transition-colors"
+                            title="Driver 360 Profile"
+                          >
+                            <span className="material-symbols-outlined text-[20px]">visibility</span>
+                          </button>
+                          <button 
                             onClick={() => openEditModal(driver.id)}
                             className="p-1 hover:bg-surface-container rounded text-outline hover:text-primary transition-colors"
                             title="Edit Driver"
@@ -518,6 +535,12 @@ const Drivers = () => {
         onSave={handleSaveDriver}
         driver={editingDriver}
         isSaving={isSaving}
+      />
+
+      <Driver360Modal
+        isOpen={is360Open}
+        onClose={() => setIs360Open(false)}
+        driverId={selected360Id}
       />
 
       <ConfirmDeleteDialog 
