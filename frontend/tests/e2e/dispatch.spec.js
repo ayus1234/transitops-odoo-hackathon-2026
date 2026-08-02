@@ -17,10 +17,10 @@ test.describe('Feature 2.2 — Operations Control Center & Dispatch Board E2E Su
     await expect(page.locator('h1').filter({ hasText: /Operations Control Center/i })).toBeVisible({ timeout: 5000 });
 
     // 2. Verify Real-time KPI Overview Bar
-    await expect(page.getByText('Jobs Waiting')).toBeVisible();
-    await expect(page.getByText('Available Vehicles')).toBeVisible();
-    await expect(page.getByText('Available Drivers')).toBeVisible();
-    await expect(page.getByText('Active Trips')).toBeVisible();
+    await expect(page.getByText('Jobs Waiting').first()).toBeVisible();
+    await expect(page.getByText('Available Vehicles').first()).toBeVisible();
+    await expect(page.getByText('Available Drivers').first()).toBeVisible();
+    await expect(page.getByText('Active Trips').first()).toBeVisible();
 
     // 3. Select first job in Column 1 (if available)
     const firstJobCard = page.locator('div:has-text("1. Select Customer Job") ~ div div[class*="cursor-pointer"]').first();

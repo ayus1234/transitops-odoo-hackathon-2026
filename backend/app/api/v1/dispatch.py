@@ -12,6 +12,7 @@ from app.services.dispatch_service import DispatchService
 from app.api.deps import PermissionChecker, get_current_user
 from app.models.user import User
 from app.schemas.trip import TripResponse
+from app.utils.exceptions import BusinessLogicError
 
 router = APIRouter(prefix="/dispatch", tags=["Dispatch & Control Tower"])
 
@@ -56,10 +57,15 @@ def assign_and_dispatch(
 ):
     """Assign vehicle and driver to customer job and operational dispatch."""
     service = DispatchService(db)
-    trip = service.assign_and_dispatch(
-        job_id=request.job_id,
-        vehicle_id=request.vehicle_id,
-        driver_id=request.driver_id,
-        notes=request.notes
-    )
-    return TripResponse.model_validate(trip)
+    try:
+        trip = service.assign_and_dispatch(
+            job_id=request.job_id,
+            vehicle_id=request.vehicle_id,
+            driver_id=request.driver_id,
+            notes=request.notes
+        )
+        return TripResponse.model_validate(trip)
+    except BusinessLogicError as e:
+        if e.code == "BIZ_DISPATCH_CONFLICT":
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=e.message)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.message)
