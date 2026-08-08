@@ -26,6 +26,8 @@ def upgrade() -> None:
         sa.Column('driver_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('drivers.id', ondelete='RESTRICT'), nullable=False),
         sa.Column('source', sa.String(length=255), nullable=False),
         sa.Column('destination', sa.String(length=255), nullable=False),
+        sa.Column('route_information', sa.Text(), nullable=True),
+        sa.Column('estimated_arrival_time', sa.DateTime(timezone=True), nullable=True),
         sa.Column('cargo_weight_kg', sa.Numeric(precision=10, scale=2), nullable=False),
         sa.Column('planned_distance_km', sa.Numeric(precision=10, scale=2), nullable=False),
         sa.Column('actual_distance_km', sa.Numeric(precision=10, scale=2), nullable=True),
