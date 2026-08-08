@@ -231,6 +231,52 @@ class DispatchService:
             self.db.refresh(job)
             self.db.refresh(dispatched_trip)
 
+            # Record Audit Events
+            try:
+                from app.services.audit_event_service import AuditEventService
+                audit = AuditEventService(self.db)
+
+                # Event 1: JOB_ASSIGNED
+                audit.record_event(
+                    event_type="JOB_ASSIGNED",
+                    entity_type="Job",
+                    entity_id=UUID(str(job.id)),
+                    job_id=UUID(str(job.id)),
+                    trip_id=UUID(str(dispatched_trip.id)),
+                    vehicle_id=UUID(str(vehicle.id)),
+                    driver_id=UUID(str(driver.id)),
+                    summary=f"Job {job.job_number} assigned to vehicle {vehicle.registration_number} & driver #{driver.license_number}",
+                    payload={"vehicle_reg": vehicle.registration_number, "driver_license": driver.license_number}
+                )
+
+                # Event 2: TRIP_CREATED
+                audit.record_event(
+                    event_type="TRIP_CREATED",
+                    entity_type="Trip",
+                    entity_id=UUID(str(dispatched_trip.id)),
+                    job_id=UUID(str(job.id)),
+                    trip_id=UUID(str(dispatched_trip.id)),
+                    vehicle_id=UUID(str(vehicle.id)),
+                    driver_id=UUID(str(driver.id)),
+                    summary=f"Trip {dispatched_trip.trip_number} created ({job.pickup_address} → {job.delivery_address})",
+                    payload={"source": job.pickup_address, "destination": job.delivery_address}
+                )
+
+                # Event 3: TRIP_STARTED
+                audit.record_event(
+                    event_type="TRIP_STARTED",
+                    entity_type="Trip",
+                    entity_id=UUID(str(dispatched_trip.id)),
+                    job_id=UUID(str(job.id)),
+                    trip_id=UUID(str(dispatched_trip.id)),
+                    vehicle_id=UUID(str(vehicle.id)),
+                    driver_id=UUID(str(driver.id)),
+                    summary=f"Trip {dispatched_trip.trip_number} dispatched & in transit",
+                    payload={"start_odometer_km": start_odo, "status": "Dispatched"}
+                )
+            except Exception:
+                pass  # Non-blocking event logging
+
             return dispatched_trip
 
         except Exception as e:
