@@ -1,18 +1,18 @@
 # FastAPI and Core
 fastapi==0.115.6
-starlette==0.41.3
-uvicorn[standard]==0.34.0
-python-multipart==0.0.20
+uvicorn[standard]==0.32.1
+python-multipart==0.0.12
 
 # Database
 sqlalchemy==2.0.36
 alembic==1.14.0
-pg8000==1.31.5
+pg8000==1.31.2
 psycopg2-binary==2.9.10
 
 # Pydantic and Validation
 pydantic==2.10.3
-pydantic-settings==2.7.0
+pydantic-settings==2.6.1
+pydantic-core==2.27.1
 email-validator==2.2.0
 
 # Authentication and Security
@@ -26,14 +26,14 @@ python-dotenv==1.0.1
 python-dateutil==2.9.0.post0
 
 # Testing
-pytest==7.4.4
-pytest-asyncio==0.23.3
+pytest==8.3.4
+pytest-asyncio==0.24.0
 httpx==0.28.1
 
 # Production Readiness & Observability
 structlog==24.4.0
 slowapi==0.1.9
-redis==5.2.1
+redis==5.2.0
 sentry-sdk==2.19.2
 
 # Code Quality
