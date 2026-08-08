@@ -29,6 +29,8 @@ def upgrade() -> None:
     op.add_column('vehicles', sa.Column('lease_end_date', sa.Date(), nullable=True))
     op.add_column('vehicles', sa.Column('monthly_lease_cost', sa.Numeric(12, 2), nullable=True))
     op.add_column('vehicles', sa.Column('engine_hours', sa.Numeric(10, 2), nullable=True, server_default='0'))
+    op.add_column('vehicles', sa.Column('latitude', sa.Numeric(10, 6), nullable=True))
+    op.add_column('vehicles', sa.Column('longitude', sa.Numeric(10, 6), nullable=True))
     op.add_column('vehicles', sa.Column('retired_date', sa.Date(), nullable=True))
     op.add_column('vehicles', sa.Column('sale_price', sa.Numeric(12, 2), nullable=True))
     op.add_column('vehicles', sa.Column('notes', sa.Text(), nullable=True))
