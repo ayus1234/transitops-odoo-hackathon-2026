@@ -58,8 +58,29 @@ def upgrade() -> None:
         sa.Column('role_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('roles.id', ondelete='CASCADE'), primary_key=True),
     )
 
+    # Create permission_audit_logs table
+    op.create_table(
+        'permission_audit_logs',
+        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
+        sa.Column('user_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('users.id', ondelete='SET NULL'), nullable=True),
+        sa.Column('action', sa.String(length=50), nullable=False),
+        sa.Column('module', sa.String(length=100), nullable=True),
+        sa.Column('target_role_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('roles.id', ondelete='SET NULL'), nullable=True),
+        sa.Column('target_user_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('users.id', ondelete='SET NULL'), nullable=True),
+        sa.Column('previous_value', sa.JSON(), nullable=True),
+        sa.Column('new_value', sa.JSON(), nullable=True),
+        sa.Column('timestamp', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    )
+    op.create_index('ix_permission_audit_logs_id', 'permission_audit_logs', ['id'])
+    op.create_index('ix_permission_audit_logs_action', 'permission_audit_logs', ['action'])
+    op.create_index('ix_permission_audit_logs_timestamp', 'permission_audit_logs', ['timestamp'])
+
 
 def downgrade() -> None:
+    op.drop_index('ix_permission_audit_logs_timestamp', table_name='permission_audit_logs')
+    op.drop_index('ix_permission_audit_logs_action', table_name='permission_audit_logs')
+    op.drop_index('ix_permission_audit_logs_id', table_name='permission_audit_logs')
+    op.drop_table('permission_audit_logs')
     op.drop_table('user_additional_roles')
     op.drop_index('ix_users_role_id', table_name='users')
     op.drop_index('ix_users_email', table_name='users')
