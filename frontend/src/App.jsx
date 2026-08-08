@@ -48,6 +48,8 @@ import TicketDetail from './pages/help/TicketDetail';
 import DriverMobileApp from './pages/drivers/DriverMobileApp';
 import CustomerTrackingPortal from './pages/jobs/CustomerTrackingPortal';
 
+import BillingSettings from './pages/settings/BillingSettings';
+
 function App() {
   return (
     <BrowserRouter>
@@ -83,6 +85,7 @@ function App() {
               <Route path="/settings/profile" element={<Settings />} />
               <Route path="/settings/app" element={<Settings />} />
               <Route path="/settings/org" element={<Settings />} />
+              <Route path="/settings/billing" element={<BillingSettings />} />
               <Route path="/settings/permissions" element={<Settings />} />
               <Route path="/settings/roles" element={<Settings />} />
               <Route path="/settings/custom-roles" element={<Settings />} />
