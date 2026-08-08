@@ -66,10 +66,7 @@ class Settings(BaseSettings):
             if v.startswith("postgres://"):
                 v = v.replace("postgres://", "postgresql://", 1)
             if v.startswith("postgresql://") and not v.startswith("postgresql+"):
-                v = v.replace("postgresql://", "postgresql+pg8000://", 1)
-            # pg8000 does not support sslmode or channel_binding in the URL string
-            if "pg8000" in v and "?" in v:
-                v = v.split("?")[0]
+                v = v.replace("postgresql://", "postgresql+psycopg2://", 1)
         return v
 
 

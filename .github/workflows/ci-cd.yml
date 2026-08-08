@@ -45,8 +45,8 @@ jobs:
 
       - name: Run Database Migrations
         env:
-          DATABASE_URL: postgresql://transitops_admin:transitops_secure_pass_2026@localhost:5432/transitops_db
-          TEST_DATABASE_URL: postgresql://transitops_admin:transitops_secure_pass_2026@localhost:5432/transitops_db
+          DATABASE_URL: postgresql+psycopg2://transitops_admin:transitops_secure_pass_2026@localhost:5432/transitops_db
+          TEST_DATABASE_URL: postgresql+psycopg2://transitops_admin:transitops_secure_pass_2026@localhost:5432/transitops_db
           SECRET_KEY: transitops_ci_secret_key_2026_super_secure_jwt
         run: |
           cd backend
@@ -54,8 +54,8 @@ jobs:
 
       - name: Run Operational Test Suite (Dispatch, Routing, POD, Audit, Telemetry, Analytics, Extended Suite)
         env:
-          DATABASE_URL: postgresql://transitops_admin:transitops_secure_pass_2026@localhost:5432/transitops_db
-          TEST_DATABASE_URL: postgresql://transitops_admin:transitops_secure_pass_2026@localhost:5432/transitops_db
+          DATABASE_URL: postgresql+psycopg2://transitops_admin:transitops_secure_pass_2026@localhost:5432/transitops_db
+          TEST_DATABASE_URL: postgresql+psycopg2://transitops_admin:transitops_secure_pass_2026@localhost:5432/transitops_db
           SECRET_KEY: transitops_ci_secret_key_2026_super_secure_jwt
         run: |
           cd backend
