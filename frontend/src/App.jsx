@@ -36,6 +36,7 @@ import PurchaseOrders from './pages/inventory/PurchaseOrders';
 import InventoryHistory from './pages/inventory/InventoryHistory';
 import VendorsPage from './pages/vendors/VendorsPage';
 import JobsPage from './pages/jobs/JobsPage';
+import DispatchBoard from './pages/dispatch/DispatchBoard';
 
 // Help Center Pages
 import HelpCenter from './pages/help/HelpCenter';
@@ -57,6 +58,7 @@ function App() {
               <Route element={<ProtectedRoute />}>
                 <Route element={<MainLayout />}>
                   <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/dispatch" element={<DispatchBoard />} />
                   <Route path="/jobs" element={<JobsPage />} />
                   <Route path="/vehicles" element={<Vehicles />} />
               <Route path="/drivers" element={<Drivers />} />
