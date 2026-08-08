@@ -62,7 +62,10 @@ def setup_logging():
     )
 
 
-def get_logger(name: str = "transitops"):
+from typing import Any
+
+
+def get_logger(name: str = "transitops") -> Any:
     """Get a configured structlog logger instance."""
     if structlog:
         return structlog.get_logger(name)
@@ -84,7 +87,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
             )
 
         start_time = time.perf_counter()
-        logger = get_logger("http_request")
+        logger: Any = get_logger("http_request")
 
         try:
             response = await call_next(request)
