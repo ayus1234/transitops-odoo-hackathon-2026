@@ -123,7 +123,7 @@ class VehicleRecommendationService:
 
         return VehicleRecommendationResponse(
             job_id=UUID(str(job.id)),
-            job_number=job.job_number,
+            job_number=str(job.job_number),
             cargo_weight_kg=cargo_weight,
             total_candidates_evaluated=len(candidate_vehicles),
             recommendations=top_recommendations
@@ -169,8 +169,8 @@ class VehicleRecommendationService:
 
         if job_lat is not None and job_lng is not None and veh_lat is not None and veh_lng is not None:
             dist_km = self._haversine_distance(
-                float(job_lat), float(job_lng),
-                float(veh_lat), float(veh_lng)
+                float(str(job_lat)), float(str(job_lng)),
+                float(str(veh_lat)), float(str(veh_lng))
             )
         else:
             # Baseline estimation: same city / location string heuristic
