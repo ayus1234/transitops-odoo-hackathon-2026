@@ -14,7 +14,7 @@ TransitOps V2 is organized into eight integrated capability waves, delivering co
 
 ```text
 ┌───────────────────────┬───────────────────────┬───────────────────────┬───────────────────────┐
-│                                TRANSITOPS V2 PLATFORM                                 │
+│                       │            TRANSITOPS V2 PLATFORM             │                       │
 ├───────────────────────┼───────────────────────┼───────────────────────┼───────────────────────┤
 │  FLEET OPERATIONS     │  ASSET OPERATIONS     │  BUSINESS OPERATIONS  │  RISK & GOVERNANCE    │
 │  - Vehicle 360        │  - Maintenance 2.0    │  - Procurement 2.0    │  - License Compliance │
@@ -110,12 +110,12 @@ TransitOps V2 is organized into eight integrated capability waves, delivering co
 
 ```text
 ┌────────────────────┬─────────────────────────────────────────────────────────────────┐
-│                                 TECHNOLOGY STACK                                │
+│                    │             TECHNOLOGY STACK                                    │
 ├────────────────────┼─────────────────────────────────────────────────────────────────┤
 │ FRONTEND LAYER     │ React 18, Vite, Tailwind CSS, Leaflet Maps, Lucide Icons        │
 │ SPECIALIZED UIs    │ Mobile Driver PWA, Customer Tracking Portal, Billing Dashboard  │
 │ BACKEND API        │ Python 3.10+, FastAPI, Pydantic v2, Uvicorn, fpdf2              │
-│ DATABASE & ORM     │ PostgreSQL 15+, SQLAlchemy 2.0 (Repository Pattern), Alembic     │
+│ DATABASE & ORM     │ PostgreSQL 15+, SQLAlchemy 2.0 (Repository Pattern), Alembic    │
 │ PAYMENT GATEWAYS   │ Stripe Checkout & Webhooks, Razorpay Checkout & Webhooks        │
 │ TESTING & QA       │ Pytest, Playwright E2E, Hypothesis, Coverage.py                 │
 │ OBSERVABILITY      │ Request-ID Middleware, Structured JSON Logging, Audit Engine    │
