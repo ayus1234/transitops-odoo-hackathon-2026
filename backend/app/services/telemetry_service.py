@@ -175,21 +175,24 @@ class TelemetryService:
             if v.updated_at is not None:
                 v_updated = v.updated_at.replace(tzinfo=None) if hasattr(v.updated_at, 'tzinfo') and v.updated_at.tzinfo is not None else v.updated_at
                 cutoff = heartbeat_cutoff.replace(tzinfo=None)
-                is_online = bool(v_updated >= cutoff)
+                is_online = (v_updated >= cutoff)
             else:
                 is_online = False
 
+            speed_val = getattr(latest_log, "speed_kmh", 0.0) if latest_log else 0.0
+            heading_val = getattr(latest_log, "heading", 0.0) if latest_log else 0.0
+
             result.append(FleetLiveLocationResponse(
                 vehicle_id=UUID(str(v.id)),
-                registration_number=str(v.registration_number),
-                vehicle_name=str(v.vehicle_name),
-                vehicle_type=str(v.vehicle_type),
-                status=str(v.status),
+                registration_number=getattr(v, "registration_number", ""),
+                vehicle_name=getattr(v, "vehicle_name", ""),
+                vehicle_type=getattr(v, "vehicle_type", ""),
+                status=getattr(v, "status", ""),
                 is_online=is_online,
                 latitude=float(str(v.latitude)) if v.latitude is not None else None,
                 longitude=float(str(v.longitude)) if v.longitude is not None else None,
-                speed_kmh=float(latest_log.speed_kmh) if latest_log else 0.0,
-                heading=float(latest_log.heading) if latest_log and latest_log.heading else 0.0,
+                speed_kmh=float(speed_val) if speed_val is not None else 0.0,
+                heading=float(heading_val) if heading_val is not None else 0.0,
                 last_ping_at=v.updated_at,
                 active_trip_id=UUID(str(active_trip.id)) if active_trip else None,
                 driver_name=driver_name
