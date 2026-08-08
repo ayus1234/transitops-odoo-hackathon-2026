@@ -130,4 +130,5 @@ def test_end_to_end_job_lifecycle_audit_timeline(db_session):
     delivered_event = next(e for e in timeline.events if e.event_type == "DELIVERED")
 
     assert job_created_event.created_at <= delivered_event.created_at
-    assert delivered_event.payload["receiver_name"] == "Port Authority Manager"
+    assert delivered_event.payload is not None
+    assert delivered_event.payload.get("receiver_name") == "Port Authority Manager"
