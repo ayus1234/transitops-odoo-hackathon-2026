@@ -48,6 +48,7 @@ jobs:
       - name: Run Database Migrations
         env:
           DATABASE_URL: postgresql+pg8000://transitops_admin@localhost:5432/transitops_db
+          SECRET_KEY: ci-test-secret-key
         run: |
           cd backend
           alembic upgrade head
@@ -55,6 +56,7 @@ jobs:
       - name: Run Operational Test Suite (Dispatch, Routing, POD, Audit)
         env:
           DATABASE_URL: postgresql+pg8000://transitops_admin@localhost:5432/transitops_db
+          SECRET_KEY: ci-test-secret-key
         run: |
           cd backend
           python -m pytest tests/test_dispatch_board.py tests/test_dispatch_concurrency.py tests/test_vehicle_recommendation.py tests/test_routing.py tests/test_pod.py tests/test_audit_events.py -v
