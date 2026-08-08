@@ -1,10 +1,10 @@
-# TransitOps V2 Connected Fleet & Transportation Operations ERP
+# TransitOps V2 Enterprise Connected Fleet & Transportation Operations ERP
 
-![TransitOps Banner](https://img.shields.io/badge/TransitOps-V2%20Enterprise%20ERP-blue?style=for-the-badge) ![Version](https://img.shields.io/badge/version-2.0.0-green?style=for-the-badge) ![Build](https://img.shields.io/badge/build-passing-brightgreen?style=for-the-badge) ![RBAC](https://img.shields.io/badge/RBAC-Granular%202.0%20Matrix-indigo?style=for-the-badge) ![AI Copilot](https://img.shields.io/badge/AI-Copilot%20Enabled-purple?style=for-the-badge)
+![TransitOps Banner](https://img.shields.io/badge/TransitOps-V2%20Enterprise%20ERP-blue?style=for-the-badge) ![Version](https://img.shields.io/badge/version-2.1.0-green?style=for-the-badge) ![Build](https://img.shields.io/badge/build-passing-brightgreen?style=for-the-badge) ![Driver App](https://img.shields.io/badge/Driver%20App-Touch%20PWA-orange?style=for-the-badge) ![SaaS Billing](https://img.shields.io/badge/SaaS%20Billing-Stripe%20%26%20Razorpay-teal?style=for-the-badge) ![AI Copilot](https://img.shields.io/badge/AI-Copilot%20Enabled-purple?style=for-the-badge)
 
-**TransitOps** is an enterprise-grade Connected Fleet & Transportation Operations Resource Planning (ERP) platform designed for modern fleet operators, logistics providers, workshop engineers, and supply chain enterprises.
+**TransitOps** is an enterprise-grade Connected Fleet & Transportation Operations Resource Planning (ERP) platform designed for modern fleet operators, logistics providers, workshop engineers, and multi-tenant SaaS transportation enterprises.
 
-Built from the ground up for zero-trust security, real-time operational execution, high-concurrency dispatching, telemetry ingestion, and predictive analytics, TransitOps seamlessly integrates vehicle telematics, multi-stop routing, driver safety scoring, preventive maintenance, multi-tier procurement, automated inventory replenishment, and natural-language AI insights into **ONE CONNECTED TRANSPORTATION PLATFORM**.
+Built from the ground up for zero-trust security, real-time operational execution, high-concurrency dispatching, IoT telemetry ingestion (Geotab, Teltonika, Traccar), touch mobile driver workflows, live customer tracking, and predictive analytics, TransitOps seamlessly integrates vehicle telematics, multi-stop routing, driver safety scoring, preventive maintenance, multi-tier procurement, automated inventory replenishment, and natural-language AI insights into **ONE CONNECTED TRANSPORTATION PLATFORM**.
 
 ---
 
@@ -20,12 +20,12 @@ TransitOps V2 is organized into eight integrated capability waves, delivering co
 │  - Vehicle 360    │ - Maintenance 2.0 │ - Procurement 2.0 │ - License & Compliance│
 │  - Driver 360     │ - Technicians     │ - Vendors 360     │ - Universal Documents │
 │  - Orders & Jobs  │ - Multi-Warehouse │ - Fuel & Theft    │ - RBAC 2.0 & Auditing │
-│  - Dispatch Board │ - Parts Reorder   │ - EV & Energy     │ - Security Middleware │
+│  - Dispatch Board │ - Parts Reorder   │ - EV & Energy     │ - Stripe/Razorpay SaaS│
 ├───────────────────┼───────────────────┼───────────────────┼───────────────────────┤
 │ CONNECTED FLEET   │  EXPERIENCES      │  INTELLIGENCE     │ PLATFORM & INTEGRATION│
 │  - Telemetry API  │ - Desktop Web ERP │ - AI Copilot      │ - Signed Webhooks     │
-│  - GPS Live Map   │ - Driver PWA      │ - Predictive Maint│ - Public REST APIs    │
-│  - Geofences      │ - Technician PWA  │ - TCO / km Analytics│ - Streaming Exporter│
+│  - Geotab/Traccar │ - Driver PWA      │ - Predictive Maint│ - Public REST APIs    │
+│  - GPS Live Map   │ - Customer Track  │ - TCO / km Analytics│ - Streaming Exporter│
 │  - Proof Delivery │ - Help Desk Chat  │ - Safety Scoring  │ - Global Command Ctrl+K│
 └───────────────────┴───────────────────┴───────────────────┴───────────────────────┘
 ```
@@ -50,7 +50,7 @@ TransitOps V2 is organized into eight integrated capability waves, delivering co
 ---
 
 ### 📡 3. Connected Fleet & Telemetry Platform (Wave 3)
-* **Provider-Neutral Telemetry Ingestion:** Ingestion API receiving `latitude`, `longitude`, `speed`, `heading`, `ignition`, `odometer`, `engine_hours`, `fuel_level`, and `battery_SOC` with device-to-vehicle resolution and out-of-order event handling.
+* **Multi-Provider Telemetry Ingestion:** Ingestion API receiving `latitude`, `longitude`, `speed`, `heading`, `ignition`, `odometer`, `engine_hours`, `fuel_level`, and `battery_SOC` with multi-provider adapter support for **Geotab**, **Teltonika**, **Traccar**, and **Demo Simulator**.
 * **Telemetry Simulator:** Demo telemetry simulator generating realistic vehicle route progression, speed changes, and heartbeat signals.
 * **Live GPS Fleet Map:** Leaflet interactive map displaying vehicle markers, live status badges, historical vehicle breadcrumb trails, and trip route overlays.
 * **Geofencing & Automated Alerts:** Circle and polygon geofence zones detecting arrival/departure events, speeding violations, and excessive idling.
@@ -72,15 +72,18 @@ TransitOps V2 is organized into eight integrated capability waves, delivering co
 
 ---
 
-### 🛡️ 6. Enterprise Platform, RBAC 2.0 & Security (Wave 6)
+### 🛡️ 6. Enterprise Platform, Multi-Tenant SaaS & Billing (Wave 6)
+* **Multi-Tenant SaaS Architecture:** `tenant_id` / `company_id` database isolation, company settings, and tenant-scoped RBAC authorization.
+* **Stripe & Razorpay SaaS Billing Engine:** Subscriptions router ([`/api/v1/billing`](file:///c:/Users/hp/Downloads/New%20folder%20(6)/transitops-odoo-hackathon-2026/backend/app/api/v1/billing.py)) and frontend management dashboard ([`/settings/billing`](file:///c:/Users/hp/Downloads/New%20folder%20(6)/transitops-odoo-hackathon-2026/frontend/src/pages/settings/BillingSettings.jsx)) supporting plan tiers (*Starter*, *Professional*, *Enterprise*), checkout sessions, and webhook listeners (`/webhooks/stripe`, `/webhooks/razorpay`).
 * **Granular RBAC 2.0 Matrix:** Role-Based Access Control enforcing 40+ distinct operational permissions across 13 canonical system roles + custom user-created roles.
 * **Observability & Tracing:** Structured JSON logging, `X-Request-ID` middleware propagation, API latency tracking, and audit event logs.
 * **Public APIs & Signed Webhooks:** Webhook subscription platform delivering signed payloads for events such as `trip.dispatched`, `maintenance.created`, and `inventory.low`.
 
 ---
 
-### 📱 7. Specialized Experiences & Help Desk (Wave 7)
-* **Responsive Desktop & Touch PWA:** Mobile-optimized touch interfaces for driver trip execution (Start ➡️ Arrive ➡️ POD) and technician work order completion.
+### 📱 7. Specialized Experiences, Mobile Driver PWA & Customer Portal (Wave 7)
+* **Mobile Driver Web App (`/driver/mobile`):** Smartphone-optimized touch interface ([`DriverMobileApp.jsx`](file:///c:/Users/hp/Downloads/New%20folder%20(6)/transitops-odoo-hackathon-2026/frontend/src/pages/drivers/DriverMobileApp.jsx)) for drivers to view active trip assignments, update trip progress (Start ➡️ Arrive), submit geofenced Proof of Delivery (photo & digital signature), log vehicle refuels, and report breakdown emergencies.
+* **Public Customer Shipment Tracking Portal (`/tracking/:job_number`):** Lightweight, public-facing shipment tracking portal ([`CustomerTrackingPortal.jsx`](file:///c:/Users/hp/Downloads/New%20folder%20(6)/transitops-odoo-hackathon-2026/frontend/src/pages/jobs/CustomerTrackingPortal.jsx)) allowing customers to track order progress on a 4-stage visual timeline with live vehicle GPS coordinates, driver details, and signed POD proof.
 * **Help Center & Support Desk:** Searchable Knowledgebase articles + full internal Support Ticket System featuring priority badges, assigned support agents, and an interactive chat message timeline.
 
 ---
@@ -109,9 +112,10 @@ TransitOps V2 is organized into eight integrated capability waves, delivering co
 │                                 TECHNOLOGY STACK                                  │
 ├───────────────────────────────────────────────────────────────────────────────────┤
 │ FRONTEND LAYER    │ React 18, Vite, Tailwind CSS, Leaflet Maps, Lucide Icons      │
-│ STATE & ROUTING   │ React Router DOM v6, React Context, Axios Interceptors        │
+│ SPECIALIZED UIs   │ Mobile Driver PWA, Customer Tracking Portal, Billing Dashboard│
 │ BACKEND API       │ Python 3.10+, FastAPI, Pydantic v2, Uvicorn, fpdf2            │
 │ DATABASE & ORM    │ PostgreSQL 15+, SQLAlchemy 2.0 (Repository Pattern), Alembic   │
+│ PAYMENT GATEWAYS  │ Stripe Checkout & Webhooks, Razorpay Checkout & Webhooks       │
 │ TESTING & QA      │ Pytest, Playwright E2E, Hypothesis, Coverage.py               │
 │ OBSERVABILITY     │ Request-ID Middleware, Structured JSON Logging, Audit Engine  │
 └───────────────────────────────────────────────────────────────────────────────────┘
@@ -131,7 +135,7 @@ transitops-odoo-hackathon-2026/
 │   │   │   ├── deps.py                     # Auth & RBAC dependencies
 │   │   │   └── v1/                         # Endpoints (auth, vehicles, drivers, trips, dispatch,
 │   │   │                                   #  maintenance, fuel, inventory, procurement, safety,
-│   │   │                                   #  help_center, ai_copilot, telemetry, reports, etc.)
+│   │   │                                   #  billing, telemetry, jobs, pod, ai_copilot, etc.)
 │   │   ├── core/                           # Security, JWT, middleware, config, DB session
 │   │   ├── models/                         # SQLAlchemy 2.0 ORM Entities (Vehicle, Driver, Trip,
 │   │   │                                   #  Job, Maintenance, Inventory, Fuel, HelpArticle, etc.)
@@ -152,8 +156,8 @@ transitops-odoo-hackathon-2026/
 │   │   ├── pages/                          # Route Views (Dashboard, Vehicles, Drivers, Trips,
 │   │   │   ├── activity/                   #  Dispatch, Jobs, Maintenance, Fuel, Expenses,
 │   │   │   ├── dispatch/                   #  Inventory, Procurement, Vendors, Help, Reports,
-│   │   │   ├── drivers/                    #  Safety Insights, License Compliance, Settings)
-│   │   │   ├── fleet_map/                  #
+│   │   │   ├── drivers/                    #  DriverMobileApp, CustomerTrackingPortal,
+│   │   │   ├── fleet_map/                  #  BillingSettings, Settings)
 │   │   │   ├── help/                       #
 │   │   │   ├── inventory/                  #
 │   │   │   ├── jobs/                       #
@@ -174,22 +178,27 @@ transitops-odoo-hackathon-2026/
 TransitOps enforces a decoupled, four-tier architecture isolating network contracts, security validation, core domain business logic, and transactional persistence:
 
 ```text
-┌─────────────────┐      ┌─────────────────┐      ┌─────────────────┐      ┌─────────────────┐
-│  React 18 View  │ ───> │  FastAPI Router │ ───> │  Service Layer  │ ───> │ Repository Layer│
-│  (UI & Context) │ <─── │ (Pydantic/RBAC) │ <─── │(Business Engine)│ <─── │(PostgreSQL/ACID)│
-└─────────────────┘      └─────────────────┘      └─────────────────┘      └─────────────────┘
-        │                                                  │                        │
-        ▼                                                  ▼                        ▼
-┌─────────────────┐                               ┌─────────────────┐      ┌─────────────────┐
-│ Global Cmd Ctrl+K│                              │   AI Copilot    │      │ Alembic Schema  │
-│ RealTimeSync Engine                            │  Query Engine   │      │   Migrations    │
-└─────────────────┘                               └─────────────────┘      └─────────────────┘
+┌─────────────────────────┐      ┌─────────────────┐      ┌─────────────────┐      ┌─────────────────┐
+│ React Web ERP / PWA App │ ───> │  FastAPI Router │ ───> │  Service Layer  │ ───> │ Repository Layer│
+│(Driver PWA/Customer Track)│ <─── │ (Pydantic/RBAC) │ <─── │(Business Engine)│ <─── │(PostgreSQL/ACID)│
+└─────────────────────────┘      └─────────────────┘      └─────────────────┘      └─────────────────┘
+      │      │                                                     │                        │
+      │      ▼                                                     ▼                        ▼
+      │ ┌─────────────────┐                               ┌─────────────────┐      ┌─────────────────┐
+      │ │ Global Cmd Ctrl+K│                              │   AI Copilot    │      │ Alembic Schema  │
+      │ │ RealTimeSync Eng│                               │  Query Engine   │      │   Migrations    │
+      │ └─────────────────┘                               └─────────────────┘      └─────────────────┘
+      ▼
+┌─────────────────────────┐
+│ Stripe & Razorpay SaaS  │
+│ Gateway Checkout/Hooks  │
+└─────────────────────────┘
 ```
 
 ### Request Lifecycle Steps:
-1. **User Action / Telemetry Stream:** User interacts with React UI, Command Palette (`Ctrl+K`), or GPS device sends telemetry JSON payload.
+1. **User Action / Telemetry / Mobile App:** Driver updates trip on Mobile PWA (`/driver/mobile`), customer checks shipment tracking (`/tracking/:job`), or IoT device sends telemetry JSON.
 2. **Security & Authorization (`api/deps.py`):** FastAPI validates JWT bearer tokens, checks tenant boundaries, and executes `RoleChecker` against the RBAC 2.0 matrix.
-3. **Business Processing (`services/`):** Validated inputs enter service logic (e.g. pre-dispatch fit calculations, maintenance threshold checks, fuel theft algorithms, AI Copilot SQL generation).
+3. **Business Processing (`services/`):** Validated inputs enter service logic (e.g. pre-dispatch fit calculations, geofence POD verification, fuel theft algorithms, Stripe/Razorpay billing, AI Copilot SQL generation).
 4. **Transactional Persistence (`repositories/`):** Changes persist within atomic SQLAlchemy database sessions. Security alterations generate immutable audit entries in `permission_audit_logs`.
 5. **Streaming Output & Real-Time Sync:** Response returns formatted JSON, streaming PDF byte-buffer, or triggers real-time UI state updates via `RealTimeSyncContext`.
 
@@ -205,7 +214,7 @@ cd backend
 python -m pytest tests/test_dispatch_board.py tests/test_dispatch_concurrency.py tests/test_vehicle_recommendation.py tests/test_routing.py tests/test_pod.py tests/test_audit_events.py tests/test_production_readiness.py tests/test_telemetry.py tests/test_analytics.py tests/test_extended_suite.py -vv --tb=long -ra
 ```
 
-**Results:** All **29/29 integration tests pass in ~2.5s** with 100% migration schema alignment.
+**Results:** All **29/29 integration tests pass in ~3.5s** with 100% migration schema alignment.
 
 ---
 
@@ -243,4 +252,4 @@ npm run dev
 - `RBAC_PERMISSION_MATRIX.md` - Master Matrix of 13 Canonical System Roles and 40+ Capabilities.
 - `PRODUCTION_READINESS.md` - System Benchmarks, Security Audits, and Scalability Architecture.
 - `DEPLOYMENT.md` - Deployment guide for Nginx, Gunicorn, PostgreSQL, and Cloud Edge runtimes.
-- `CHANGELOG.md` - Full release history for V2.0.0.
+- `CHANGELOG.md` - Full release history for V2.1.0.
