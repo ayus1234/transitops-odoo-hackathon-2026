@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { RealTimeSyncProvider } from './contexts/RealTimeSyncContext';
 import { ToastProvider } from './contexts/ToastContext';
-import ProtectedRoute from './components/layout/ProtectedRoute';
+import ProtectedRoute from './components/ProtectedRoute';
 import MainLayout from './components/layout/MainLayout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -23,7 +23,7 @@ import FleetCompliance from './pages/reports/FleetCompliance';
 import ReportBuilder from './pages/reports/ReportBuilder';
 import Settings from './pages/Settings';
 import ActivityLog from './pages/activity/ActivityLog';
-import FullFleetMapPage from './pages/fleet_map/FullFleetMapPage';
+import { FullFleetMapPage } from './pages/fleet_map/FleetMapWrappers';
 
 import InventoryDashboard from './pages/inventory/InventoryDashboard';
 import ProcurementRequests from './pages/inventory/ProcurementRequests';
