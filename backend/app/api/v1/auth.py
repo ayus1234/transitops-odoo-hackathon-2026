@@ -3,7 +3,7 @@ Authentication API endpoints.
 """
 from datetime import datetime, timedelta, timezone, date
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, get_current_user
@@ -164,8 +164,13 @@ def get_default_permissions_for_role(role_name: str) -> dict:
     return defaults.get(role_name, {"dashboard": ["read"], "trips": ["read"], "vehicles": ["read"], "reports": ["read"]})
 
 
+from app.core.rate_limiter import limiter, RATE_LIMIT_AUTH
+
+
 @router.post("/login", response_model=TokenResponse)
+@limiter.limit(RATE_LIMIT_AUTH)
 def login(
+    request: Request,
     credentials: LoginRequest,
     db: Session = Depends(get_db)
 ) -> TokenResponse:

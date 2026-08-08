@@ -1,40 +1,43 @@
 # FastAPI and Core
-fastapi==0.109.0
-uvicorn[standard]==0.27.0
-python-multipart==0.0.6
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+python-multipart==0.0.12
 
 # Database
-sqlalchemy==2.0.25
-alembic==1.13.1
-pg8000==1.30.5
-psycopg2-binary==2.9.12
+sqlalchemy==2.0.36
+alembic==1.14.0
+pg8000==1.31.2
+psycopg2-binary==2.9.10
 
 # Pydantic and Validation
-pydantic==2.11.7
-pydantic-settings==2.1.0
-email-validator==2.1.0
+pydantic==2.10.3
+pydantic-settings==2.6.1
+pydantic-core==2.27.1
+email-validator==2.2.0
 
 # Authentication and Security
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
-python-multipart==0.0.6
 
 # Environment and Configuration
-python-dotenv==1.0.0
+python-dotenv==1.0.1
 
 # Utilities
-python-dateutil==2.8.2
-fpdf2==2.8.7
-
-# CORS
-fastapi-cors==0.0.6
+python-dateutil==2.9.0.post0
+fpdf2==2.8.2
 
 # Testing
-pytest==7.4.4
-pytest-asyncio==0.23.3
-httpx==0.26.0
+pytest==8.3.4
+pytest-asyncio==0.24.0
+httpx==0.28.1
+
+# Production Readiness & Observability
+structlog==24.4.0
+slowapi==0.1.9
+redis==5.2.0
+sentry-sdk==2.19.2
 
 # Code Quality
-black==23.12.1
-flake8==7.0.0
-mypy==1.8.0
+black==24.10.0
+flake8==7.1.1
+mypy==1.13.0
