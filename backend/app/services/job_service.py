@@ -44,6 +44,8 @@ class JobService:
         )
 
     def create_job(self, job_data: JobCreate, created_by_id: Optional[UUID] = None) -> Job:
+        from app.services.audit_event_service import AuditEventService
+
         # Validate time windows
         if (job_data.time_window_start and job_data.time_window_end and
             job_data.time_window_end <= job_data.time_window_start):
@@ -52,7 +54,29 @@ class JobService:
                 code="BIZ_JOB_001"
             )
 
-        return self.repository.create(job_data, created_by_id=created_by_id)
+        job = self.repository.create(job_data, created_by_id=created_by_id)
+        
+        try:
+            audit = AuditEventService(self.db)
+            audit.record_event(
+                event_type="JOB_CREATED",
+                entity_type="Job",
+                entity_id=UUID(str(job.id)),
+                job_id=UUID(str(job.id)),
+                actor_id=created_by_id,
+                summary=f"Customer Job {job.job_number} created for {job.customer_name}",
+                payload={
+                    "customer_name": job.customer_name,
+                    "pickup_address": job.pickup_address,
+                    "delivery_address": job.delivery_address,
+                    "cargo_weight_kg": float(str(job.cargo_weight_kg)) if job.cargo_weight_kg is not None else 0.0,
+                    "priority": job.priority
+                }
+            )
+        except Exception:
+            pass  # Non-blocking event logging
+
+        return job
 
     def update_job(self, job_id: UUID, job_data: JobUpdate) -> Job:
         job = self.get_job(job_id)
