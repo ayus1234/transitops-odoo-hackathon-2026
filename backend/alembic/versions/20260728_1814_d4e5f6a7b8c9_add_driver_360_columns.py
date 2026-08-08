@@ -25,6 +25,8 @@ def upgrade() -> None:
     op.add_column('drivers', sa.Column('overall_score', sa.Numeric(5, 2), nullable=True, server_default='100.00'))
     op.add_column('drivers', sa.Column('current_vehicle_id', sa.Uuid(as_uuid=True),
                   sa.ForeignKey('vehicles.id', ondelete='SET NULL'), nullable=True, index=True))
+    op.add_column('drivers', sa.Column('latitude', sa.Numeric(10, 6), nullable=True))
+    op.add_column('drivers', sa.Column('longitude', sa.Numeric(10, 6), nullable=True))
     op.add_column('drivers', sa.Column('notes', sa.Text(), nullable=True))
 
 
