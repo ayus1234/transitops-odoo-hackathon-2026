@@ -59,7 +59,7 @@ jobs:
           SECRET_KEY: transitops_ci_secret_key_2026_super_secure_jwt
         run: |
           cd backend
-          python -m pytest tests/test_dispatch_board.py tests/test_dispatch_concurrency.py tests/test_vehicle_recommendation.py tests/test_routing.py tests/test_pod.py tests/test_audit_events.py tests/test_production_readiness.py tests/test_telemetry.py tests/test_analytics.py tests/test_extended_suite.py -v
+          python -m pytest tests/test_dispatch_board.py tests/test_dispatch_concurrency.py tests/test_vehicle_recommendation.py tests/test_routing.py tests/test_pod.py tests/test_audit_events.py tests/test_production_readiness.py tests/test_telemetry.py tests/test_analytics.py tests/test_extended_suite.py -vv --tb=long -ra
 
   frontend-build:
     name: Frontend Build & Typecheck
