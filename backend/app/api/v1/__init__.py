@@ -3,7 +3,7 @@ API v1 routes package.
 """
 from fastapi import APIRouter
 
-from app.api.v1 import auth, vehicles, drivers, trips, maintenance, maintenance_technicians, maintenance_tasks, fuel, expenses, dashboard, reports, admin, notifications, help_center, quick_actions, custom_reports, activity, fleet_map, license_compliance, fleet_compliance, safety_insights, inventory, procurement, purchase_orders, rbac, odometer, documents, vendors, jobs, dispatch, routing, pod, audit, telemetry, analytics, ai_copilot, payroll, crm, accounting, warehouse
+from app.api.v1 import auth, vehicles, drivers, trips, maintenance, maintenance_technicians, maintenance_tasks, fuel, expenses, dashboard, reports, admin, notifications, help_center, quick_actions, custom_reports, activity, fleet_map, license_compliance, fleet_compliance, safety_insights, inventory, procurement, purchase_orders, rbac, odometer, documents, vendors, jobs, dispatch, routing, pod, audit, telemetry, analytics, ai_copilot, payroll, crm, accounting, warehouse, billing
 
 # Create main API router
 api_router = APIRouter()
@@ -28,6 +28,7 @@ api_router.include_router(payroll.router, tags=["Fleet Payroll & Driver Pay"])
 api_router.include_router(crm.router, tags=["Logistics CRM & Client Accounts"])
 api_router.include_router(accounting.router, tags=["Fleet Financial Accounting"])
 api_router.include_router(warehouse.router, tags=["Yard & Warehouse Management"])
+api_router.include_router(billing.router, tags=["SaaS Billing & Subscriptions"])
 api_router.include_router(drivers.router, prefix="/drivers", tags=["Drivers"])
 api_router.include_router(trips.router, prefix="/trips", tags=["Trips"])
 api_router.include_router(maintenance_technicians.router, prefix="/maintenance/technicians", tags=["Technician Management"])
