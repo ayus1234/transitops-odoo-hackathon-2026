@@ -13,21 +13,21 @@ Built from the ground up for zero-trust security, real-time operational executio
 TransitOps V2 is organized into eight integrated capability waves, delivering complete operational coverage across the entire transportation asset lifecycle:
 
 ```text
-┌───────────────────────────────────────────────────────────────────────────────────┐
-│                           TRANSITOPS V2 PLATFORM                                  │
-├───────────────────┬───────────────────┬───────────────────┬───────────────────────┤
-│  FLEET OPERATIONS │ ASSET OPERATIONS  │BUSINESS OPERATIONS│  RISK & GOVERNANCE    │
-│  - Vehicle 360    │ - Maintenance 2.0 │ - Procurement 2.0 │ - License & Compliance│
-│  - Driver 360     │ - Technicians     │ - Vendors 360     │ - Universal Documents │
-│  - Orders & Jobs  │ - Multi-Warehouse │ - Fuel & Theft    │ - RBAC 2.0 & Auditing │
-│  - Dispatch Board │ - Parts Reorder   │ - EV & Energy     │ - Stripe/Razorpay SaaS│
-├───────────────────┼───────────────────┼───────────────────┼───────────────────────┤
-│ CONNECTED FLEET   │  EXPERIENCES      │  INTELLIGENCE     │ PLATFORM & INTEGRATION│
-│  - Telemetry API  │ - Desktop Web ERP │ - AI Copilot      │ - Signed Webhooks     │
-│  - Geotab/Traccar │ - Driver PWA      │ - Predictive Maint│ - Public REST APIs    │
-│  - GPS Live Map   │ - Customer Track  │ - Pilot Telemetry │ - Streaming Exporter│
-│  - Proof Delivery │ - Help Desk Chat  │ - Safety Scoring  │ - Global Command Ctrl+K│
-└───────────────────┴───────────────────┴───────────────────┴───────────────────────┘
+┌───────────────────────┬───────────────────────┬───────────────────────┬───────────────────────┐
+│                                TRANSITOPS V2 PLATFORM                                 │
+├───────────────────────┼───────────────────────┼───────────────────────┼───────────────────────┤
+│  FLEET OPERATIONS     │  ASSET OPERATIONS     │  BUSINESS OPERATIONS  │  RISK & GOVERNANCE    │
+│  - Vehicle 360        │  - Maintenance 2.0    │  - Procurement 2.0    │  - License Compliance │
+│  - Driver 360         │  - Technicians        │  - Vendors 360        │  - Universal Documents│
+│  - Orders & Jobs      │  - Multi-Warehouse    │  - Fuel & Theft       │  - RBAC 2.0 & Auditing│
+│  - Dispatch Board     │  - Parts Reorder      │  - EV & Energy        │  - Stripe/Razorpay    │
+├───────────────────────┼───────────────────────┼───────────────────────┼───────────────────────┤
+│  CONNECTED FLEET      │  EXPERIENCES          │  INTELLIGENCE         │  PLATFORM INTEGRATION │
+│  - Telemetry API      │  - Desktop Web ERP    │  - AI Copilot         │  - Signed Webhooks    │
+│  - Geotab/Traccar     │  - Driver Mobile PWA  │  - Predictive Maint   │  - Public REST APIs   │
+│  - GPS Live Map       │  - Customer Tracking  │  - Pilot Telemetry    │  - Streaming Exporter │
+│  - Proof Delivery     │  - Help Desk Chat     │  - Safety Scoring     │  - Global Cmd Ctrl+K  │
+└───────────────────────┴───────────────────────┴───────────────────────┴───────────────────────┘
 ```
 
 ---
@@ -109,17 +109,17 @@ TransitOps V2 is organized into eight integrated capability waves, delivering co
 ## 🏗️ Technology Stack
 
 ```text
-┌───────────────────────────────────────────────────────────────────────────────────┐
-│                                 TECHNOLOGY STACK                                  │
-├───────────────────────────────────────────────────────────────────────────────────┤
-│ FRONTEND LAYER    │ React 18, Vite, Tailwind CSS, Leaflet Maps, Lucide Icons      │
-│ SPECIALIZED UIs   │ Mobile Driver PWA, Customer Tracking Portal, Billing Dashboard│
-│ BACKEND API       │ Python 3.10+, FastAPI, Pydantic v2, Uvicorn, fpdf2            │
-│ DATABASE & ORM    │ PostgreSQL 15+, SQLAlchemy 2.0 (Repository Pattern), Alembic   │
-│ PAYMENT GATEWAYS  │ Stripe Checkout & Webhooks, Razorpay Checkout & Webhooks       │
-│ TESTING & QA      │ Pytest, Playwright E2E, Hypothesis, Coverage.py               │
-│ OBSERVABILITY     │ Request-ID Middleware, Structured JSON Logging, Audit Engine  │
-└───────────────────────────────────────────────────────────────────────────────────┘
+┌────────────────────┬─────────────────────────────────────────────────────────────────┐
+│                                 TECHNOLOGY STACK                                │
+├────────────────────┼─────────────────────────────────────────────────────────────────┤
+│ FRONTEND LAYER     │ React 18, Vite, Tailwind CSS, Leaflet Maps, Lucide Icons        │
+│ SPECIALIZED UIs    │ Mobile Driver PWA, Customer Tracking Portal, Billing Dashboard  │
+│ BACKEND API        │ Python 3.10+, FastAPI, Pydantic v2, Uvicorn, fpdf2              │
+│ DATABASE & ORM     │ PostgreSQL 15+, SQLAlchemy 2.0 (Repository Pattern), Alembic     │
+│ PAYMENT GATEWAYS   │ Stripe Checkout & Webhooks, Razorpay Checkout & Webhooks        │
+│ TESTING & QA       │ Pytest, Playwright E2E, Hypothesis, Coverage.py                 │
+│ OBSERVABILITY      │ Request-ID Middleware, Structured JSON Logging, Audit Engine    │
+└────────────────────┴─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
