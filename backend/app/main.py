@@ -19,10 +19,8 @@ import os
 import tempfile
 
 from app.core.logging_config import setup_logging, LoggingMiddleware
-from app.core.rate_limiter import limiter
+from app.core.rate_limiter import limiter, RateLimitExceeded, _rate_limit_exceeded_handler
 from app.core.sentry import init_sentry
-from slowapi.errors import RateLimitExceeded
-from slowapi import _rate_limit_exceeded_handler
 
 # Initialize Logging & Error Tracking
 setup_logging()
@@ -122,7 +120,8 @@ app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 # Attach Rate Limiter to FastAPI state
 app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+if _rate_limit_exceeded_handler is not None:
+    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Configure Middlewares
 app.add_middleware(LoggingMiddleware)
