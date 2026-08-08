@@ -30,16 +30,16 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.13
+      - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.12'
           cache: 'pip'
 
       - name: Install Dependencies
         run: |
           cd backend
-          python -m pip install --upgrade pip
+          python -m pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
 
       - name: Run Database Migrations
@@ -49,12 +49,12 @@ jobs:
           cd backend
           alembic upgrade head
 
-      - name: Run Operational Test Suite (Dispatch, Routing, POD, Audit)
+      - name: Run Operational Test Suite (Dispatch, Routing, POD, Audit, Telemetry, Analytics, Extended Suite)
         env:
           DATABASE_URL: postgresql://transitops_admin:transitops_secure_pass_2026@localhost:5432/transitops_db
         run: |
           cd backend
-          python -m pytest tests/test_dispatch_board.py tests/test_dispatch_concurrency.py tests/test_vehicle_recommendation.py tests/test_routing.py tests/test_pod.py tests/test_audit_events.py -v
+          python -m pytest tests/test_dispatch_board.py tests/test_dispatch_concurrency.py tests/test_vehicle_recommendation.py tests/test_routing.py tests/test_pod.py tests/test_audit_events.py tests/test_production_readiness.py tests/test_telemetry.py tests/test_analytics.py tests/test_extended_suite.py -v
 
   frontend-build:
     name: Frontend Build & Typecheck
