@@ -55,7 +55,8 @@ def create_job(
 ):
     """Create a new customer shipping order / job."""
     service = JobService(db)
-    job = service.create_job(job_data, created_by_id=current_user.id)
+    user_id = UUID(str(current_user.id)) if current_user and current_user.id else None
+    job = service.create_job(job_data, created_by_id=user_id)
     return JobResponse.model_validate(job)
 
 

@@ -24,6 +24,9 @@ class JobService:
             raise NotFoundError(f"Job with ID {job_id} not found")
         return job
 
+    def get_job_by_number(self, job_number: str) -> Optional[Job]:
+        return self.repository.get_by_job_number(job_number)
+
     def get_jobs(
         self,
         page: int = 1,
