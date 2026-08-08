@@ -102,9 +102,10 @@ class JobService:
                 code="BIZ_JOB_003"
             )
 
-        job.status = "Cancelled"
+        setattr(job, "status", "Cancelled")
         if reason:
-            job.special_instructions = f"{job.special_instructions or ''}\n[Cancellation Reason]: {reason}".strip()
+            instructions = f"{job.special_instructions or ''}\n[Cancellation Reason]: {reason}".strip()
+            setattr(job, "special_instructions", instructions)
 
         self.db.commit()
         self.db.refresh(job)

@@ -114,16 +114,16 @@ def track_job_public(
     
     response_data = {
         "id": str(job.id),
-        "job_number": job.job_number,
-        "customer_name": job.customer_name,
-        "source_address": job.source_address,
-        "destination_address": job.destination_address,
-        "cargo_description": job.cargo_description,
-        "weight_kg": float(job.weight_kg) if job.weight_kg else 0.0,
-        "priority": job.priority,
-        "status": job.status,
-        "pickup_window_start": job.pickup_window_start.isoformat() if job.pickup_window_start else None,
-        "delivery_window_end": job.delivery_window_end.isoformat() if job.delivery_window_end else None,
+        "job_number": str(job.job_number),
+        "customer_name": str(job.customer_name),
+        "source_address": str(job.pickup_address),
+        "destination_address": str(job.delivery_address),
+        "cargo_description": str(job.cargo_description or ""),
+        "weight_kg": float(job.cargo_weight_kg) if job.cargo_weight_kg is not None else 0.0,
+        "priority": str(job.priority),
+        "status": str(job.status),
+        "pickup_window_start": job.time_window_start.isoformat() if job.time_window_start else None,
+        "delivery_window_end": job.time_window_end.isoformat() if job.time_window_end else None,
         "created_at": job.created_at.isoformat() if job.created_at else None,
         "tracking_timeline": [
             {"status": "Created", "timestamp": job.created_at.isoformat() if job.created_at else None, "completed": True},
@@ -133,20 +133,22 @@ def track_job_public(
         ]
     }
     
-    if job.assigned_vehicle:
+    if job.trip and job.trip.vehicle:
+        v = job.trip.vehicle
         response_data["vehicle"] = {
-            "registration_number": job.assigned_vehicle.registration_number,
-            "name": job.assigned_vehicle.vehicle_name,
-            "type": job.assigned_vehicle.vehicle_type,
-            "latitude": float(job.assigned_vehicle.latitude) if job.assigned_vehicle.latitude else None,
-            "longitude": float(job.assigned_vehicle.longitude) if job.assigned_vehicle.longitude else None,
-            "status": job.assigned_vehicle.status
+            "registration_number": str(v.registration_number),
+            "name": str(v.vehicle_name),
+            "type": str(v.vehicle_type),
+            "latitude": float(v.latitude) if v.latitude is not None else None,
+            "longitude": float(v.longitude) if v.longitude is not None else None,
+            "status": str(v.status)
         }
         
-    if job.assigned_driver and job.assigned_driver.user:
+    if job.trip and job.trip.driver and job.trip.driver.user:
+        u = job.trip.driver.user
         response_data["driver"] = {
-            "first_name": job.assigned_driver.user.first_name,
-            "phone_number": job.assigned_driver.user.phone_number
+            "first_name": str(u.first_name),
+            "phone_number": str(u.phone_number or "")
         }
         
     return response_data
