@@ -66,6 +66,47 @@ def upgrade() -> None:
     )
     op.create_index(op.f('ix_help_articles_id'), 'help_articles', ['id'], unique=False)
     op.create_index(op.f('ix_help_articles_slug'), 'help_articles', ['slug'], unique=True)
+
+    op.create_table('support_tickets',
+    sa.Column('id', sa.Uuid(), nullable=False),
+    sa.Column('ticket_number', sa.String(length=50), nullable=False),
+    sa.Column('created_by', sa.Uuid(), nullable=False),
+    sa.Column('title', sa.String(length=200), nullable=False),
+    sa.Column('description', sa.Text(), nullable=False),
+    sa.Column('module_name', sa.String(length=50), nullable=False),
+    sa.Column('priority', sa.String(length=20), nullable=False, server_default='Medium'),
+    sa.Column('category', sa.String(length=50), nullable=False),
+    sa.Column('status', sa.String(length=20), nullable=False, server_default='Open'),
+    sa.Column('assigned_to', sa.Uuid(), nullable=True),
+    sa.Column('resolution_notes', sa.Text(), nullable=True),
+    sa.Column('resolved_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('closed_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('attachment_url', sa.String(length=255), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
+    sa.ForeignKeyConstraint(['created_by'], ['users.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['assigned_to'], ['users.id'], ondelete='SET NULL'),
+    sa.PrimaryKeyConstraint('id'),
+    sa.CheckConstraint("priority IN ('Low', 'Medium', 'High', 'Critical')", name='check_ticket_priority'),
+    sa.CheckConstraint("status IN ('Open', 'In Progress', 'Resolved', 'Closed')", name='check_ticket_status')
+    )
+    op.create_index(op.f('ix_support_tickets_id'), 'support_tickets', ['id'], unique=False)
+    op.create_index(op.f('ix_support_tickets_ticket_number'), 'support_tickets', ['ticket_number'], unique=True)
+    op.create_index(op.f('ix_support_tickets_status'), 'support_tickets', ['status'], unique=False)
+
+    op.create_table('feedback',
+    sa.Column('id', sa.Uuid(), nullable=False),
+    sa.Column('user_id', sa.Uuid(), nullable=True),
+    sa.Column('rating', sa.Integer(), nullable=False),
+    sa.Column('title', sa.String(length=200), nullable=True),
+    sa.Column('message', sa.Text(), nullable=True),
+    sa.Column('page', sa.String(length=255), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='SET NULL'),
+    sa.PrimaryKeyConstraint('id'),
+    sa.CheckConstraint('rating >= 1 AND rating <= 5', name='check_feedback_rating')
+    )
+    op.create_index(op.f('ix_feedback_id'), 'feedback', ['id'], unique=False)
     op.alter_column('drivers', 'id',
                existing_type=sa.NUMERIC(),
                type_=sa.Uuid(),
@@ -459,6 +500,12 @@ def downgrade() -> None:
                existing_type=sa.Uuid(),
                type_=sa.NUMERIC(),
                existing_nullable=False)
+    op.drop_index(op.f('ix_feedback_id'), table_name='feedback')
+    op.drop_table('feedback')
+    op.drop_index(op.f('ix_support_tickets_status'), table_name='support_tickets')
+    op.drop_index(op.f('ix_support_tickets_ticket_number'), table_name='support_tickets')
+    op.drop_index(op.f('ix_support_tickets_id'), table_name='support_tickets')
+    op.drop_table('support_tickets')
     op.drop_index(op.f('ix_help_articles_slug'), table_name='help_articles')
     op.drop_index(op.f('ix_help_articles_id'), table_name='help_articles')
     op.drop_table('help_articles')
