@@ -25,7 +25,7 @@ TransitOps V2 is organized into eight integrated capability waves, delivering co
 │  CONNECTED FLEET      │  EXPERIENCES          │  INTELLIGENCE         │  PLATFORM INTEGRATION │
 │  - Telemetry API      │  - Desktop Web ERP    │  - AI Copilot         │  - Signed Webhooks    │
 │  - Geotab/Traccar     │  - Driver Mobile PWA  │  - Predictive Maint   │  - Public REST APIs   │
-│  - GPS Live Map       │  - Customer Tracking  │  - Pilot Telemetry    │  - Streaming Exporter │
+│  - GPS Live Map       │  - Customer Tracking  │  - Pilot Dashboard    │  - Streaming Exporter │
 │  - Proof Delivery     │  - Help Desk Chat     │  - Safety Scoring     │  - Global Cmd Ctrl+K  │
 └───────────────────────┴───────────────────────┴───────────────────────┴───────────────────────┘
 ```
@@ -84,13 +84,14 @@ TransitOps V2 is organized into eight integrated capability waves, delivering co
 ### 📱 7. Specialized Experiences, Mobile Driver PWA & Customer Portal (Wave 7)
 * **Mobile Driver Web App (`/driver/mobile`):** Smartphone-optimized touch interface ([`DriverMobileApp.jsx`](file:///c:/Users/hp/Downloads/New%20folder%20(6)/transitops-odoo-hackathon-2026/frontend/src/pages/drivers/DriverMobileApp.jsx)) for drivers to view active trip assignments, update trip progress (Start ➡️ Arrive), submit geofenced Proof of Delivery (photo & digital signature), log vehicle refuels, and report breakdown emergencies.
 * **Public Customer Shipment Tracking Portal (`/tracking/:job_number`):** Lightweight, public-facing shipment tracking portal ([`CustomerTrackingPortal.jsx`](file:///c:/Users/hp/Downloads/New%20folder%20(6)/transitops-odoo-hackathon-2026/frontend/src/pages/jobs/CustomerTrackingPortal.jsx)) allowing customers to track order progress on a 4-stage visual timeline with live vehicle GPS coordinates, driver details, and signed POD proof.
+* **Commercial Pilot Adoption Dashboard (`/analytics/pilot-dashboard`):** Real-time operational validation control center ([`PilotAdoptionDashboard.jsx`](file:///c:/Users/hp/Downloads/New%20folder%20(6)/transitops-odoo-hackathon-2026/frontend/src/pages/reports/PilotAdoptionDashboard.jsx)) tracking 6 explicit commercial readiness indicators across pilot fleets.
 * **Help Center & Support Desk:** Searchable Knowledgebase articles + full internal Support Ticket System featuring priority badges, assigned support agents, and an interactive chat message timeline.
 
 ---
 
 ### 🤖 8. AI Intelligence & Predictive Analytics (Wave 8)
 * **Fleet Copilot AI Assistant:** Natural-language query interface (`/api/v1/ai-copilot/query`) answering operational questions ("Which vehicles have highest maintenance cost this month?") grounded strictly in tenant database records.
-* **Pilot Fleet Adoption Telemetry (`/api/v1/analytics/pilot-metrics`):** Operational adoption telemetry engine measuring real pilot fleet usage indicators across 5 key dimensions: dispatches executed, IoT GPS telemetry pings, mobile POD submissions, customer tracking portal pageviews, and Stripe/Razorpay subscription funnel conversions.
+* **Pilot Fleet Adoption Telemetry (`/api/v1/analytics/pilot-metrics`):** Operational telemetry engine measuring 6 explicit commercial readiness indicators: (1) Active Pilot Fleets / Tenants, (2) Weekly Dispatches per Fleet, (3) Daily Telemetry Pings per Vehicle, (4) Mobile POD Submissions Completed, (5) Customer Tracking Portal Views per Order, and (6) Trial-to-Paid Subscription Conversion Rate by Plan (*Starter*, *Pro*, *Enterprise*) with Monthly Recurring Revenue (MRR) tracking.
 * **Predictive Analytics Models:** Fleet health score calculations, Total Cost of Ownership (TCO) per kilometer, and predictive maintenance component wear forecasting algorithms.
 
 ---
@@ -114,6 +115,7 @@ TransitOps V2 is organized into eight integrated capability waves, delivering co
 ├────────────────────┼─────────────────────────────────────────────────────────────────┤
 │ FRONTEND LAYER     │ React 18, Vite, Tailwind CSS, Leaflet Maps, Lucide Icons        │
 │ SPECIALIZED UIs    │ Mobile Driver PWA, Customer Tracking Portal, Billing Dashboard  │
+│ COMMERCIAL UIs     │ Pilot Fleet Commercial Adoption Control Center Dashboard        │
 │ BACKEND API        │ Python 3.10+, FastAPI, Pydantic v2, Uvicorn, fpdf2              │
 │ DATABASE & ORM     │ PostgreSQL 15+, SQLAlchemy 2.0 (Repository Pattern), Alembic     │
 │ PAYMENT GATEWAYS   │ Stripe Checkout & Webhooks, Razorpay Checkout & Webhooks        │
@@ -158,12 +160,12 @@ transitops-odoo-hackathon-2026/
 │   │   │   ├── activity/                   #  Dispatch, Jobs, Maintenance, Fuel, Expenses,
 │   │   │   ├── dispatch/                   #  Inventory, Procurement, Vendors, Help, Reports,
 │   │   │   ├── drivers/                    #  DriverMobileApp, CustomerTrackingPortal,
-│   │   │   ├── fleet_map/                  #  BillingSettings, Settings)
+│   │   │   ├── fleet_map/                  #  PilotAdoptionDashboard, BillingSettings, Settings)
 │   │   │   ├── help/                       #
 │   │   │   ├── inventory/                  #
 │   │   │   ├── jobs/                       #
 │   │   │   ├── maintenance/                #
-│   │   │   ├── reports/                    #
+│   │   │   ├── reports/                    #  FleetCompliance, ReportBuilder, PilotAdoptionDashboard
 │   │   │   ├── settings/                   #
 │   │   │   └── vendors/                    #
 │   │   ├── services/                       # Axios REST client with authorization interceptors
@@ -197,7 +199,7 @@ TransitOps enforces a decoupled, four-tier architecture isolating network contra
 ```
 
 ### Request Lifecycle Steps:
-1. **User Action / Telemetry / Mobile App:** Driver updates trip on Mobile PWA (`/driver/mobile`), customer checks shipment tracking (`/tracking/:job`), or IoT device sends telemetry JSON.
+1. **User Action / Telemetry / Mobile App:** Driver updates trip on Mobile PWA (`/driver/mobile`), customer checks shipment tracking (`/tracking/:job`), or fleet manager views Pilot Adoption Control Center (`/analytics/pilot-dashboard`).
 2. **Security & Authorization (`api/deps.py`):** FastAPI validates JWT bearer tokens, checks tenant boundaries, and executes `RoleChecker` against the RBAC 2.0 matrix.
 3. **Business Processing (`services/`):** Validated inputs enter service logic (e.g. pre-dispatch fit calculations, geofence POD verification, fuel theft algorithms, Stripe/Razorpay billing, AI Copilot SQL generation, pilot fleet adoption metrics).
 4. **Transactional Persistence (`repositories/`):** Changes persist within atomic SQLAlchemy database sessions. Security alterations generate immutable audit entries in `permission_audit_logs`.
