@@ -119,7 +119,7 @@ def track_job_public(
         "source_address": str(job.pickup_address),
         "destination_address": str(job.delivery_address),
         "cargo_description": str(job.cargo_description or ""),
-        "weight_kg": float(job.cargo_weight_kg) if job.cargo_weight_kg is not None else 0.0,
+        "weight_kg": float(str(job.cargo_weight_kg)) if job.cargo_weight_kg is not None else 0.0,
         "priority": str(job.priority),
         "status": str(job.status),
         "pickup_window_start": job.time_window_start.isoformat() if job.time_window_start else None,
