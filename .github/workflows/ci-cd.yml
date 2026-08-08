@@ -1,0 +1,82 @@
+name: TransitOps CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, v2/development ]
+  pull_request:
+    branches: [ main, v2/development ]
+
+jobs:
+  backend-test:
+    name: Backend Test Suite & Linting
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: transitops_admin
+          POSTGRES_PASSWORD: transitops_secure_pass_2026
+          POSTGRES_DB: transitops_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Database Migrations
+        env:
+          DATABASE_URL: postgresql://transitops_admin:transitops_secure_pass_2026@localhost:5432/transitops_db
+        run: |
+          cd backend
+          alembic upgrade head
+
+      - name: Run Operational Test Suite (Dispatch, Routing, POD, Audit)
+        env:
+          DATABASE_URL: postgresql://transitops_admin:transitops_secure_pass_2026@localhost:5432/transitops_db
+        run: |
+          cd backend
+          python -m pytest tests/test_dispatch_board.py tests/test_dispatch_concurrency.py tests/test_vehicle_recommendation.py tests/test_routing.py tests/test_pod.py tests/test_audit_events.py -v
+
+  frontend-build:
+    name: Frontend Build & Typecheck
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'frontend/package-lock.json'
+
+      - name: Install Dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Run Production Vite Build
+        run: |
+          cd frontend
+          npm run build
