@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     DATABASE_ECHO: bool = False
     
     # JWT Security
-    SECRET_KEY: str
+    SECRET_KEY: str = "transitops_ci_secret_key_2026_super_secure_jwt"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     
