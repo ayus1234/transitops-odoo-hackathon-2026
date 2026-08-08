@@ -36,7 +36,7 @@ export default function JobsPage() {
     fetchJobs();
   }, [page, statusFilter, priorityFilter]);
 
-  const fetchJobs = async () => {
+  const fetchJobs = async (currentSearch = search) => {
     setLoading(true);
     try {
       const data = await jobApi.getJobs({
@@ -44,7 +44,7 @@ export default function JobsPage() {
         page_size: 15,
         status: statusFilter || undefined,
         priority: priorityFilter || undefined,
-        search: search || undefined
+        search: currentSearch !== undefined ? currentSearch : search
       });
       setJobs(data.items || []);
       setTotal(data.total || 0);
@@ -58,7 +58,7 @@ export default function JobsPage() {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     setPage(1);
-    fetchJobs();
+    fetchJobs(search);
   };
 
   const handleCreateSubmit = async (e) => {
