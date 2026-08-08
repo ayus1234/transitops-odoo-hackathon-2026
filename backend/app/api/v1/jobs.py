@@ -55,7 +55,8 @@ def create_job(
 ):
     """Create a new customer shipping order / job."""
     service = JobService(db)
-    job = service.create_job(job_data, created_by_id=current_user.id)
+    user_id = UUID(str(current_user.id)) if current_user and current_user.id else None
+    job = service.create_job(job_data, created_by_id=user_id)
     return JobResponse.model_validate(job)
 
 
@@ -95,6 +96,62 @@ def cancel_job(
     service = JobService(db)
     job = service.cancel_job(job_id, reason=reason)
     return JobResponse.model_validate(job)
+
+
+@router.get("/track/{job_number}")
+def track_job_public(
+    job_number: str,
+    db: Session = Depends(get_db)
+):
+    """Public tracking lookup by job/tracking number (no auth required for customer portal)."""
+    service = JobService(db)
+    job = service.get_job_by_number(job_number)
+    if not job:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Shipment/Job #{job_number} not found"
+        )
+    
+    response_data = {
+        "id": str(job.id),
+        "job_number": str(job.job_number),
+        "customer_name": str(job.customer_name),
+        "source_address": str(job.pickup_address),
+        "destination_address": str(job.delivery_address),
+        "cargo_description": str(job.cargo_description or ""),
+        "weight_kg": float(str(job.cargo_weight_kg)) if job.cargo_weight_kg is not None else 0.0,
+        "priority": str(job.priority),
+        "status": str(job.status),
+        "pickup_window_start": job.time_window_start.isoformat() if job.time_window_start else None,
+        "delivery_window_end": job.time_window_end.isoformat() if job.time_window_end else None,
+        "created_at": job.created_at.isoformat() if job.created_at else None,
+        "tracking_timeline": [
+            {"status": "Created", "timestamp": job.created_at.isoformat() if job.created_at else None, "completed": True},
+            {"status": "Assigned", "completed": job.status in ["Assigned", "In Transit", "Delivered"]},
+            {"status": "In Transit", "completed": job.status in ["In Transit", "Delivered"]},
+            {"status": "Delivered", "completed": job.status == "Delivered"}
+        ]
+    }
+    
+    if job.trip and job.trip.vehicle:
+        v = job.trip.vehicle
+        response_data["vehicle"] = {
+            "registration_number": str(v.registration_number),
+            "name": str(v.vehicle_name),
+            "type": str(v.vehicle_type),
+            "latitude": float(v.latitude) if v.latitude is not None else None,
+            "longitude": float(v.longitude) if v.longitude is not None else None,
+            "status": str(v.status)
+        }
+        
+    if job.trip and job.trip.driver and job.trip.driver.user:
+        u = job.trip.driver.user
+        response_data["driver"] = {
+            "first_name": str(u.first_name),
+            "phone_number": str(u.phone_number or "")
+        }
+        
+    return response_data
 
 
 @router.delete("/{job_id}", status_code=status.HTTP_204_NO_CONTENT)

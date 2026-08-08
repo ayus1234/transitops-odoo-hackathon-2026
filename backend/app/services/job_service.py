@@ -24,6 +24,9 @@ class JobService:
             raise NotFoundError(f"Job with ID {job_id} not found")
         return job
 
+    def get_job_by_number(self, job_number: str) -> Optional[Job]:
+        return self.repository.get_by_job_number(job_number)
+
     def get_jobs(
         self,
         page: int = 1,
@@ -99,9 +102,10 @@ class JobService:
                 code="BIZ_JOB_003"
             )
 
-        job.status = "Cancelled"
+        setattr(job, "status", "Cancelled")
         if reason:
-            job.special_instructions = f"{job.special_instructions or ''}\n[Cancellation Reason]: {reason}".strip()
+            instructions = f"{job.special_instructions or ''}\n[Cancellation Reason]: {reason}".strip()
+            setattr(job, "special_instructions", instructions)
 
         self.db.commit()
         self.db.refresh(job)
