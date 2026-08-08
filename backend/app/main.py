@@ -121,7 +121,10 @@ app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 # Attach Rate Limiter to FastAPI state
 app.state.limiter = limiter
 if _rate_limit_exceeded_handler is not None:
-    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+    async def custom_rate_limit_handler(request: Request, exc: Exception):
+        return _rate_limit_exceeded_handler(request, exc)
+
+    app.add_exception_handler(RateLimitExceeded, custom_rate_limit_handler)
 
 # Configure Middlewares
 app.add_middleware(LoggingMiddleware)
