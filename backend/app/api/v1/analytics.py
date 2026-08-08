@@ -80,11 +80,11 @@ def get_pilot_fleet_adoption_metrics(
     """Get pilot fleet operational adoption telemetry (dispatches, GPS updates, PODs, customer tracking views, and subscription conversions)."""
     from app.models.job import Job
     from app.models.trip import Trip
-    from app.models.telemetry import TelemetryLog
+    from app.models.telemetry import VehicleTelemetryLog
     
     total_dispatches = db.query(Trip).filter(Trip.status.in_(["Dispatched", "In Transit", "Completed"])).count()
     completed_pods = db.query(Trip).filter(Trip.status == "Completed").count()
-    gps_ping_count = db.query(TelemetryLog).count()
+    gps_ping_count = db.query(VehicleTelemetryLog).count()
     total_customer_jobs = db.query(Job).count()
     
     return {
