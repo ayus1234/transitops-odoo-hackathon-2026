@@ -69,3 +69,19 @@ def assign_and_dispatch(
         if e.code == "BIZ_DISPATCH_CONFLICT":
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=e.message)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.message)
+
+
+from app.services.vehicle_recommendation_service import VehicleRecommendationService
+from app.schemas.vehicle_recommendation import VehicleRecommendationResponse
+
+@router.get("/recommendations/{job_id}", response_model=VehicleRecommendationResponse)
+def get_vehicle_recommendations(
+    job_id: UUID4,
+    top_n: int = Query(default=5, ge=1, le=20),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(PermissionChecker("trips", "read"))
+):
+    """Get multi-factor AI/algorithmic vehicle and driver recommendations for a job."""
+    service = VehicleRecommendationService(db)
+    return service.recommend_vehicles_for_job(job_id=job_id, top_n=top_n)
+
