@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ main, v2/development ]
 
+permissions:
+  contents: read
+
 jobs:
   backend-test:
     name: Backend Test Suite & Linting
