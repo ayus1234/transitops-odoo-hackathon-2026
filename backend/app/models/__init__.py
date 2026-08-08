@@ -25,6 +25,7 @@ from app.models.vendor import Vendor
 from app.models.job import Job
 from app.models.trip_stop import TripStop
 from app.models.audit_event import AuditEvent
+from app.models.telemetry import VehicleTelemetryLog
 
 __all__ = [
     "Base", "Role", "user_additional_roles", "User", "Vehicle", "Driver", "Trip",
@@ -35,6 +36,6 @@ __all__ = [
     "CustomReport", "ReportExecution", "ScheduledReport",
     "ActivityLog", "PermissionAuditLog",
     "InventoryItem", "ProcurementRequest", "PurchaseOrder", "InventoryHistory",
-    "OdometerReading", "Document", "Vendor", "Job", "TripStop", "AuditEvent"
+    "OdometerReading", "Document", "Vendor", "Job", "TripStop", "AuditEvent", "VehicleTelemetryLog"
 ]
 
