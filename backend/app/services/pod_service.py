@@ -134,10 +134,8 @@ class PODService:
         if not stop:
             raise NotFoundError(f"Trip stop with ID '{stop_id}' not found.")
 
-        if not stop.proof_of_delivery:
-            raise NotFoundError(f"No Proof of Delivery found for stop '{stop_id}'.")
-
-        pod_data = dict(stop.proof_of_delivery)
+        pod_raw = getattr(stop, 'proof_of_delivery', {}) or {}
+        pod_data: Dict[str, Any] = dict(pod_raw) if isinstance(pod_raw, dict) else {}
 
         return PODResponse(
             stop_id=UUID(str(stop.id)),
