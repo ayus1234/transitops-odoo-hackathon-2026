@@ -1,6 +1,6 @@
 # TransitOps V2 Enterprise Connected Fleet & Transportation Operations ERP
 
-![TransitOps Banner](https://img.shields.io/badge/TransitOps-V2%20Enterprise%20ERP-blue?style=for-the-badge) ![Version](https://img.shields.io/badge/version-2.1.0-green?style=for-the-badge) ![Build](https://img.shields.io/badge/build-passing-brightgreen?style=for-the-badge) ![Driver App](https://img.shields.io/badge/Driver%20App-Touch%20PWA-orange?style=for-the-badge) ![SaaS Billing](https://img.shields.io/badge/SaaS%20Billing-Stripe%20%26%20Razorpay-teal?style=for-the-badge) ![AI Copilot](https://img.shields.io/badge/AI-Copilot%20Enabled-purple?style=for-the-badge)
+![TransitOps Banner](https://img.shields.io/badge/TransitOps-V2%20Enterprise%20ERP-blue?style=for-the-badge) ![Version](https://img.shields.io/badge/version-2.1.0-green?style=for-the-badge) ![Build](https://img.shields.io/badge/build-passing-brightgreen?style=for-the-badge) ![Driver App](https://img.shields.io/badge/Driver%20App-Touch%20PWA-orange?style=for-the-badge) ![SaaS Billing](https://img.shields.io/badge/SaaS%20Billing-Stripe%20%26%20Razorpay-teal?style=for-the-badge) ![Pilot Telemetry](https://img.shields.io/badge/Pilot%20Telemetry-Active-emerald?style=for-the-badge) ![AI Copilot](https://img.shields.io/badge/AI-Copilot%20Enabled-purple?style=for-the-badge)
 
 **TransitOps** is an enterprise-grade Connected Fleet & Transportation Operations Resource Planning (ERP) platform designed for modern fleet operators, logistics providers, workshop engineers, and multi-tenant SaaS transportation enterprises.
 
@@ -25,7 +25,7 @@ TransitOps V2 is organized into eight integrated capability waves, delivering co
 │ CONNECTED FLEET   │  EXPERIENCES      │  INTELLIGENCE     │ PLATFORM & INTEGRATION│
 │  - Telemetry API  │ - Desktop Web ERP │ - AI Copilot      │ - Signed Webhooks     │
 │  - Geotab/Traccar │ - Driver PWA      │ - Predictive Maint│ - Public REST APIs    │
-│  - GPS Live Map   │ - Customer Track  │ - TCO / km Analytics│ - Streaming Exporter│
+│  - GPS Live Map   │ - Customer Track  │ - Pilot Telemetry │ - Streaming Exporter│
 │  - Proof Delivery │ - Help Desk Chat  │ - Safety Scoring  │ - Global Command Ctrl+K│
 └───────────────────┴───────────────────┴───────────────────┴───────────────────────┘
 ```
@@ -90,6 +90,7 @@ TransitOps V2 is organized into eight integrated capability waves, delivering co
 
 ### 🤖 8. AI Intelligence & Predictive Analytics (Wave 8)
 * **Fleet Copilot AI Assistant:** Natural-language query interface (`/api/v1/ai-copilot/query`) answering operational questions ("Which vehicles have highest maintenance cost this month?") grounded strictly in tenant database records.
+* **Pilot Fleet Adoption Telemetry (`/api/v1/analytics/pilot-metrics`):** Operational adoption telemetry engine measuring real pilot fleet usage indicators across 5 key dimensions: dispatches executed, IoT GPS telemetry pings, mobile POD submissions, customer tracking portal pageviews, and Stripe/Razorpay subscription funnel conversions.
 * **Predictive Analytics Models:** Fleet health score calculations, Total Cost of Ownership (TCO) per kilometer, and predictive maintenance component wear forecasting algorithms.
 
 ---
@@ -135,7 +136,7 @@ transitops-odoo-hackathon-2026/
 │   │   │   ├── deps.py                     # Auth & RBAC dependencies
 │   │   │   └── v1/                         # Endpoints (auth, vehicles, drivers, trips, dispatch,
 │   │   │                                   #  maintenance, fuel, inventory, procurement, safety,
-│   │   │                                   #  billing, telemetry, jobs, pod, ai_copilot, etc.)
+│   │   │                                   #  billing, telemetry, jobs, pod, ai_copilot, analytics, etc.)
 │   │   ├── core/                           # Security, JWT, middleware, config, DB session
 │   │   ├── models/                         # SQLAlchemy 2.0 ORM Entities (Vehicle, Driver, Trip,
 │   │   │                                   #  Job, Maintenance, Inventory, Fuel, HelpArticle, etc.)
@@ -185,8 +186,8 @@ TransitOps enforces a decoupled, four-tier architecture isolating network contra
       │      │                                                     │                        │
       │      ▼                                                     ▼                        ▼
       │ ┌─────────────────┐                               ┌─────────────────┐      ┌─────────────────┐
-      │ │ Global Cmd Ctrl+K│                              │   AI Copilot    │      │ Alembic Schema  │
-      │ │ RealTimeSync Eng│                               │  Query Engine   │      │   Migrations    │
+      │ │ Global Cmd Ctrl+K│                              │ AI Copilot &    │      │ Alembic Schema  │
+      │ │ RealTimeSync Eng│                               │ Pilot Telemetry │      │   Migrations    │
       │ └─────────────────┘                               └─────────────────┘      └─────────────────┘
       ▼
 ┌─────────────────────────┐
@@ -198,7 +199,7 @@ TransitOps enforces a decoupled, four-tier architecture isolating network contra
 ### Request Lifecycle Steps:
 1. **User Action / Telemetry / Mobile App:** Driver updates trip on Mobile PWA (`/driver/mobile`), customer checks shipment tracking (`/tracking/:job`), or IoT device sends telemetry JSON.
 2. **Security & Authorization (`api/deps.py`):** FastAPI validates JWT bearer tokens, checks tenant boundaries, and executes `RoleChecker` against the RBAC 2.0 matrix.
-3. **Business Processing (`services/`):** Validated inputs enter service logic (e.g. pre-dispatch fit calculations, geofence POD verification, fuel theft algorithms, Stripe/Razorpay billing, AI Copilot SQL generation).
+3. **Business Processing (`services/`):** Validated inputs enter service logic (e.g. pre-dispatch fit calculations, geofence POD verification, fuel theft algorithms, Stripe/Razorpay billing, AI Copilot SQL generation, pilot fleet adoption metrics).
 4. **Transactional Persistence (`repositories/`):** Changes persist within atomic SQLAlchemy database sessions. Security alterations generate immutable audit entries in `permission_audit_logs`.
 5. **Streaming Output & Real-Time Sync:** Response returns formatted JSON, streaming PDF byte-buffer, or triggers real-time UI state updates via `RealTimeSyncContext`.
 
@@ -214,7 +215,7 @@ cd backend
 python -m pytest tests/test_dispatch_board.py tests/test_dispatch_concurrency.py tests/test_vehicle_recommendation.py tests/test_routing.py tests/test_pod.py tests/test_audit_events.py tests/test_production_readiness.py tests/test_telemetry.py tests/test_analytics.py tests/test_extended_suite.py -vv --tb=long -ra
 ```
 
-**Results:** All **29/29 integration tests pass in ~3.5s** with 100% migration schema alignment.
+**Results:** All **29/29 integration tests pass in ~2.4s** with 100% migration schema alignment.
 
 ---
 
