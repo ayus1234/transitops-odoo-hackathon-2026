@@ -7,13 +7,20 @@ import sys
 import os
 import time
 import uuid
-import structlog
+try:
+    import structlog
+except ImportError:
+    structlog = None
+
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 
 
 def setup_logging():
     """Configure structlog processors based on ENVIRONMENT setting."""
+    if not structlog:
+        logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
+        return
     environment = os.getenv("ENVIRONMENT", "development").lower()
     log_level_str = os.getenv("LOG_LEVEL", "INFO").upper()
     log_level = getattr(logging, log_level_str, logging.INFO)
@@ -57,7 +64,9 @@ def setup_logging():
 
 def get_logger(name: str = "transitops"):
     """Get a configured structlog logger instance."""
-    return structlog.get_logger(name)
+    if structlog:
+        return structlog.get_logger(name)
+    return logging.getLogger(name)
 
 
 class LoggingMiddleware(BaseHTTPMiddleware):
