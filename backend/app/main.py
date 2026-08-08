@@ -118,12 +118,14 @@ UPLOAD_DIR = os.path.join(tempfile.gettempdir(), "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
+from typing import cast
+
 # Attach Rate Limiter to FastAPI state
 app.state.limiter = limiter
 if _rate_limit_exceeded_handler is not None:
     async def custom_rate_limit_handler(request: Request, exc: Exception):
         if isinstance(exc, RateLimitExceeded):
-            return _rate_limit_exceeded_handler(request, exc)
+            return _rate_limit_exceeded_handler(request, cast(RateLimitExceeded, exc))
         return JSONResponse(status_code=429, content={"detail": "Rate limit exceeded"})
 
     app.add_exception_handler(RateLimitExceeded, custom_rate_limit_handler)
