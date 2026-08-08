@@ -97,6 +97,60 @@ def cancel_job(
     return JobResponse.model_validate(job)
 
 
+@router.get("/track/{job_number}")
+def track_job_public(
+    job_number: str,
+    db: Session = Depends(get_db)
+):
+    """Public tracking lookup by job/tracking number (no auth required for customer portal)."""
+    service = JobService(db)
+    job = service.get_job_by_number(job_number)
+    if not job:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Shipment/Job #{job_number} not found"
+        )
+    
+    response_data = {
+        "id": str(job.id),
+        "job_number": job.job_number,
+        "customer_name": job.customer_name,
+        "source_address": job.source_address,
+        "destination_address": job.destination_address,
+        "cargo_description": job.cargo_description,
+        "weight_kg": float(job.weight_kg) if job.weight_kg else 0.0,
+        "priority": job.priority,
+        "status": job.status,
+        "pickup_window_start": job.pickup_window_start.isoformat() if job.pickup_window_start else None,
+        "delivery_window_end": job.delivery_window_end.isoformat() if job.delivery_window_end else None,
+        "created_at": job.created_at.isoformat() if job.created_at else None,
+        "tracking_timeline": [
+            {"status": "Created", "timestamp": job.created_at.isoformat() if job.created_at else None, "completed": True},
+            {"status": "Assigned", "completed": job.status in ["Assigned", "In Transit", "Delivered"]},
+            {"status": "In Transit", "completed": job.status in ["In Transit", "Delivered"]},
+            {"status": "Delivered", "completed": job.status == "Delivered"}
+        ]
+    }
+    
+    if job.assigned_vehicle:
+        response_data["vehicle"] = {
+            "registration_number": job.assigned_vehicle.registration_number,
+            "name": job.assigned_vehicle.vehicle_name,
+            "type": job.assigned_vehicle.vehicle_type,
+            "latitude": float(job.assigned_vehicle.latitude) if job.assigned_vehicle.latitude else None,
+            "longitude": float(job.assigned_vehicle.longitude) if job.assigned_vehicle.longitude else None,
+            "status": job.assigned_vehicle.status
+        }
+        
+    if job.assigned_driver and job.assigned_driver.user:
+        response_data["driver"] = {
+            "first_name": job.assigned_driver.user.first_name,
+            "phone_number": job.assigned_driver.user.phone_number
+        }
+        
+    return response_data
+
+
 @router.delete("/{job_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_job(
     job_id: UUID,

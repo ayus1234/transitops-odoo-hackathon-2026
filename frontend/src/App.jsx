@@ -45,6 +45,9 @@ import HelpArticle from './pages/help/HelpArticle';
 import SupportTickets from './pages/help/SupportTickets';
 import TicketDetail from './pages/help/TicketDetail';
 
+import DriverMobileApp from './pages/drivers/DriverMobileApp';
+import CustomerTrackingPortal from './pages/jobs/CustomerTrackingPortal';
+
 function App() {
   return (
     <BrowserRouter>
@@ -54,6 +57,8 @@ function App() {
             <Routes>
               <Route path="/" element={<Navigate to="/login" replace />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/driver/mobile" element={<DriverMobileApp />} />
+              <Route path="/tracking/:job_number?" element={<CustomerTrackingPortal />} />
               
               <Route element={<ProtectedRoute />}>
                 <Route element={<MainLayout />}>
