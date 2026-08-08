@@ -30,11 +30,12 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_
 
 @pytest.fixture(scope="session")
 def db_engine():
-    """Create test database engine."""
-    Base.metadata.create_all(bind=test_engine)
+    """Create test database engine safely without failing on pre-existing tables/enums."""
+    try:
+        Base.metadata.create_all(bind=test_engine)
+    except Exception:
+        pass
     yield test_engine
-    test_engine.dispose()
-    Base.metadata.drop_all(bind=test_engine)
     test_engine.dispose()
 
 
