@@ -3,7 +3,7 @@ API v1 routes package.
 """
 from fastapi import APIRouter
 
-from app.api.v1 import auth, vehicles, drivers, trips, maintenance, maintenance_technicians, maintenance_tasks, fuel, expenses, dashboard, reports, admin, notifications, help_center, quick_actions, custom_reports, activity, fleet_map, license_compliance, fleet_compliance, safety_insights, inventory, procurement, purchase_orders, rbac, odometer, documents, vendors, jobs, dispatch, routing, pod, audit, telemetry
+from app.api.v1 import auth, vehicles, drivers, trips, maintenance, maintenance_technicians, maintenance_tasks, fuel, expenses, dashboard, reports, admin, notifications, help_center, quick_actions, custom_reports, activity, fleet_map, license_compliance, fleet_compliance, safety_insights, inventory, procurement, purchase_orders, rbac, odometer, documents, vendors, jobs, dispatch, routing, pod, audit, telemetry, analytics
 
 # Create main API router
 api_router = APIRouter()
@@ -22,6 +22,7 @@ api_router.include_router(routing.router, tags=["Routing & Multi-Stop ETA"])
 api_router.include_router(pod.router, tags=["Proof of Delivery (POD)"])
 api_router.include_router(audit.router, tags=["Event-Driven Audit Trail"])
 api_router.include_router(telemetry.router, tags=["Connected Fleet Telemetry (IoT)"])
+api_router.include_router(analytics.router, tags=["Enterprise Intelligence & Analytics"])
 api_router.include_router(drivers.router, prefix="/drivers", tags=["Drivers"])
 api_router.include_router(trips.router, prefix="/trips", tags=["Trips"])
 api_router.include_router(maintenance_technicians.router, prefix="/maintenance/technicians", tags=["Technician Management"])
