@@ -45,17 +45,26 @@ class CRMService:
 
         result: List[ClientAccount] = []
         for c in demo_clients:
-            client_jobs = [j for j in jobs if str(j.customer_name).lower() == c["company_name"].lower()]
-            rev = sum(float(j.cargo_weight_kg or 1000.0) * 2.5 for j in client_jobs)
+            c_id: UUID = c["id"]  # type: ignore
+            c_name: str = str(c["company_name"])
+            c_person: str = str(c["contact_person"])
+            c_email: str = str(c["email"])
+            c_phone: str = str(c["phone"])
+            c_credit: float = float(c["credit_limit"])  # type: ignore
+            c_tier: str = str(c["tier"])
+            c_rate: float = float(c["rate_per_km"])  # type: ignore
+
+            client_jobs = [j for j in jobs if str(j.customer_name).lower() == c_name.lower()]
+            rev = sum(float(getattr(j, "cargo_weight_kg", 1000.0) or 1000.0) * 2.5 for j in client_jobs)
             result.append(ClientAccount(
-                client_id=c["id"],
-                company_name=c["company_name"],
-                contact_person=c["contact_person"],
-                email=c["email"],
-                phone=c["phone"],
-                credit_limit_usd=c["credit_limit"],
-                contract_tier=c["tier"],
-                rate_per_km_usd=c["rate_per_km"],
+                client_id=c_id,
+                company_name=c_name,
+                contact_person=c_person,
+                email=c_email,
+                phone=c_phone,
+                credit_limit_usd=c_credit,
+                contract_tier=c_tier,
+                rate_per_km_usd=c_rate,
                 total_jobs_booked=len(client_jobs) if client_jobs else 12,
                 total_revenue_usd=rev if rev > 0 else 45800.0
             ))
