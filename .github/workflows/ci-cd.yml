@@ -2,9 +2,9 @@ name: TransitOps CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, v2/development ]
+    branches: [ main, v2/development, copilot/* ]
   pull_request:
-    branches: [ main, v2/development ]
+    branches: [ main, v2/development, copilot/* ]
 
 jobs:
   backend-test:
