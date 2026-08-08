@@ -12,8 +12,16 @@ from app.core.database import Base, get_db
 from app.core.config import settings
 
 
-# Use a Postgres test database
-TEST_DATABASE_URL = "postgresql+psycopg2://postgres:1234@localhost:5432/transitops_test"
+import os
+
+# Use environment DATABASE_URL or fallback to local test database
+raw_db_url = os.getenv("TEST_DATABASE_URL") or os.getenv("DATABASE_URL") or "postgresql+psycopg2://postgres:1234@localhost:5432/transitops_test"
+if raw_db_url.startswith("postgres://"):
+    raw_db_url = raw_db_url.replace("postgres://", "postgresql://", 1)
+if raw_db_url.startswith("postgresql://") and not raw_db_url.startswith("postgresql+"):
+    raw_db_url = raw_db_url.replace("postgresql://", "postgresql+psycopg2://", 1)
+
+TEST_DATABASE_URL = raw_db_url
 
 # Create test engine
 test_engine = create_engine(TEST_DATABASE_URL, pool_pre_ping=True)
