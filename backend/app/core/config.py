@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     DATABASE_ECHO: bool = False
     
     # JWT Security
-    SECRET_KEY: str
+    SECRET_KEY: str = "ci_test_secret_key_not_for_production_use"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     
