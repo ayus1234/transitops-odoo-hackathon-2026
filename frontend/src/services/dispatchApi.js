@@ -14,5 +14,10 @@ export const dispatchApi = {
   assignAndDispatch: async (data) => {
     const response = await api.post('/dispatch/assign-and-dispatch', data);
     return response.data;
+  },
+
+  getRecommendations: async (jobId) => {
+    const response = await api.get(`/dispatch/recommendations/${jobId}`);
+    return response.data;
   }
 };
