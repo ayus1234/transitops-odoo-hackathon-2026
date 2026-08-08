@@ -120,7 +120,7 @@ class AnalyticsService:
                         severity="CRITICAL",
                         fuel_loss_liters=round(loss_liters, 1),
                         time_span_minutes=round(dt_minutes, 1),
-                        detected_at=curr.timestamp,
+                        detected_at=getattr(curr, "timestamp", datetime.now()),
                         location={
                             "latitude": float(str(curr.latitude)) if curr.latitude else None,
                             "longitude": float(str(curr.longitude)) if curr.longitude else None,
