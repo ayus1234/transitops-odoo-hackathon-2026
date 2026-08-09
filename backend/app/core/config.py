@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     PORT: int = 8000
     
     # Database
-    DATABASE_URL: str
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./transitops.db")
     DATABASE_ECHO: bool = False
     
     # JWT Security
