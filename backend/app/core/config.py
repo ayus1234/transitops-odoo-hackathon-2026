@@ -22,7 +22,8 @@ class Settings(BaseSettings):
     PORT: int = 8000
     
     # Database
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:////tmp/transitops.db")
+    _raw_db_url: str = os.getenv("DATABASE_URL", "sqlite:////tmp/transitops.db")
+    DATABASE_URL: str = _raw_db_url.replace("ssl_context=true", "sslmode=require").replace("ssl_context=false", "sslmode=disable").replace("ssl_context=", "sslmode=") if "ssl_context" in _raw_db_url else _raw_db_url
     DATABASE_ECHO: bool = False
     
     # JWT Security
