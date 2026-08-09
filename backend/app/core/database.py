@@ -18,8 +18,8 @@ ssl_context.check_hostname = False
 ssl_context.verify_mode = ssl.CERT_NONE
 
 connect_args = {}
-# Use SSL if this is a remote database (not localhost)
-if "localhost" not in settings.DATABASE_URL and "127.0.0.1" not in settings.DATABASE_URL:
+# Use SSL if this is a remote PostgreSQL database (not sqlite, not localhost)
+if "sqlite" not in settings.DATABASE_URL and "localhost" not in settings.DATABASE_URL and "127.0.0.1" not in settings.DATABASE_URL:
     connect_args["ssl_context"] = ssl_context
 
 # Create SQLAlchemy engine

@@ -35,9 +35,12 @@ async def lifespan(app_instance: FastAPI):
     print(f"Starting {settings.APP_NAME} v{settings.APP_VERSION}")
     print(f"Environment: {settings.ENVIRONMENT}")
     print(f"Database: {settings.DATABASE_URL.split('@')[1] if '@' in settings.DATABASE_URL else 'configured'}")
-    
-    if settings.ENVIRONMENT == "development":
-        print("Database tables created")
+    try:
+        from app.core.database import Base, engine
+        Base.metadata.create_all(bind=engine)
+        print("Database tables created/verified.")
+    except Exception as e:
+        print(f"Notice: Database table creation check: {e}")
 
     # Ensure all 13 demo role accounts exist so hackathon evaluators never encounter invalid credentials
     try:
