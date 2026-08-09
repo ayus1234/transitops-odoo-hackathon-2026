@@ -23,8 +23,10 @@ from app.services.document_service import DocumentService
 
 router = APIRouter()
 
-# Local upload directory setup
-UPLOAD_DIR = os.path.join(os.getcwd(), "uploads", "documents")
+import tempfile
+
+# Local upload directory setup (use tempfile.gettempdir() for Vercel Serverless compatibility)
+UPLOAD_DIR = os.path.join(tempfile.gettempdir(), "uploads", "documents")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
