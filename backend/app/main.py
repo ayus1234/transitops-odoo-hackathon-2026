@@ -208,8 +208,8 @@ async def general_exception_handler(request: Request, exc: Exception):
             "success": False,
             "error": {
                 "code": "SYS_002",
-                "message": "Internal server error",
-                "details": {}
+                "message": f"Internal server error: {str(exc)}",
+                "details": {"traceback": traceback.format_exc()}
             }
         }
     )
