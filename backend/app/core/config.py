@@ -31,7 +31,12 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     
     # CORS
-    CORS_ORIGINS: Any = ["http://localhost:3000", "http://localhost:5173"]
+    CORS_ORIGINS: Any = [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "https://transitops-ui.vercel.app",
+        "https://transitops-api-psi.vercel.app"
+    ]
     
     # Pagination
     DEFAULT_PAGE_SIZE: int = 20
