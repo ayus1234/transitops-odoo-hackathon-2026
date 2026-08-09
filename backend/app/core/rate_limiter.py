@@ -34,17 +34,22 @@ class DummyLimiter:
 
 
 # Redis or Memory Storage Configuration
-redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+redis_url = os.getenv("REDIS_URL")
 
 if SLOWAPI_AVAILABLE and Limiter is not None:
-    try:
-        limiter = Limiter(
-            key_func=get_user_or_ip_identifier,
-            storage_uri=redis_url,
-            default_limits=["120/minute"]
-        )
-    except Exception:
-        # Fallback to in-memory limiter if Redis is unreachable in test/dev
+    if redis_url:
+        try:
+            limiter = Limiter(
+                key_func=get_user_or_ip_identifier,
+                storage_uri=redis_url,
+                default_limits=["120/minute"]
+            )
+        except Exception:
+            limiter = Limiter(
+                key_func=get_user_or_ip_identifier,
+                default_limits=["120/minute"]
+            )
+    else:
         limiter = Limiter(
             key_func=get_user_or_ip_identifier,
             default_limits=["120/minute"]
