@@ -1,10 +1,12 @@
 import os
 import sys
 
-# Add the backend directory to Python's path so 'from app...' imports work
-backend_path = os.path.join(os.path.dirname(__file__), 'backend')
-if backend_path not in sys.path:
-    sys.path.insert(0, backend_path)
+current_dir = os.path.dirname(os.path.abspath(__file__))
+backend_dir = os.path.join(current_dir, "backend")
+
+if current_dir not in sys.path:
+    sys.path.insert(0, current_dir)
+if backend_dir not in sys.path:
+    sys.path.insert(0, backend_dir)
 
 from app.main import app
-
