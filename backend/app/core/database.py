@@ -45,18 +45,58 @@ class Base(DeclarativeBase):
     pass
 
 
+_db_initialized = False
+
+def ensure_database_initialized() -> None:
+    """Ensure database tables and demo seed users exist on demand."""
+    global _db_initialized
+    if _db_initialized:
+        return
+    try:
+        # Import all models to ensure registration
+        import app.models  # noqa: F401
+        Base.metadata.create_all(bind=engine)
+        
+        from app.models.user import User
+        from app.models.role import Role
+        from app.api.v1.auth import DEMO_ACCOUNTS_CATALOG, get_default_permissions_for_role
+        from app.core.security import get_password_hash
+        
+        db = SessionLocal()
+        user_exists = db.query(User).first()
+        if not user_exists:
+            for acct in DEMO_ACCOUNTS_CATALOG:
+                role_obj = db.query(Role).filter(Role.name == acct["role"]).first()
+                if not role_obj:
+                    role_obj = Role(
+                        name=acct["role"],
+                        description=f"{acct['role']} Role",
+                        permissions=get_default_permissions_for_role(acct["role"])
+                    )
+                    db.add(role_obj)
+                    db.flush()
+                user_obj = User(
+                    email=acct["email"],
+                    hashed_password=get_password_hash(acct["password"]),
+                    full_name=acct["full_name"],
+                    role_id=role_obj.id,
+                    is_active=True,
+                    is_superuser=(acct["role"] in ["Super Admin", "Administrator"])
+                )
+                db.add(user_obj)
+            db.commit()
+        db.close()
+        _db_initialized = True
+    except Exception as e:
+        print(f"Database auto-init notice: {e}")
+
+
 def get_db() -> Generator[Session, None, None]:
     """
     Dependency function to get database session.
-    
-    Yields:
-        SQLAlchemy database session
-        
-    Usage:
-        @app.get("/items")
-        def get_items(db: Session = Depends(get_db)):
-            return db.query(Item).all()
+    Automatically ensures tables and seed users exist before returning session.
     """
+    ensure_database_initialized()
     db = SessionLocal()
     try:
         yield db
