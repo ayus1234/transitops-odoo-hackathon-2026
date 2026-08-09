@@ -34,7 +34,8 @@ async def lifespan(app_instance: FastAPI):
     """
     print(f"Starting {settings.APP_NAME} v{settings.APP_VERSION}")
     print(f"Environment: {settings.ENVIRONMENT}")
-    print(f"Database: {settings.DATABASE_URL.split('@')[1] if '@' in settings.DATABASE_URL else 'configured'}")
+    db_info = settings.DATABASE_URL.split('@')[-1] if '@' in settings.DATABASE_URL else settings.DATABASE_URL
+    print(f"Database: {db_info}")
     try:
         from app.core.database import Base, engine
         Base.metadata.create_all(bind=engine)
