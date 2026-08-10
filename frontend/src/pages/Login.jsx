@@ -2,88 +2,90 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 
-const makeDemoPass = (prefix, suffix = "2026") => `${prefix}${suffix}`;
+const getAccountPassword = (acc) => `${acc.prefix}${acc.suffix || "2026"}`;
 
 const DEFAULT_DEMO_ACCOUNTS = [
   {
     role: "Super Admin",
     email: "admin@transitops.com",
-    password: makeDemoPass("admin", "123"),
+    prefix: "admin",
+    suffix: "123",
     description: "Unrestricted administrative access across all enterprise ERP modules, user management, and system governance."
   },
   {
     role: "Administrator",
     email: "administrator@transitops.com",
-    password: makeDemoPass("adminpass"),
+    prefix: "adminpass",
     description: "Comprehensive administrative privileges for configuring roles, organization settings, and enterprise oversight."
   },
   {
     role: "System Admin",
     email: "sysadmin@transitops.com",
-    password: makeDemoPass("sysadmin"),
+    prefix: "sysadmin",
     description: "Technical administrative control over system diagnostics, support center operations, and server configurations."
   },
   {
     role: "Fleet Manager",
     email: "fleet@transitops.com",
-    password: makeDemoPass("fleet"),
+    prefix: "fleet",
     description: "Full fleet management capabilities including vehicle registry, driver assignments, trip tracking, and operational reports."
   },
   {
     role: "Dispatcher",
     email: "dispatcher@transitops.com",
-    password: makeDemoPass("dispatch"),
+    prefix: "dispatch",
     description: "Operational control over trip creation, route scheduling, driver assignments, and live dispatch monitoring."
   },
   {
     role: "Maintenance Manager",
     email: "maintenance@transitops.com",
-    password: makeDemoPass("maint"),
+    prefix: "maint",
     description: "Authority over vehicle servicing, repair schedules, maintenance approval workflows, and part inventory management."
   },
   {
     role: "Technician",
     email: "technician@transitops.com",
-    password: makeDemoPass("tech"),
+    prefix: "tech",
     description: "Field access to inspect vehicles, log repair notes, update task statuses, and monitor service checklists."
   },
   {
     role: "Safety Officer",
     email: "safety@transitops.com",
-    password: makeDemoPass("safety"),
+    prefix: "safety",
     description: "Focused access to driver safety scores, incident logs, compliance audits, and enterprise safety analytics."
   },
   {
     role: "Financial Analyst",
     email: "finance@transitops.com",
-    password: makeDemoPass("finance", "123"),
+    prefix: "finance",
+    suffix: "123",
     description: "Comprehensive financial insight across expenses, fuel budgeting, operational cost analytics, and accounting reports."
   },
   {
     role: "Procurement Operations",
     email: "procurement@transitops.com",
-    password: makeDemoPass("procure"),
+    prefix: "procure",
     description: "Management of inventory ordering, vendor purchase orders, spare parts requisition, and cost approvals."
   },
   {
     role: "HR/Operations",
     email: "hr@transitops.com",
-    password: makeDemoPass("hr"),
+    prefix: "hr",
     description: "Personnel management access for driver onboarding, profile updates, license verification, and HR records."
   },
   {
     role: "Support Agent",
     email: "support@transitops.com",
-    password: makeDemoPass("support"),
+    prefix: "support",
     description: "Help center access to resolve user tickets, assist driver technical issues, and log support interactions."
   },
   {
     role: "Driver",
     email: "driver@transitops.com",
-    password: makeDemoPass("driver"),
+    prefix: "driver",
     description: "Driver portal access for viewing assigned trips, vehicle telemetry, navigation logs, and personal safety metrics."
   }
-];
+].map(acc => ({ ...acc, password: getAccountPassword(acc) }));
 
 const Login = () => {
   const [email, setEmail] = useState('');
