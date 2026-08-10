@@ -6,15 +6,15 @@ services:
     container_name: transitops_postgres
     restart: always
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-transitops_admin}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ci_test_db_password}
+      POSTGRES_USER: ${POSTGRES_USER:-transitops_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB:-transitops_db}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U transitops_admin -d transitops_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-transitops_user} -d ${POSTGRES_DB:-transitops_db}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -40,9 +40,9 @@ services:
     container_name: transitops_backend
     restart: always
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-transitops_admin}:${POSTGRES_PASSWORD:-ci_test_db_password}@postgres:5432/${POSTGRES_DB:-transitops_db}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-transitops_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-transitops_db}
       REDIS_URL: redis://redis:6379/0
-      SECRET_KEY: ${SECRET_KEY:-dev_secret_key_change_in_production}
+      SECRET_KEY: ${SECRET_KEY}
       ENVIRONMENT: production
     ports:
       - "8000:8000"
