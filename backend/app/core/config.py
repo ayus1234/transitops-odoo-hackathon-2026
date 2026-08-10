@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     DATABASE_ECHO: bool = False
     
     # JWT Security
-    SECRET_KEY: str = "ci_test_secret_key_not_for_production_use"
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "dev_secret_key_change_in_production")
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     
